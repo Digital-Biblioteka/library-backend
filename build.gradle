@@ -37,8 +37,18 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'com.positiondev.epublib:epublib-core:3.1'
+
+//    implementation 'com.groupdocs:groupdocs-conversion:25.9'
+//    implementation 'com.groupdocs:groupdocs-parser:25.5'
+
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// Для решения ошибки с большим MANIFEST.MF у JDK 21+
+tasks.withType(JavaExec).configureEach {
+    jvmArgs = ['-Djdk.jar.maxSignatureFileSize=25000000']
 }

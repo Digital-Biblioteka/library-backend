@@ -16,4 +16,6 @@ public class Bookmark {
     @JoinColumn(name = "UserId", nullable = false)
     @ManyToOne
     private User user;
+
+    String textBookmark;
 }
