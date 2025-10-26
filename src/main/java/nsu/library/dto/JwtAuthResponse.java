@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-@Builder
 @AllArgsConstructor
 @Data
 @Schema(description = "Ответ c токеном доступа")
