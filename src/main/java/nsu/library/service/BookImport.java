@@ -3,8 +3,13 @@ package nsu.library.service;
 import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubReader;
 import nsu.library.entity.Book;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
 import javax.xml.namespace.QName;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.lang.StringBuilder;
@@ -15,7 +20,7 @@ public class BookImport {
         EpubReader epubReader = new EpubReader();
         return epubReader.readEpub(new FileInputStream(fileName));
     }
-    public Book parseEpub(nl.siegmann.epublib.domain.Book book) throws IOException {
+    public Book parseEpub(nl.siegmann.epublib.domain.Book book){
         Metadata metadata = book.getMetadata();
         Book ourBook = new Book();
         ourBook.setAuthor(metadata.getAuthors().isEmpty() ? "" : metadata.getAuthors().getFirst().toString());
@@ -32,28 +37,29 @@ public class BookImport {
                 .forEach(reference -> System.out.println(reference.getTitle() + " " + reference.getResource().getHref()));
     }
 
-    public List<SpineReference> getChapters(nl.siegmann.epublib.domain.Book book) throws IOException {
+    public List<SpineReference> parseChapters(nl.siegmann.epublib.domain.Book book){
         Spine spine = book.getSpine();
-        List<SpineReference> spineReferences = spine.getSpineReferences();
-        spineReferences.getFirst();
+        return spine.getSpineReferences();
+    }
+
+    public List<String> parseParagraphsByChapter(SpineReference spineReference) throws IOException {
+        Resource resource = spineReference.getResource();
+        InputStream is = resource.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
         String line;
-        for (SpineReference spineReference : spineReferences) {
-            Resource resource = spineReference.getResource();
-            InputStream is = resource.getInputStream();
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(is));
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);
         }
-        return spineReferences;
+
+        Document doc = Jsoup.parse(sb.toString());
+        List<Element> elems = doc.getElementsByTag("p");
+        List<String> paragraphs = new ArrayList<>();
+        elems.forEach(element -> paragraphs.add(element.text()));
+        return paragraphs;
     }
 
     public static void main(String[] args) throws Exception {
         nl.siegmann.epublib.domain.Book book = new BookImport().readEpub("hitman.epub");
-        Book bookOurs = new BookImport().parseEpub(book);
-        new BookImport().getTableOfContents(book);
-        new BookImport().getChapters(book);
     }
 }

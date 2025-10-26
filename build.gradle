@@ -38,6 +38,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'com.positiondev.epublib:epublib-core:3.1'
+    implementation 'org.jsoup:jsoup:1.21.2'
 
 //    implementation 'com.groupdocs:groupdocs-conversion:25.9'
 //    implementation 'com.groupdocs:groupdocs-parser:25.5'
