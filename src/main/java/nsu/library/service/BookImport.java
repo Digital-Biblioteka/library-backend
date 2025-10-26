@@ -20,7 +20,7 @@ public class BookImport {
         EpubReader epubReader = new EpubReader();
         return epubReader.readEpub(new FileInputStream(fileName));
     }
-    public Book parseEpub(nl.siegmann.epublib.domain.Book book){
+    public Book parseEpub(String fileName, nl.siegmann.epublib.domain.Book book){
         Metadata metadata = book.getMetadata();
         Book ourBook = new Book();
         ourBook.setAuthor(metadata.getAuthors().isEmpty() ? "" : metadata.getAuthors().getFirst().toString());
@@ -29,6 +29,7 @@ public class BookImport {
         ourBook.setPublisher(metadata.getPublishers().isEmpty() ? "" : metadata.getPublishers().getFirst());
         ourBook.setGenres(metadata.getMetaAttribute("genre"));
         ourBook.setIsbn(metadata.getMetaAttribute("isbn"));
+        ourBook.setLinkToBook(fileName);
         return ourBook;
     }
 
