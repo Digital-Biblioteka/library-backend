@@ -16,10 +16,25 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     String title;
+
+    @Column
     String author;
+
+    @Column
     String publisher;
+
+    @Column(nullable = false)
     String isbn;
+
+    @Column
     String description;
+
+    @Column
     String genres;
+
+    @Column(nullable = false)
+    String linkToBook;
 }

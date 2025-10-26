@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.4'
     id 'io.spring.dependency-management' version '1.1.7'
+    id("co.uzzu.dotenv.gradle") version "4.0.0"
 }
 
 group = 'nsu.library'
@@ -39,6 +40,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'com.positiondev.epublib:epublib-core:3.1'
     implementation 'org.jsoup:jsoup:1.21.2'
+    implementation 'org.liquibase:liquibase-core:4.24.0'
 
 //    implementation 'com.groupdocs:groupdocs-conversion:25.9'
 //    implementation 'com.groupdocs:groupdocs-parser:25.5'
@@ -48,8 +50,7 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
-
-// Для решения ошибки с большим MANIFEST.MF у JDK 21+
-tasks.withType(JavaExec).configureEach {
-    jvmArgs = ['-Djdk.jar.maxSignatureFileSize=25000000']
+configurations.configureEach {
+    exclude group: 'org.slf4j', module: 'slf4j-simple'
+    exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
 }

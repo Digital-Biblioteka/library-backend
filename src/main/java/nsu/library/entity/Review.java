@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    Long id;
 
     @JoinColumn(name = "BookId", nullable = false)
     @ManyToOne
@@ -16,4 +16,11 @@ public class Review {
     @JoinColumn(name = "UserId", nullable = false)
     @ManyToOne
     private User user;
+
+    @Column(nullable = false)
+    int rating;
+
+    @Column
+    String review_text;
+
 }

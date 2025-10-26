@@ -18,10 +18,11 @@ public class Bookmark {
     @ManyToOne
     private Book book;
 
-    @NonNull
+    @Column(nullable = false)
     String spine_reference;
-    int paragraph_index;
 
+    @Column(nullable = false)
+    int paragraph_index;
 
     String text_bookmark;
 }
