@@ -39,14 +39,7 @@ public class AuthService {
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(User.ROLE.ROLE_USER);
-<<<<<<< HEAD
         user.setEmail(request.getEmail());
-=======
-<<<<<<< HEAD
-        user.setEmail(request.getEmail());
-=======
->>>>>>> fa885dc6924d75ca32739e6cca7784c2f03e7d91
->>>>>>> 5448f6c89097dd64c72a9a10ac2cc0289e3be4aa
         userRepository.save(user); //.......bruh
         System.out.println("user created!");
         CustomUserDetails userDetails = new CustomUserDetails(user);
