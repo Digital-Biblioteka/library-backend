@@ -39,6 +39,7 @@ public class AuthService {
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(User.ROLE.ROLE_USER);
+        user.setEmail(request.getEmail());
         userRepository.save(user); //.......bruh
         System.out.println("user created!");
         CustomUserDetails userDetails = new CustomUserDetails(user);
