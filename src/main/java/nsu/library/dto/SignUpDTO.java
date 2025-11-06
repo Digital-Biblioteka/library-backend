@@ -14,11 +14,11 @@ public class SignUpDTO {
     @NotBlank(message = "Имя пользователя не может быть пустыми")
     private String username;
 
-    @Schema(description = "Пароль", example = "my_1secret1_password")
-    @Size(min = 4, max = 255, message = "Длина пароля должна быть не более 255 символов")
-    private String password;
-
     @Schema(description = "Email", example = "myemail@gmail.com")
     @Size(min = 4, max = 255, message = "Длина почты должна быть не более 255 символов")
     private String email;
+
+    @Schema(description = "Пароль", example = "my_1secret1_password")
+    @Size(min = 4, max = 255, message = "Длина пароля должна быть не более 255 символов")
+    private String password;
 }
