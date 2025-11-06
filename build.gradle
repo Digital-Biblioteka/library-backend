@@ -44,6 +44,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
+    implementation 'io.minio:minio:8.5.7'
 
 //    implementation 'com.groupdocs:groupdocs-conversion:25.9'
 //    implementation 'com.groupdocs:groupdocs-parser:25.5'
@@ -56,4 +57,9 @@ tasks.named('test') {
 configurations.configureEach {
     exclude group: 'org.slf4j', module: 'slf4j-simple'
     exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
+}
+
+tasks.register('minioInit', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'nsu.library.tools.MinioInit'
 }
