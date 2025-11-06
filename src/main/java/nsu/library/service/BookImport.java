@@ -6,6 +6,8 @@ import nsu.library.entity.Book;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 import javax.xml.namespace.QName;
 import java.io.*;
@@ -14,14 +16,18 @@ import java.util.List;
 import java.util.Map;
 import java.lang.StringBuilder;
 
+@Component
 public class BookImport {
 
     public nl.siegmann.epublib.domain.Book readEpub(String fileName) throws IOException {
         EpubReader epubReader = new EpubReader();
         return epubReader.readEpub(new FileInputStream(fileName));
     }
-    public Book parseEpub(String fileName, nl.siegmann.epublib.domain.Book book){
+
+    public Book parseEpub(String fileName) throws IOException {
+        nl.siegmann.epublib.domain.Book book = readEpub(fileName);
         Metadata metadata = book.getMetadata();
+
         Book ourBook = new Book();
         ourBook.setAuthor(metadata.getAuthors().isEmpty() ? "" : metadata.getAuthors().getFirst().toString());
         ourBook.setTitle(metadata.getTitles().isEmpty() ? "" : metadata.getTitles().getFirst());
@@ -30,6 +36,7 @@ public class BookImport {
         ourBook.setGenres(metadata.getMetaAttribute("genre"));
         ourBook.setIsbn(metadata.getMetaAttribute("isbn"));
         ourBook.setLinkToBook(fileName);
+
         return ourBook;
     }
 
