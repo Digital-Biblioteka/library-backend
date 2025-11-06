@@ -55,15 +55,12 @@ public class AuthService {
      * @return токен
      */
     public JwtAuthResponse signIn(SignInDTO request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.getUsername(),
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),
                 request.getPassword()
         ));
 
-        var user = customUserDetailsService.getByUsername(request.getUsername());
-        System.out.println("user found");
+        var user = customUserDetailsService.getByEmail(request.getEmail());
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println(auth.getAuthorities());
 
         var jwt = jwtService.generateToken(user);
         return new JwtAuthResponse(jwt);

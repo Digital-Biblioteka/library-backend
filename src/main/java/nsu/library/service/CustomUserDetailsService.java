@@ -14,16 +14,9 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
-    /**
-     * Получение пользователя по имени пользователя
-     *
-     * @return пользователь
-     */
-    public CustomUserDetails getByUsername(String username) {
-        return new CustomUserDetails(userRepository.getUsersByUsername(username));//-> new UsernameNotFoundException("Пользователь не найден"));
-
+    public CustomUserDetails getByEmail(String email) {
+        return new CustomUserDetails(userRepository.getUsersByEmail(email));
     }
-
     /**
      * Получение пользователя по имени пользователя
      * <p>
@@ -32,7 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
      * @return пользователь
      */
     public org.springframework.security.core.userdetails.UserDetailsService userDetailsService() {
-        return this::getByUsername;
+        return this::getByEmail;
     }
 
     /**
@@ -43,14 +36,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     public CustomUserDetails getCurrentUser() {
         // Получение имени пользователя из контекста Spring Security
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return getByUsername(username);
+        return getByEmail(username);
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user = userRepository.getUsersByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        var user = userRepository.getUsersByEmail(email);
         if (user == null) {
-            throw new UsernameNotFoundException("User not found: " + username);
+            throw new UsernameNotFoundException("User not found: " + email);
         }
         return new CustomUserDetails(user);
     }
