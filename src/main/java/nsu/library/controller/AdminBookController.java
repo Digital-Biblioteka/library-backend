@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api")
 @RequiredArgsConstructor
-public class BookController {
+public class AdminBookController {
     private final BookService bookService;
 
     @GetMapping("admin/books")

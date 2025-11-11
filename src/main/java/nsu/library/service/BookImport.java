@@ -2,6 +2,8 @@ package nsu.library.service;
 
 import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubReader;
+import nsu.library.dto.BookDTO;
+import nsu.library.dto.BookPreviewDTO;
 import nsu.library.entity.Book;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,25 +26,33 @@ public class BookImport {
         return epubReader.readEpub(new FileInputStream(fileName));
     }
 
-    public Book parseEpub(String fileName) throws IOException {
-        nl.siegmann.epublib.domain.Book book = readEpub(fileName);
+    public BookDTO parseEpub(nl.siegmann.epublib.domain.Book book, String link) throws IOException {
         Metadata metadata = book.getMetadata();
-
-        Book ourBook = new Book();
+        BookDTO ourBook = new BookDTO();
         ourBook.setAuthor(metadata.getAuthors().isEmpty() ? "" : metadata.getAuthors().getFirst().toString());
         ourBook.setTitle(metadata.getTitles().isEmpty() ? "" : metadata.getTitles().getFirst());
         ourBook.setDescription(metadata.getDescriptions().isEmpty() ? "" : metadata.getDescriptions().getFirst());
         ourBook.setPublisher(metadata.getPublishers().isEmpty() ? "" : metadata.getPublishers().getFirst());
-        ourBook.setGenres(metadata.getMetaAttribute("genre"));
+        ourBook.setGenre(metadata.getMetaAttribute("genre"));
         ourBook.setIsbn(metadata.getMetaAttribute("isbn"));
-        ourBook.setLinkToBook(fileName);
+        ourBook.setLinkToBook(link);
 
         return ourBook;
     }
 
-    public void getTableOfContents(nl.siegmann.epublib.domain.Book book) {
-        book.getTableOfContents().getTocReferences()
-                .forEach(reference -> System.out.println(reference.getTitle() + " " + reference.getResource().getHref()));
+    public BookPreviewDTO getBookPreview(String bookLink){
+        Resource cover;
+        BookDTO bookDTO;
+        try {
+            nl.siegmann.epublib.domain.Book book = readEpub(bookLink);
+            cover = book.getCoverImage();
+            bookDTO = parseEpub(book, bookLink);
+        } catch (IOException e) {
+            System.err.println("Error reading book in getBookPreview" + e.getMessage());
+            return null;
+        }
+
+        return new BookPreviewDTO(cover, bookDTO);
     }
 
     public List<SpineReference> parseChapters(nl.siegmann.epublib.domain.Book book){
@@ -65,9 +75,5 @@ public class BookImport {
         List<String> paragraphs = new ArrayList<>();
         elems.forEach(element -> paragraphs.add(element.text()));
         return paragraphs;
-    }
-
-    public static void main(String[] args) throws Exception {
-        nl.siegmann.epublib.domain.Book book = new BookImport().readEpub("hitman.epub");
     }
 }

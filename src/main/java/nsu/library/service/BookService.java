@@ -33,15 +33,27 @@ public class BookService {
         return book;
     }
 
+    public Book createBookFromDTO(BookDTO dto) {
+        Book book = new Book();
+        book.setTitle(dto.getTitle());
+        book.setAuthor(dto.getAuthor());
+        book.setDescription(dto.getDescription());
+        book.setIsbn(dto.getIsbn());
+        book.setPublisher(dto.getPublisher());
+        book.setGenres(dto.getGenre());
+        book.setLinkToBook(dto.getLinkToBook());
+        return book;
+    }
     public Book addBookAuto(String fileLink) {
-        Book book;
+        BookDTO book;
         try {
-            book = bookImport.parseEpub(fileLink);
+            book = bookImport.parseEpub(bookImport.readEpub(fileLink), fileLink);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        bookRepository.save(book);
-        return book;
+        Book ourBook = createBookFromDTO(book);
+        bookRepository.save(ourBook);
+        return ourBook;
     }
 
     public List<Book> searchBooks(SearchQuery searchQuery) {
@@ -88,5 +100,7 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-
+    public Book getBook(Long id) {
+        return bookRepository.findById(id).orElse(null);
+    }
 }
