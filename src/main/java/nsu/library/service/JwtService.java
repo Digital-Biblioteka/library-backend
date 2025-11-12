@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import nsu.library.entity.User;
+import nsu.library.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class JwtService {
      */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        if (userDetails instanceof User customUserDetails) {
+        if (userDetails instanceof CustomUserDetails customUserDetails) {
             claims.put("id", customUserDetails.getId());
             claims.put("role", customUserDetails.getRole());
         }
