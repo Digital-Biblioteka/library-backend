@@ -1,6 +1,5 @@
 package nsu.library.controller;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.BookDTO;
 import nsu.library.dto.SearchQuery;
@@ -17,7 +16,7 @@ import java.util.List;
 public class AdminBookController {
     private final BookService bookService;
 
-    @GetMapping("admin/books")
+    @GetMapping("admin/books/list")
     public List<Book> getBooks() {
         return bookService.getBooks();
     }
@@ -27,7 +26,7 @@ public class AdminBookController {
         return bookService.searchBooks(searchQuery);
     }
 
-    @PostMapping("admin/books")
+    @PostMapping("admin/books/add")
     public Book addBook(@RequestBody addBookDTO dto) {
         Book book = new Book();
         if (dto.getMode() == addBookDTO.ADDMode.auto) {
@@ -35,17 +34,17 @@ public class AdminBookController {
         } else if (dto.getMode() == addBookDTO.ADDMode.manual) {
             book = bookService.addBookManually(dto.getBookDTO());
         } else {
-            throw new IllegalArgumentException("invalid adding book mode!");
+            throw new IllegalArgumentException("invalid adding book mode!" + dto.getMode() + addBookDTO.ADDMode.manual);
         }
         return book;
     }
 
-    @DeleteMapping("admin/books")
+    @DeleteMapping("admin/books/edit")
     public void deleteBook(@RequestBody String isbn) {
         bookService.deleteBook(isbn);
     }
 
-    @PutMapping("admin/books")
+    @PutMapping("admin/books/delete")
     public Book updateBook(@RequestBody BookDTO dto) {
         return bookService.editBook(dto.getIsbn(), dto);
     }
