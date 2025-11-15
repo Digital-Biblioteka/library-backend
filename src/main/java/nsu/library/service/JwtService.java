@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import nsu.library.entity.User;
+import nsu.library.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -37,9 +38,11 @@ public class JwtService {
      */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        if (userDetails instanceof User customUserDetails) {
-            claims.put("id", customUserDetails.getId());
-            claims.put("role", customUserDetails.getRole());
+        if (userDetails instanceof CustomUserDetails customUserDetails) {
+            claims.put("id", customUserDetails.getUser().getId());
+            claims.put("role", customUserDetails.getUser().getRole());
+            claims.put("username", customUserDetails.getUser().getUsername());
+            claims.put("email", customUserDetails.getUser().getEmail());
         }
         return generateToken(claims, userDetails);
     }
@@ -76,11 +79,21 @@ public class JwtService {
      * @param userDetails данные пользователя
      * @return токен
      */
-    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts.builder().claims(extraClaims).subject(userDetails.getUsername()).issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24))
-                .signWith(getSigningKey()).compact();
-    }
+//    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+//        return Jwts.builder().claims(extraClaims).subject(userDetails.getUsername()).issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24))
+//                .signWith(getSigningKey()).compact();
+//    }
 
+    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        CustomUserDetails cud = (CustomUserDetails) userDetails;
+        return Jwts.builder()
+                .claims(extraClaims)
+                .subject(userDetails.getUsername())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24))
+                .signWith(getSigningKey())
+                .compact();
+    }
     /**
      * Проверка токена на просроченность
      *
