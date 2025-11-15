@@ -27,7 +27,7 @@ public class BookService {
         book.setDescription(bookDTO.getDescription());
         book.setIsbn(bookDTO.getIsbn());
         book.setPublisher(bookDTO.getPublisher());
-        book.setGenres(bookDTO.getGenre());
+        book.setGenre(bookDTO.getGenre());
         book.setLinkToBook(bookDTO.getLinkToBook());
         bookRepository.save(book);
         return book;
@@ -40,7 +40,7 @@ public class BookService {
         book.setDescription(dto.getDescription());
         book.setIsbn(dto.getIsbn());
         book.setPublisher(dto.getPublisher());
-        book.setGenres(dto.getGenre());
+        book.setGenre(dto.getGenre());
         book.setLinkToBook(dto.getLinkToBook());
         return book;
     }
@@ -84,7 +84,7 @@ public class BookService {
             book.setIsbn(bookDTO.getIsbn());
         }
         if (bookDTO.getGenre() != null) {
-            book.setGenres(bookDTO.getGenre());
+            book.setGenre(bookDTO.getGenre());
         }
         if (bookDTO.getLinkToBook() != null) {
             book.setLinkToBook(bookDTO.getLinkToBook());
