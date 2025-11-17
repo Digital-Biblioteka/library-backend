@@ -39,12 +39,12 @@ public class AdminBookController {
         return book;
     }
 
-    @DeleteMapping("admin/books/edit")
+    @DeleteMapping("admin/books/delete")
     public void deleteBook(@RequestBody String isbn) {
         bookService.deleteBook(isbn);
     }
 
-    @PutMapping("admin/books/delete")
+    @PutMapping("admin/books/edit")
     public Book updateBook(@RequestBody BookDTO dto) {
         return bookService.editBook(dto.getIsbn(), dto);
     }
