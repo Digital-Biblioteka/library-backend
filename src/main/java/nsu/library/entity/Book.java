@@ -33,7 +33,9 @@ public class Book {
     String description;
 
     @Column
-    String genres;
+    String genre; //нужно в бд-шку добавить столбец с жанрами
+    //переименовала с множественного на единственное число, т.к посчитала этот вариант
+    //более правильным с точки зрения что это книга и жанр у нее один вот
 
     @Column(nullable = false)
     String linkToBook;

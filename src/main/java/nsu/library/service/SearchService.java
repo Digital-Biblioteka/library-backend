@@ -90,6 +90,7 @@ public class SearchService {
                     (String) src.get("genres"),
                     (String) src.get("linkToBook"),
                     (String) src.get("source_uid"),
+                    (String) src.get("isbn"),
                     score
             ));
         }

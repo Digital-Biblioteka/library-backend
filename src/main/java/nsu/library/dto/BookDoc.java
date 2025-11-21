@@ -9,5 +9,6 @@ public record BookDoc(
         String genres,
         String linkToBook,
         String source_uid,
+        String isbn,
         Float score
 ) {}
