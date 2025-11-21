@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
+@Data
 @Schema(description = "Ответ c токеном доступа")
 public class JwtAuthResponse {
     @Schema(description = "Токен доступа", example = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTYyMjUwNj...")
