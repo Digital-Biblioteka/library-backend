@@ -16,7 +16,7 @@ import java.util.List;
 public class AdminBookController {
     private final BookService bookService;
 
-    @GetMapping("admin/books/list")
+    @GetMapping("admin/books")
     public List<Book> getBooks() {
         return bookService.getBooks();
     }
@@ -26,7 +26,7 @@ public class AdminBookController {
         return bookService.searchBooks(searchQuery);
     }
 
-    @PostMapping("admin/books/add")
+    @PostMapping("admin/books")
     public Book addBook(@RequestBody addBookDTO dto) {
         Book book = new Book();
         if (dto.getMode() == addBookDTO.ADDMode.auto) {
@@ -39,12 +39,12 @@ public class AdminBookController {
         return book;
     }
 
-    @DeleteMapping("admin/books/edit")
+    @DeleteMapping("admin/books")
     public void deleteBook(@RequestBody String isbn) {
         bookService.deleteBook(isbn);
     }
 
-    @PutMapping("admin/books/delete")
+    @PutMapping("admin/books")
     public Book updateBook(@RequestBody BookDTO dto) {
         return bookService.editBook(dto.getIsbn(), dto);
     }
