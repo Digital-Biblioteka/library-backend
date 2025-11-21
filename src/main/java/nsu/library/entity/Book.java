@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
 @RequiredArgsConstructor
 @Getter
@@ -32,8 +30,8 @@ public class Book {
     @Column
     String description;
 
-    @Column
-    String genres;
+//    @Column
+//    String genre;
 
     @Column(nullable = false)
     String linkToBook;

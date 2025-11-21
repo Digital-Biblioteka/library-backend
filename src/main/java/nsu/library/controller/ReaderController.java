@@ -26,7 +26,8 @@ public class ReaderController {
     @Operation(summary = "Получение превью книги")
     @GetMapping("{id}/preview")
     public BookPreviewDTO getBookPreview(@PathVariable Long id) {
-        Book book = bookService.getBook(id);
-        return bookImport.getBookPreview(book.getLinkToBook());
+//        Book book = bookService.getBook(id);
+//        return bookImport.getBookPreview(book.getLinkToBook());
+        return null;
     }
 }

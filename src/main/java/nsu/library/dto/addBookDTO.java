@@ -1,13 +1,14 @@
 package nsu.library.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 public class addBookDTO {
+    @NonNull
     ADDMode mode;
-    String link;
     BookDTO bookDTO;
 
     public enum ADDMode{

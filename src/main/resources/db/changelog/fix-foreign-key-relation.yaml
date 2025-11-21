@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: addForeignKeyConstraint-example
+      author: liquibase-docs
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: bookmarks
+            constraintName: foreign_user_id_bookmarks_key
+            referencedTableName: users
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseColumnNames: book_id
+            baseTableName: bookmarks
+            constraintName: foreign_book_id_bookmarks_key
+            referencedColumnNames: id
+            referencedTableName: books
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: reviews
+            constraintName: foreign_user_id_reviews_key
+            referencedTableName: users
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: reviews
+            baseColumnNames: book_id
+            constraintName: foreign_book_id_reviews_key
+            referencedTableName: books
+            referencedColumnNames: id

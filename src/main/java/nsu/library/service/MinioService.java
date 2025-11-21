@@ -20,25 +20,23 @@ import java.util.concurrent.TimeUnit;
 public class MinioService {
 
     private final BookRepository bookRepository;
-    String epubBucketName = "epub";
+    String epubBucketName = "raw";
 
-    private final MinioClient minioClient = MinioClient.builder()
-            .endpoint("https://play.min.io")
-            .credentials("Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG")
-            .build();
+    private final MinioClient minioClient;
 
     public String getUrlOfEpubBook(Long id) {
         String url = null;
-        Book book = bookRepository.findById(id).orElse(null);
-        if (book == null) {
-            return null;
-        }
+        //Book book = bookRepository.findById(id).orElse(null);
+//        if (book == null) {
+//            book = "hitman.epub";
+//        }
+        String linkToBook = "hitman.epub";
         try {
             url = minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
                             .method(Method.GET).
                             bucket(epubBucketName).
-                            object(book.getLinkToBook()).
+                            object(linkToBook).
                             expiry(1, TimeUnit.DAYS).
                             build()
             );
@@ -50,17 +48,18 @@ public class MinioService {
         return url;
     }
 
-    public String loadBookEpub(MultipartFile file) {
+    public String loadBookEpub(MultipartFile file, String bookId) {
+        String fileName = file.getOriginalFilename();
         try {
             String filePath = file.getOriginalFilename();
             if (filePath == null) {
                 filePath = "defaultName.epub";
             }
-            String fileName = Paths.get(filePath).toFile().getName();
+            fileName = Paths.get(filePath).toFile().getName();
             minioClient.putObject(
                     PutObjectArgs.builder()
-                            .bucket("epub")
-                            .object(fileName)
+                            .bucket(epubBucketName)
+                            .object(bookId)
                             .stream(file.getInputStream(), file.getSize(), -1)
                             .contentType(file.getContentType())
                             .build());
@@ -73,6 +72,7 @@ public class MinioService {
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
-        return file.getName();
+        return fileName;
     }
+
 }

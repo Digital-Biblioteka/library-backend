@@ -1,12 +1,9 @@
 databaseChangeLog:
   - changeSet:
-      id: 2
-      author: Alina
+      id: 3
+      author: ALina
       changes:
-        - dropUniqueConstraint:
-            tableName: users
-            constraintName: name
         - addUniqueConstraint:
             tableName: users
             columnNames: email
-            constraintName: uq_users_email
+            constraintName: uq_email_unique
