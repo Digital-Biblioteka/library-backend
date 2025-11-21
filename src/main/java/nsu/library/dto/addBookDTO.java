@@ -1,12 +1,15 @@
 package nsu.library.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public class addBookDTO {
+    @NonNull
     ADDMode mode;
+    @NonNull
     String link;
     BookDTO bookDTO;
 
