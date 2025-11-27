@@ -1,4 +1,4 @@
-package nsu.library.service;
+package nsu.library.service.system;
 
 import lombok.AllArgsConstructor;
 import nsu.library.repository.UserRepository;

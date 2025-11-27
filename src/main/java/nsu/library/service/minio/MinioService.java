@@ -1,10 +1,9 @@
-package nsu.library.service;
+package nsu.library.service.minio;
 
 import io.minio.*;
 import io.minio.errors.MinioException;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
-import nsu.library.entity.Book;
 import nsu.library.repository.BookRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

@@ -2,7 +2,7 @@ package nsu.library.config;
 
 import lombok.RequiredArgsConstructor;
 import nsu.library.security.JwtAuthFilter;
-import nsu.library.service.CustomUserDetailsService;
+import nsu.library.service.system.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

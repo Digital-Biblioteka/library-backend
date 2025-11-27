@@ -1,4 +1,4 @@
-package nsu.library.service;
+package nsu.library.service.books;
 
 import nsu.library.config.AppProps;
 import nsu.library.dto.SearchQuery;
