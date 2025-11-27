@@ -1,13 +1,12 @@
 package nsu.library.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 // name, author, year, description, genre, publishing house of the book.
-@Getter
-@Setter
+//@Getter
+//@Setter
+@Data
 public class BookDTO {
     String title;
     String author;

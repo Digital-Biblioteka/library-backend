@@ -56,6 +56,7 @@ public class AdminBookController {
 
     @PutMapping("admin/books")
     public Book updateBook(@RequestBody BookDTO dto) {
+        System.out.println(dto);
         return bookService.editBook(dto.getIsbn(), dto);
     }
 
