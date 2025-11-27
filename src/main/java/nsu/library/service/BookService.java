@@ -71,12 +71,12 @@ public class BookService {
         return searchBooks;
     }
 
-    public void deleteBook(String isbn) {
-        bookRepository.delete(bookRepository.findByIsbn(isbn));
+    public void deleteBook(Long id) {
+        bookRepository.deleteById(id);
     }
 
-    public Book editBook(String isbn, BookDTO bookDTO) {
-        Book book = bookRepository.findByIsbn(isbn);
+    public Book editBook(Long id, BookDTO bookDTO) {
+        Book book = bookRepository.findById(id).orElseThrow();
         if (bookDTO.getTitle() != null) {
             book.setTitle(bookDTO.getTitle());
         }

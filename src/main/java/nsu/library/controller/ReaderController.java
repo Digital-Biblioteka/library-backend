@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/reader")
 @RequiredArgsConstructor
 public class ReaderController {
-    BookImport bookImport;
     BookService bookService;
 
     @GetMapping("{id}")

@@ -51,13 +51,13 @@ public class AdminBookController {
     }
 
     @DeleteMapping("admin/books")
-    public void deleteBook(@RequestBody String isbn) {
-        bookService.deleteBook(isbn);
+    public void deleteBook(@PathVariable Long id) {
+        bookService.deleteBook(id);
     }
 
     @PutMapping("admin/books")
-    public Book updateBook(@RequestBody BookDTO dto) {
-        return bookService.editBook(dto.getIsbn(), dto);
+    public Book updateBook(@PathVariable Long id, @RequestBody BookDTO dto) {
+        return bookService.editBook(id, dto);
     }
 
     @GetMapping("debug")
