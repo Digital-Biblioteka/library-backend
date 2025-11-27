@@ -4,13 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
-import nsu.library.entity.Book;
 import nsu.library.dto.BookDTO;
+import nsu.library.dto.SearchQuery;
 import nsu.library.dto.addBookDTO;
-import nsu.library.service.books.BookService;
+import nsu.library.service.BookService;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import nsu.library.entity.Book;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -26,10 +27,10 @@ public class AdminBookController {
         return bookService.getBooks();
     }
 
-    //@GetMapping("admin/search")
-    //public List<Book> searchBooks(SearchQuery searchQuery) {
-        //return bookService.searchBooks(searchQuery);
-    //}
+    @GetMapping("admin/search")
+    public List<Book> searchBooks(SearchQuery searchQuery) {
+        return bookService.searchBooks(searchQuery);
+    }
 
     @PostMapping(
             value = "admin/books",
@@ -50,14 +51,13 @@ public class AdminBookController {
     }
 
     @DeleteMapping("admin/books")
-    public void deleteBook(@RequestBody String isbn) {
-        bookService.deleteBook(isbn);
+    public void deleteBook(@PathVariable Long id) {
+        bookService.deleteBook(id);
     }
 
     @PutMapping("admin/books")
-    public Book updateBook(@RequestBody BookDTO dto) {
-        System.out.println(dto);
-        return bookService.editBook(dto.getIsbn(), dto);
+    public Book updateBook(@PathVariable Long id, @RequestBody BookDTO dto) {
+        return bookService.editBook(id, dto);
     }
 
     @GetMapping("debug")
