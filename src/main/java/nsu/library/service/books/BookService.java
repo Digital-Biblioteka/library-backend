@@ -39,7 +39,10 @@ public class BookService {
         book.setTitle(bookDTO.getTitle());
         book.setAuthor(bookDTO.getAuthor());
         book.setDescription(bookDTO.getDescription());
-        book.setIsbn(bookDTO.getIsbn());
+        if (bookDTO.getIsbn() != null) {
+            book.setIsbn(bookDTO.getIsbn());
+        }
+        book.setIsbn("12345"); // zaglushka ebani
         book.setPublisher(bookDTO.getPublisher());
         //book.setGenre(bookDTO.getGenre());
         book.setLinkToBook(link);

@@ -4,6 +4,7 @@ import io.minio.*;
 import io.minio.errors.MinioException;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
+import nsu.library.entity.Book;
 import nsu.library.repository.BookRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,11 +26,13 @@ public class MinioService {
 
     public String getUrlOfEpubBook(Long id) {
         String url = null;
-        //Book book = bookRepository.findById(id).orElse(null);
-//        if (book == null) {
-//            book = "hitman.epub";
-//        }
-        String linkToBook = "hitman.epub";
+        String linkToBook;
+        Book book = bookRepository.findById(id).orElse(null);
+        if (book == null) {
+            linkToBook = "hitman.epub";
+        } else {
+            linkToBook = book.getLinkToBook();
+        }
         try {
             url = minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
