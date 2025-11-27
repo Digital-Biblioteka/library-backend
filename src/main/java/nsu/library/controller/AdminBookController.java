@@ -50,12 +50,12 @@ public class AdminBookController {
         }
     }
 
-    @DeleteMapping("admin/books")
+    @DeleteMapping("admin/books/{id}")
     public void deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
     }
 
-    @PutMapping("admin/books")
+    @PutMapping("admin/books/{id}")
     public Book updateBook(@PathVariable Long id, @RequestBody BookDTO dto) {
         return bookService.editBook(id, dto);
     }
