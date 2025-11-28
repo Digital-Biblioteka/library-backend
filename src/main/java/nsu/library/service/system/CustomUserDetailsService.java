@@ -42,6 +42,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         var user = userRepository.getUsersByEmail(email);
+
+        /*при загрузке книги происходит проверка на админа(SecurityConfig)
+        * и короче после долгих манипуляций все попадает сюда
+        * но тут типо получается что вот пользователь ivan у него емал ivan@mail.ru
+        * типо при регистрации сюда var user = userRepository.getUsersByEmail(email);
+        * попадает именно его емаил и все ок, НОООООООООООООООООООООООООООООО
+        * при загрузке книги сюда попадает его USERNAME поэтому загрузка падает с ошибкой
+        * пользователь не найден, потому что его ищут по имейлу, а получают в аргументы имя, мяу
+        * я временно для теста убрала проверку на админа, потому что я ебала, простите*/
         if (user == null) {
             throw new UsernameNotFoundException("User not found: " + email);
         }
