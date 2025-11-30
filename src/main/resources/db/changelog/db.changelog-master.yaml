@@ -3,6 +3,9 @@ databaseChangeLog:
       file: db/changelog/change-unique-constraints.yaml
   - include:
       file: db/changelog/fix-foreign-key-relation.yaml
+  - include:
+      file: db/changelog/add-genres-table.yaml
+
   - changeSet:
       id: 1
       author: alina

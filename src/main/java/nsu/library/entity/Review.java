@@ -9,11 +9,11 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @JoinColumn(name = "BookId", nullable = false)
+    @JoinColumn(name = "books", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Book book;
 
-    @JoinColumn(name = "UserId", nullable = false)
+    @JoinColumn(name = "users", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private User user;
 
