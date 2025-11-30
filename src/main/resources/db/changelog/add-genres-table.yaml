@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: add_genres
+      author: Alina
+      changes:
+        - createTable:
+            tableName: genres
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: genre_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+        - addColumn:
+            tableName: books
+            columns:
+              - column:
+                  name: genre
+                  type: BIGSERIAL
+                  constraints:
+                    foreignKeyName: genre_reference_id
+                    referencedTableName: genres
+                    referencedColumnNames: id

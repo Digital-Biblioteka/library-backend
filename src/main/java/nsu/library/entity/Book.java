@@ -30,8 +30,9 @@ public class Book {
     @Column
     String description;
 
-//    @Column
-//    String genre;
+    @JoinColumn(name = "genres", referencedColumnName = "id", nullable = false)
+    @ManyToOne
+    private Genre genre;
 
     @Column(nullable = false)
     String linkToBook;
