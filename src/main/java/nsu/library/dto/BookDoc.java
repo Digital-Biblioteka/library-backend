@@ -1,5 +1,6 @@
 package nsu.library.dto;
 
+
 public record BookDoc(
         String book_id,
         String title,

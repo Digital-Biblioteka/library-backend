@@ -1,4 +1,4 @@
-package nsu.library.service;
+package nsu.library.service.books;
 
 import nsu.library.config.AppProps;
 import nsu.library.dto.SearchQuery;
@@ -40,7 +40,7 @@ public class SearchService {
         body.put("size", req.sizeOrDefault());
         Map<String, Object> mm = new HashMap<>();
         mm.put("query", req.query());
-        mm.put("fields", List.of("title^3", "author^2", "description", "genres"));
+        mm.put("fields", List.of("title^3", "author^2", "description", "genre"));
         body.put("query", Map.of("multi_match", mm));
         Map<String, Object> resp = postJson(url, body);
         return toBookDocs(resp);
@@ -87,7 +87,7 @@ public class SearchService {
                     (String) src.get("author"),
                     (String) src.get("publisher"),
                     (String) src.get("description"),
-                    (String) src.get("genres"),
+                    (String) src.get("genre"),
                     (String) src.get("linkToBook"),
                     (String) src.get("source_uid"),
                     (String) src.get("isbn"),

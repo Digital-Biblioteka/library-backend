@@ -4,9 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Schema(description = "Запрос на аутентификацию")
+@NoArgsConstructor
 public class SignInDTO {
 
     @Schema(description = "Email", example = "myemail@gmail.com")

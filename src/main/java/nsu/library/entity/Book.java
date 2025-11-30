@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
 @RequiredArgsConstructor
 @Getter
@@ -32,10 +30,8 @@ public class Book {
     @Column
     String description;
 
-    @Column
-    String genre; //нужно в бд-шку добавить столбец с жанрами
-    //переименовала с множественного на единственное число, т.к посчитала этот вариант
-    //более правильным с точки зрения что это книга и жанр у нее один вот
+//    @Column
+//    String genre;
 
     @Column(nullable = false)
     String linkToBook;
