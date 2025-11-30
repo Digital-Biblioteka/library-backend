@@ -1,22 +1,18 @@
-package nsu.library.service;
+package nsu.library.service.books;
 
 import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubReader;
 import nsu.library.dto.BookDTO;
 import nsu.library.dto.BookPreviewDTO;
-import nsu.library.entity.Book;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.xml.namespace.QName;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.lang.StringBuilder;
 
 @Component

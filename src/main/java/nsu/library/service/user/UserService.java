@@ -1,4 +1,4 @@
-package nsu.library.service;
+package nsu.library.service.user;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;

@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import nsu.library.dto.JwtAuthResponse;
 import nsu.library.dto.SignInDTO;
 import nsu.library.dto.SignUpDTO;
-import nsu.library.entity.User;
-import nsu.library.service.AuthService;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import nsu.library.service.system.AuthService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

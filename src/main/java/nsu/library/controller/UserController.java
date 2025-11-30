@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import nsu.library.dto.CreateUserDTO;
 import nsu.library.dto.UserDTO;
 import nsu.library.security.CustomUserDetails;
-import nsu.library.service.UserService;
+import nsu.library.service.user.UserService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 

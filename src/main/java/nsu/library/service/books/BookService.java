@@ -1,4 +1,4 @@
-package nsu.library.service;
+package nsu.library.service.books;
 
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.BookDoc;
@@ -6,6 +6,7 @@ import nsu.library.dto.BookDTO;
 import nsu.library.dto.SearchQuery;
 import nsu.library.entity.Book;
 import nsu.library.repository.BookRepository;
+import nsu.library.service.minio.MinioService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,7 +39,10 @@ public class BookService {
         book.setTitle(bookDTO.getTitle());
         book.setAuthor(bookDTO.getAuthor());
         book.setDescription(bookDTO.getDescription());
-        book.setIsbn(bookDTO.getIsbn());
+        if (bookDTO.getIsbn() != null) {
+            book.setIsbn(bookDTO.getIsbn());
+        }
+        book.setIsbn("12345"); // zaglushka ebani
         book.setPublisher(bookDTO.getPublisher());
         //book.setGenre(bookDTO.getGenre());
         book.setLinkToBook(link);

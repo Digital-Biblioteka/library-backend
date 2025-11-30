@@ -1,4 +1,4 @@
-package nsu.library.service;
+package nsu.library.service.minio;
 
 import io.minio.*;
 import io.minio.errors.MinioException;
@@ -26,11 +26,13 @@ public class MinioService {
 
     public String getUrlOfEpubBook(Long id) {
         String url = null;
-        //Book book = bookRepository.findById(id).orElse(null);
-//        if (book == null) {
-//            book = "hitman.epub";
-//        }
-        String linkToBook = "hitman.epub";
+        String linkToBook;
+        Book book = bookRepository.findById(id).orElse(null);
+        if (book == null) {
+            linkToBook = "hitman.epub";
+        } else {
+            linkToBook = book.getLinkToBook();
+        }
         try {
             url = minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
