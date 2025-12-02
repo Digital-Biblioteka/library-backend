@@ -6,9 +6,11 @@ import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import nsu.library.entity.Book;
 import nsu.library.repository.BookRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
@@ -21,6 +23,7 @@ public class MinioService {
 
     private final BookRepository bookRepository;
     String epubBucketName = "raw";
+    String coverBucketName = "cover";
 
     private final MinioClient minioClient;
 
@@ -77,4 +80,45 @@ public class MinioService {
         return fileName;
     }
 
+    public String loadBookCover(byte[] cover, String bookId) {
+        String imageName = bookId + ".jpg";
+        try {
+            minioClient.putObject(
+                PutObjectArgs.builder()
+                        .bucket(coverBucketName)
+                        .object(imageName)
+                        .stream(new ByteArrayInputStream(cover), cover.length, -1)
+                        .contentType("image/jpeg")
+                        .build());
+        } catch (MinioException e) {
+            System.out.println("Error occurred: " + e);
+            System.out.println("HTTP trace: " + e.httpTrace());
+            throw new AccessDeniedException("minio access denied");
+        } catch (IOException e) {
+            System.out.println("Error occurred: " + e);
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new RuntimeException(e);
+        }
+        return imageName;
+    }
+
+    public String getBookCover(String bookId) {
+        String url;
+        String imageName = bookId + ".jpg";
+        try {
+            url = minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET).
+                            bucket(epubBucketName).
+                            object(imageName).
+                            expiry(1, TimeUnit.DAYS).
+                            build()
+            );
+        } catch (Exception e) {
+            String errorMsg = "minio access error" + e.getMessage();
+            System.err.println(errorMsg);
+            return errorMsg;
+        }
+        return url;
+    }
 }

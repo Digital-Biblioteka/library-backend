@@ -3,6 +3,7 @@ package nsu.library.service.books;
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.BookDoc;
 import nsu.library.dto.BookDTO;
+import nsu.library.dto.BookPreviewDTO;
 import nsu.library.dto.SearchQuery;
 import nsu.library.entity.Book;
 import nsu.library.entity.Genre;
@@ -29,8 +30,10 @@ public class BookService {
 
     public Book addBookManually(BookDTO bookDTO, MultipartFile file) {
         String bookId = UUID.randomUUID().toString() + "." + file.getOriginalFilename();
-
         String fileName = minioService.loadBookEpub(file, bookId);
+
+        byte[] cover = bookImport.getBookPreview(file);
+        String coverName = minioService.loadBookCover(cover, bookId);
 
         Book book = createBookFromDTO(bookDTO, bookId);
         bookRepository.save(book);
@@ -47,8 +50,10 @@ public class BookService {
         }
         book.setIsbn("12345"); // zaglushka ebani
         book.setPublisher(bookDTO.getPublisher());
-        Genre genre = genreRepository.getReferenceById(bookDTO.getGenreId());
-        book.setGenre(genre);
+        if (bookDTO.getGenreId()!= null) {
+            Genre genre = genreRepository.getReferenceById(bookDTO.getGenreId());
+            book.setGenre(genre);
+        }
         book.setLinkToBook(link);
         return book;
     }
@@ -62,9 +67,12 @@ public class BookService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         Book ourBook = createBookFromDTO(book, bookId);
+
         String fileName = minioService.loadBookEpub(file, bookId);
+
+        byte[] cover = bookImport.getBookPreview(file);
+        String coverName = minioService.loadBookCover(cover, bookId);
 
         bookRepository.save(ourBook);
         return ourBook;

@@ -37,26 +37,39 @@ public class BookImport {
         ourBook.setTitle(metadata.getTitles().isEmpty() ? "" : metadata.getTitles().getFirst());
         ourBook.setDescription(metadata.getDescriptions().isEmpty() ? "" : metadata.getDescriptions().getFirst());
         ourBook.setPublisher(metadata.getPublishers().isEmpty() ? "" : metadata.getPublishers().getFirst());
-        Genre genre = genreService.AddGenre(metadata.getMetaAttribute("genre"));
-        ourBook.setGenreId(genre.getId());
+        String genreName = metadata.getMetaAttribute("genre");
+        System.out.println("i will kill myself");
+        if (genreName != null) {
+            // dont create new genre here
+            Genre genre = genreService.AddGenre(metadata.getMetaAttribute("genre"));
+            System.out.println(genre);
+            System.out.println(genre.getId());
+            ourBook.setGenreId(genre.getId());
+        }
         ourBook.setIsbn(metadata.getMetaAttribute("isbn"));
 
         return ourBook;
     }
 
-    public BookPreviewDTO getBookPreview(MultipartFile file){
+    public byte[] getBookPreview(MultipartFile file){
         Resource cover;
         BookDTO bookDTO;
         try {
             nl.siegmann.epublib.domain.Book book = readEpub(file);
             cover = book.getCoverImage();
-            bookDTO = parseEpub(book, file.getOriginalFilename());
         } catch (IOException e) {
             System.err.println("Error reading book in getBookPreview" + e.getMessage());
             return null;
         }
-
-        return new BookPreviewDTO(cover, bookDTO);
+        cover.getSize();
+        byte[] coverBytes;
+        try {
+            coverBytes = cover.getData();
+        } catch (IOException e) {
+            System.err.println("Error reading book in getBookPreview" + e.getMessage());
+            throw new IllegalArgumentException();
+        }
+        return coverBytes;
     }
 
     public List<SpineReference> parseChapters(nl.siegmann.epublib.domain.Book book){

@@ -9,6 +9,6 @@ import nl.siegmann.epublib.domain.Resource;
 @Getter
 @NoArgsConstructor
 public class BookPreviewDTO {
-    Resource cover;
+    byte[] cover;
     BookDTO metadata;
 }

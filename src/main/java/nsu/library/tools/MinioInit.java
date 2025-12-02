@@ -10,6 +10,7 @@ public class MinioInit {
         String access = getenvOr("MINIO_ROOT_USER", getenvOr("MINIO_ACCESS_KEY", "minioadmin"));
         String secret = getenvOr("MINIO_ROOT_PASSWORD", getenvOr("MINIO_SECRET_KEY", "minioadmin"));
         String raw = getenvOr("RAW_BUCKET", "raw");
+        String cover = getenvOr("COVER_BUCKET", "cover");
         String parsed = getenvOr("PARSED_BUCKET", "parsed");
         String index = getenvOr("INDEX_BUCKET", "index");
         String snaps = getenvOr("ES_SNAPSHOTS_BUCKET", "es-snapshots");
@@ -23,6 +24,7 @@ public class MinioInit {
         ensureBucket(mc, parsed);
         ensureBucket(mc, index);
         ensureBucket(mc, snaps);
+        ensureBucket(mc, cover);
     }
 
     private static void ensureBucket(MinioClient mc, String name) throws Exception {
