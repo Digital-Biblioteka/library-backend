@@ -5,6 +5,7 @@ import io.minio.errors.MinioException;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import nsu.library.entity.Book;
+import nsu.library.exception.MinioErrorException;
 import nsu.library.repository.BookRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -72,10 +73,12 @@ public class MinioService {
         } catch (MinioException e) {
             System.out.println("Error occurred: " + e);
             System.out.println("HTTP trace: " + e.httpTrace());
+            throw new MinioErrorException(e.getMessage());
         } catch (IOException e) {
             System.out.println("Error occurred: " + e);
+            throw new MinioErrorException(e.getMessage());
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new RuntimeException(e);
+            throw new MinioErrorException(e.getMessage());
         }
         return fileName;
     }
@@ -93,11 +96,12 @@ public class MinioService {
         } catch (MinioException e) {
             System.out.println("Error occurred: " + e);
             System.out.println("HTTP trace: " + e.httpTrace());
-            throw new AccessDeniedException("minio access denied");
+            throw new MinioErrorException(e.getMessage());
         } catch (IOException e) {
             System.out.println("Error occurred: " + e);
+            throw new MinioErrorException(e.getMessage());
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new RuntimeException(e);
+            throw new MinioErrorException(e.getMessage());
         }
         return imageName;
     }
@@ -109,7 +113,7 @@ public class MinioService {
             url = minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
                             .method(Method.GET).
-                            bucket(epubBucketName).
+                            bucket(coverBucketName).
                             object(imageName).
                             expiry(1, TimeUnit.DAYS).
                             build()
@@ -117,7 +121,7 @@ public class MinioService {
         } catch (Exception e) {
             String errorMsg = "minio access error" + e.getMessage();
             System.err.println(errorMsg);
-            return errorMsg;
+            throw new MinioErrorException(e.getMessage());
         }
         return url;
     }
