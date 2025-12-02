@@ -31,14 +31,10 @@ public class AdminBookController {
     //    return bookService.searchBooks(searchQuery);
     //}
 
-    @PostMapping(
-            value = "admin/books",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
-    public Book addBook(
-            @RequestPart("file") MultipartFile file,
-            @RequestPart("addBookDTO") String dtoJson
-    ) throws JsonProcessingException {
+    @PostMapping(value = "admin/books",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Book addBook(@RequestPart("file") MultipartFile file, @RequestPart("addBookDTO") String dtoJson)
+            throws JsonProcessingException {
         addBookDTO dto = new ObjectMapper().readValue(dtoJson, addBookDTO.class);
 
         if (dto.getMode() == addBookDTO.ADDMode.auto) {

@@ -7,5 +7,6 @@ import lombok.*;
 @Setter
 @Getter
 public class GenreDTO {
+    Long id;
     String genreName;
 }

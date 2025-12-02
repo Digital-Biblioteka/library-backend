@@ -5,7 +5,9 @@ import nsu.library.dto.BookDoc;
 import nsu.library.dto.BookDTO;
 import nsu.library.dto.SearchQuery;
 import nsu.library.entity.Book;
+import nsu.library.entity.Genre;
 import nsu.library.repository.BookRepository;
+import nsu.library.repository.GenreRepository;
 import nsu.library.service.minio.MinioService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +25,7 @@ public class BookService {
     private final BookImport bookImport;
     private final SearchService searchService;
     private final MinioService minioService;
+    private final GenreRepository genreRepository;
 
     public Book addBookManually(BookDTO bookDTO, MultipartFile file) {
         String bookId = UUID.randomUUID().toString() + "." + file.getOriginalFilename();
@@ -44,7 +47,8 @@ public class BookService {
         }
         book.setIsbn("12345"); // zaglushka ebani
         book.setPublisher(bookDTO.getPublisher());
-        //book.setGenre(bookDTO.getGenre());
+        Genre genre = genreRepository.getReferenceById(bookDTO.getGenreId());
+        book.setGenre(genre);
         book.setLinkToBook(link);
         return book;
     }
@@ -93,9 +97,10 @@ public class BookService {
         if (bookDTO.getIsbn() != null) {
             book.setIsbn(bookDTO.getIsbn());
         }
-//        if (bookDTO.getGenre() != null) {
-//            //book.setGenre(bookDTO.getGenre());
-//        }
+        if (bookDTO.getGenreId() != null) {
+            book.setGenre(genreRepository.findById(bookDTO.getGenreId())
+                    .orElseThrow());
+        }
 
         if (bookDTO.getPublisher() != null) {
             book.setPublisher(bookDTO.getPublisher());
@@ -109,6 +114,6 @@ public class BookService {
     }
 
     public Book getBook(Long id) {
-        return bookRepository.findById(id).orElse(null);
+        return bookRepository.findById(id).orElseThrow();
     }
 }

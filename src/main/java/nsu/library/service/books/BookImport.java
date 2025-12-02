@@ -4,6 +4,7 @@ import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubReader;
 import nsu.library.dto.BookDTO;
 import nsu.library.dto.BookPreviewDTO;
+import nsu.library.entity.Genre;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -18,6 +19,12 @@ import java.lang.StringBuilder;
 @Component
 public class BookImport {
 
+    private final GenreService genreService;
+
+    public BookImport(GenreService genreService) {
+        this.genreService = genreService;
+    }
+
     public nl.siegmann.epublib.domain.Book readEpub(MultipartFile file) throws IOException {
         EpubReader epubReader = new EpubReader();
         return epubReader.readEpub(file.getInputStream());
@@ -30,7 +37,8 @@ public class BookImport {
         ourBook.setTitle(metadata.getTitles().isEmpty() ? "" : metadata.getTitles().getFirst());
         ourBook.setDescription(metadata.getDescriptions().isEmpty() ? "" : metadata.getDescriptions().getFirst());
         ourBook.setPublisher(metadata.getPublishers().isEmpty() ? "" : metadata.getPublishers().getFirst());
-        ourBook.setGenre(metadata.getMetaAttribute("genre"));
+        Genre genre = genreService.AddGenre(metadata.getMetaAttribute("genre"));
+        ourBook.setGenreId(genre.getId());
         ourBook.setIsbn(metadata.getMetaAttribute("isbn"));
 
         return ourBook;
