@@ -31,14 +31,19 @@ public class AdminBookController {
     //    return bookService.searchBooks(searchQuery);
     //}
 
-    @PostMapping(
-            value = "admin/books",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
-    public Book addBook(
-            @RequestPart("file") MultipartFile file,
-            @RequestPart("addBookDTO") String dtoJson
-    ) throws JsonProcessingException {
+    /**
+     * Добавление книжки админом с двумя модами: авто и вручную.
+     * Для описания логики see bookservice и соотв. методы
+     *
+     * @param file файл книжки
+     * @param dtoJson де факто addBookDTO, но в виде джсона тк нельзя иметь и дто, и файл в параметрах
+     * @return созданную книжку
+     * @throws JsonProcessingException если не распарсим джсон из строки
+     */
+    @PostMapping(value = "admin/books",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Book addBook(@RequestPart("file") MultipartFile file, @RequestPart("addBookDTO") String dtoJson)
+            throws JsonProcessingException {
         addBookDTO dto = new ObjectMapper().readValue(dtoJson, addBookDTO.class);
 
         if (dto.getMode() == addBookDTO.ADDMode.auto) {
@@ -60,9 +65,4 @@ public class AdminBookController {
         return bookService.editBook(id, dto);
     }
 
-    @GetMapping("debug")
-    public String debug() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        return "Name: " + auth.getName() + ", authorities: " + auth.getAuthorities();
-    }
 }

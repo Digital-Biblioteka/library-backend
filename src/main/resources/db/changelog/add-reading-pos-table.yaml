@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-reading-pos
+      author: Alina
+      changes:
+        - createTable:
+            tableName: reading_positions
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: book_id
+                  type: BIGSERIAL
+                  constraints:
+                    nullable: false
+              - column:
+                  name: position
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: reading_positions
+            columnNames: user_id, book_id
+            constraintName: pk_reading_pos
+        - addForeignKeyConstraint:
+            baseTableName: reading_positions
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_reading_positions_user
+        - addForeignKeyConstraint:
+            baseTableName: reading_positions
+            baseColumnNames: book_id
+            referencedTableName: books
+            referencedColumnNames: id
+            constraintName: fk_reading_positions_book
