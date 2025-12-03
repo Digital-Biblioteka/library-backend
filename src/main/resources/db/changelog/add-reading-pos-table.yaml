@@ -8,22 +8,32 @@ databaseChangeLog:
             columns:
               - column:
                   name: user_id
-                  type: BIGSERIAL
+                  type: BIGINT
                   constraints:
-                    primaryKey: true
-                    referencedTableName: users
-                    referencedColumnNames: id
                     nullable: false
               - column:
                   name: book_id
                   type: BIGSERIAL
                   constraints:
-                    primaryKey: true
-                    referencedTableName: books
-                    referencedColumnNames: id
                     nullable: false
               - column:
                   name: position
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
+        - addPrimaryKey:
+            tableName: reading_positions
+            columnNames: user_id, book_id
+            constraintName: pk_reading_pos
+        - addForeignKeyConstraint:
+            baseTableName: reading_positions
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_reading_positions_user
+        - addForeignKeyConstraint:
+            baseTableName: reading_positions
+            baseColumnNames: book_id
+            referencedTableName: books
+            referencedColumnNames: id
+            constraintName: fk_reading_positions_book
