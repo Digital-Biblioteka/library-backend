@@ -30,7 +30,7 @@ public class Book {
     @Column
     String description;
 
-    @JoinColumn(name = "genres", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "genre", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Genre genre;
 

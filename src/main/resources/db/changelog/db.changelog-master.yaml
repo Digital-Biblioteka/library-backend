@@ -1,11 +1,4 @@
 databaseChangeLog:
-  - include:
-      file: db/changelog/change-unique-constraints.yaml
-  - include:
-      file: db/changelog/fix-foreign-key-relation.yaml
-  - include:
-      file: db/changelog/add-genres-table.yaml
-
   - changeSet:
       id: 1
       author: alina
@@ -138,6 +131,15 @@ databaseChangeLog:
               - column:
                   name: review_text
                   type: VARCHAR(500)
+  - include:
+      file: db/changelog/change-unique-constraints.yaml
+  - include:
+      file: db/changelog/fix-foreign-key-relation.yaml
+  - include:
+      file: db/changelog/add-genres-table.yaml
+  - include:
+      file: db/changelog/fix-genres.yaml
+
 
 
 

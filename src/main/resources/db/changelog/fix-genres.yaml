@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: fix_genres
+      author: Alina
+      changes:
+        - modifyDataType:
+            tableName: books
+            columnName: genre
+            newDataType: BIGINT
+  - changeSet:
+      id: fix_fg_key_genre_books
+      author: Alina
+      changes:
+        - addColumn:
+            tableName: books
+            columns:
+              - column:
+                  name: genre_id
+                  type: BIGINT
+
+        - addForeignKeyConstraint:
+            baseTableName: books
+            baseColumnNames: genre
+            referencedTableName: genres
+            referencedColumnNames: id
+            constraintName: fk_books_genre
