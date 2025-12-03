@@ -3,7 +3,6 @@ package nsu.library.service.books;
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.BookDoc;
 import nsu.library.dto.BookDTO;
-import nsu.library.dto.BookPreviewDTO;
 import nsu.library.dto.SearchQuery;
 import nsu.library.entity.Book;
 import nsu.library.entity.Genre;
@@ -28,6 +27,13 @@ public class BookService {
     private final MinioService minioService;
     private final GenreRepository genreRepository;
 
+    /**
+     * Ручное добавление книги с заполнением всех полей и ее добавление в минио
+     *
+     * @param bookDTO заполненный админом дто книги
+     * @param file файл самой книжки
+     * @return созданный и сохраненный в бд объект книги
+     */
     public Book addBookManually(BookDTO bookDTO, MultipartFile file) {
         String bookId = UUID.randomUUID().toString() + "." + file.getOriginalFilename();
         String fileName = minioService.loadBookEpub(file, bookId);
@@ -40,30 +46,20 @@ public class BookService {
         return book;
     }
 
-    public Book createBookFromDTO(BookDTO bookDTO, String link) {
-        Book book = new Book();
-        book.setTitle(bookDTO.getTitle());
-        book.setAuthor(bookDTO.getAuthor());
-        book.setDescription(bookDTO.getDescription());
-        if (bookDTO.getIsbn() != null) {
-            book.setIsbn(bookDTO.getIsbn());
-        }
-        book.setIsbn("12345"); // zaglushka ebani
-        book.setPublisher(bookDTO.getPublisher());
-        if (bookDTO.getGenreId()!= null) {
-            Genre genre = genreRepository.getReferenceById(bookDTO.getGenreId());
-            book.setGenre(genre);
-        }
-        book.setLinkToBook(link);
-        return book;
-    }
-
+    /**
+     * Автоматическое извлечение метаданных из книги и ее добавление в бд и минио.
+     * + добавление обложки в минио
+     * + нужно имплементировать автоматическое добавление жанра, если его еще нет
+     *
+     * @param file просто файл книжки
+     * @return созданную книжку
+     */
     public Book addBookAuto(MultipartFile file) {
         String bookId = UUID.randomUUID().toString() + "." + file.getOriginalFilename();
 
         BookDTO book;
         try {
-            book = bookImport.parseEpub(bookImport.readEpub(file), bookId);
+            book = bookImport.parseEpub(bookImport.readEpub(file));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -76,6 +72,47 @@ public class BookService {
 
         bookRepository.save(ourBook);
         return ourBook;
+    }
+
+    /**
+     * Конверт dto в книжку
+     *
+     * @param bookDTO дто
+     * @param link ссылка на книжку в минио
+     * @return созданная книжка
+     */
+    public Book createBookFromDTO(BookDTO bookDTO, String link) {
+        Book book = new Book();
+        book.setTitle(bookDTO.getTitle());
+        book.setAuthor(bookDTO.getAuthor());
+        book.setDescription(bookDTO.getDescription());
+        if (bookDTO.getIsbn() != null) {
+            book.setIsbn(bookDTO.getIsbn());
+        }
+        book.setIsbn("12345"); // zaglushka ebani
+        book.setPublisher(bookDTO.getPublisher());
+//        if (bookDTO.getGenreId()!= null) {
+//            Genre genre = genreRepository.getReferenceById(bookDTO.getGenreId());
+//            book.setGenre(genre);
+//        } fix this
+        book.setLinkToBook(link);
+        return book;
+    }
+
+    /**
+     * Обратная операция. конверт из книги в дто для извлечения метаданных.
+     *
+     * @param book книжка
+     * @return дто
+     */
+    public BookDTO convertBookToDTO(Book book) {
+        BookDTO bookDTO = new BookDTO();
+        bookDTO.setTitle(book.getTitle());
+        bookDTO.setAuthor(book.getAuthor());
+        bookDTO.setDescription(book.getDescription());
+        bookDTO.setPublisher(book.getPublisher());
+        bookDTO.setGenreId(book.getGenre().getId());
+        return bookDTO;
     }
 
     public List<Book> searchBooks(SearchQuery searchQuery) {
