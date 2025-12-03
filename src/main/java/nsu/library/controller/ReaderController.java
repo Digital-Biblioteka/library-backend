@@ -2,13 +2,15 @@ package nsu.library.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import nsu.library.dto.BookDTO;
 import nsu.library.dto.BookPreviewDTO;
-import nsu.library.service.books.BookImport;
-import nsu.library.service.books.BookService;
+import nsu.library.entity.ReadingPosition;
+import nsu.library.entity.User;
+import nsu.library.repository.ReadingPositionRepository;
 import nsu.library.service.books.ReaderService;
 import nsu.library.service.minio.MinioService;
+import nsu.library.util.ReadingPositionId;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class ReaderController {
     private final MinioService minioService;
     private final ReaderService readerService;
+    private final ReadingPositionRepository readingPositionRepository;
 
     @GetMapping("{id}")
     public String getBook(@PathVariable Long id) {
@@ -37,5 +40,23 @@ public class ReaderController {
         return readerService.getBookPreview(id);
     }
 
+    @GetMapping("{id}/pos")
+    public ReadingPosition getBookReadingPosition(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        Long userId = user.getId();
+        ReadingPositionId posId = new ReadingPositionId(userId, id);
+        return readingPositionRepository.findById(posId).orElseThrow();
+    }
 
+    @PostMapping("{id}/pos")
+    public ReadingPosition postBookReadingPosition(@PathVariable Long id, @AuthenticationPrincipal User user,
+                       @RequestBody String position) {
+        Long userId = user.getId();
+
+        ReadingPosition readingPosition = new ReadingPosition();
+        readingPosition.setPosition(position);
+        readingPosition.setUserId(userId);
+        readingPosition.setBookId(id);
+        readingPositionRepository.save(readingPosition);
+        return readingPosition;
+    }
 }
