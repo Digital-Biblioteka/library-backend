@@ -5,6 +5,8 @@ databaseChangeLog:
       file: db/changelog/fix-foreign-key-relation.yaml
   - include:
       file: db/changelog/add-genres-table.yaml
+  - include:
+      file: db/changelog/add-reading-pos-table.yaml
 
   - changeSet:
       id: 1

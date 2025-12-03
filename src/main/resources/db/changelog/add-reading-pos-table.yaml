@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-reading-pos
+      author: Alina
+      changes:
+        - createTable:
+            tableName: reading_positions
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    nullable: false
+              - column:
+                  name: book_id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    referencedTableName: books
+                    referencedColumnNames: id
+                    nullable: false
+              - column:
+                  name: position
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
