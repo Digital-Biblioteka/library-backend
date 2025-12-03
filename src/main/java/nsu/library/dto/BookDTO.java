@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
-// name, author, year, description, genre, publishing house of the book.
 @Getter
 @Setter
 @NoArgsConstructor

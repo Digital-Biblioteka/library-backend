@@ -6,6 +6,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MinioConfig {
+    /**
+     * бин с минио чтобы спринг его инджектил.
+     *
+     * @return клиент для работы с минио
+     */
     @Bean
     public MinioClient minioClient() {
         return MinioClient.builder()

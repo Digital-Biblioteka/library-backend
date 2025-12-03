@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import nsu.library.entity.Book;
 import nsu.library.exception.MinioErrorException;
 import nsu.library.repository.BookRepository;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +27,13 @@ public class MinioService {
 
     private final MinioClient minioClient;
 
+    /**
+     * Получаем ссылку на книгу в минио.
+     * Ссылку можно использовать в хттп запросах для получения книги
+     *
+     * @param id ид книжки(как в бд)
+     * @return ссылка
+     */
     public String getUrlOfEpubBook(Long id) {
         String url = null;
         String linkToBook;
@@ -54,7 +60,16 @@ public class MinioService {
         return url;
     }
 
-    public String loadBookEpub(MultipartFile file, String bookId) {
+    /**
+     * Загрузка книги в минио.
+     * bookLink = название книги в минио = linkToBook в объекте книги = название книги + random uuid
+     * todo: проверять наличие книги в бакете, возможно для этого по другому составлять ид книги в минио
+     *
+     * @param file файл книжки
+     * @param bookLink описано выше
+     * @return чета странное он возвращает, я хз зачем я это сделал
+     */
+    public String loadBookEpub(MultipartFile file, String bookLink) {
         String fileName = file.getOriginalFilename();
         try {
             String filePath = file.getOriginalFilename();
@@ -65,7 +80,7 @@ public class MinioService {
             minioClient.putObject(
                     PutObjectArgs.builder()
                             .bucket(epubBucketName)
-                            .object(bookId)
+                            .object(bookLink)
                             .stream(file.getInputStream(), file.getSize(), -1)
                             .contentType(file.getContentType())
                             .build());
@@ -83,6 +98,13 @@ public class MinioService {
         return fileName;
     }
 
+    /**
+     * Загрузка обложки в минио
+     *
+     * @param cover сама обложка
+     * @param bookId минио-ссылка на книгу, чья эта обложка
+     * @return название обложки в минио
+     */
     public String loadBookCover(byte[] cover, String bookId) {
         String imageName = bookId + ".jpg";
         try {
@@ -106,9 +128,16 @@ public class MinioService {
         return imageName;
     }
 
-    public String getBookCover(String bookId) {
+    /**
+     * Получение ссылки на обложку в минио.
+     * Та же история, что с книгой, ссылку можно юзать для фетча
+     *
+     * @param bookLink ссылка на книжку в минио
+     * @return ссылка на обложку
+     */
+    public String getBookCover(String bookLink) {
         String url;
-        String imageName = bookId + ".jpg";
+        String imageName = bookLink + ".jpg";
         try {
             url = minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
