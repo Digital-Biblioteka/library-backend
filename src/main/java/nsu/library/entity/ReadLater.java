@@ -16,13 +16,8 @@ import nsu.library.util.ReadLaterId;
 @Table(name="read_later")
 public class ReadLater {
     @Id
-    ReadLaterId id;
+    Long userId;
 
-    @ManyToOne
-    @JoinColumn(name="user_id")
-    User user;
-
-    @ManyToOne
-    @JoinColumn(name="book_id")
-    Book book;
+    @Id
+    Long bookId;
 }
