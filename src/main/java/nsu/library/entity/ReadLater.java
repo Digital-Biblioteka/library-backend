@@ -13,7 +13,7 @@ import nsu.library.util.ReadLaterId;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name="read_later")
+@Table(name="read_later_books")
 public class ReadLater {
     @Id
     Long userId;

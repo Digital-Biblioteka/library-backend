@@ -5,7 +5,6 @@ import nsu.library.dto.BookDoc;
 import nsu.library.dto.BookDTO;
 import nsu.library.dto.SearchQuery;
 import nsu.library.entity.Book;
-import nsu.library.entity.Genre;
 import nsu.library.repository.BookRepository;
 import nsu.library.repository.GenreRepository;
 import nsu.library.service.minio.MinioService;
@@ -111,7 +110,9 @@ public class BookService {
         bookDTO.setAuthor(book.getAuthor());
         bookDTO.setDescription(book.getDescription());
         bookDTO.setPublisher(book.getPublisher());
-        bookDTO.setGenreId(book.getGenre().getId());
+        if (book.getGenre() != null) {
+            bookDTO.setGenreId(book.getGenre().getId());
+        }
         return bookDTO;
     }
 

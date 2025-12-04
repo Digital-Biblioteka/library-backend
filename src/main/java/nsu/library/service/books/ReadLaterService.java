@@ -5,7 +5,7 @@ import nsu.library.dto.ReadLaterBookDTO;
 import nsu.library.entity.Book;
 import nsu.library.entity.ReadLater;
 import nsu.library.repository.BookRepository;
-import nsu.library.repository.ReadLaterRepository;
+import nsu.library.repository.ReadLaterBooksRepository;
 import nsu.library.util.ReadLaterId;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ReadLaterService {
-    private final ReadLaterRepository readLaterRepository;
+    private final ReadLaterBooksRepository readLaterBooksRepository;
     private final BookRepository bookRepository;
     private final BookService bookService;
 
@@ -23,22 +23,26 @@ public class ReadLaterService {
         ReadLater readLater = new ReadLater();
         readLater.setUserId(userId);
         readLater.setBookId(bookId);
-        return readLaterRepository.save(readLater);
+        return readLaterBooksRepository.save(readLater);
     }
 
     public void deleteBookFromReadLater(Long userId, Long bookId) {
         ReadLaterId id = new ReadLaterId();
         id.setUserId(userId);
         id.setBookId(bookId);
-        readLaterRepository.deleteById(id);
+        readLaterBooksRepository.deleteById(id);
     }
 
     public List<ReadLaterBookDTO> getListOfReadLaterBooksByUser(Long userId) {
-        List<ReadLater> readLaterList = readLaterRepository.findByUserId(userId);
+        List<ReadLater> readLaterList = readLaterBooksRepository.findByUserId(userId);
         List<ReadLaterBookDTO> laterBookDTOList = new ArrayList<>();
+        System.out.println(readLaterList.size());
+        System.out.println("user: " + userId);
         for (ReadLater readLater : readLaterList) {
+            System.out.println("bookId" + readLater.getBookId());
             Book book = bookRepository.findById(readLater.getBookId()).orElse(null);
             if (book != null) {
+                System.out.println(readLater.getBookId());
                 ReadLaterBookDTO readLaterBookDTO = new ReadLaterBookDTO();
                 readLaterBookDTO.setBookId(book.getId());
                 readLaterBookDTO.setUserId(readLater.getUserId());

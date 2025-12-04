@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ReadLaterRepository extends JpaRepository<ReadLater, ReadLaterId> {
+public interface ReadLaterBooksRepository extends JpaRepository<ReadLater, ReadLaterId> {
      List<ReadLater> findByUserId(Long userId);
 }
