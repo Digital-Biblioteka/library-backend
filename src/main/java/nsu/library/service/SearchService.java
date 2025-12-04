@@ -2,7 +2,7 @@
 
 import nsu.library.config.AppProps;
 import nsu.library.dto.SearchQuery;
-import nsu.library.dto.BookDoc;
+import nsu.library.dto.BookDTO;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -25,15 +25,15 @@ public class SearchService {
         this.props = props;
     }
 
-    public List<BookDoc> searchBooks(SearchQuery q) {
+    public List<BookDTO> searchBooks(SearchQuery q) {
         String delegate = props.getSearchUrl();
         if (delegate != null && !delegate.isBlank()) {
-            return searchBooksExternal(delegate, q.query());
+            return searchBooksExternal(delegate, q);
         }
         return searchBooksBM25TopN(q.query(), 20);
     }
 
-    private List<BookDoc> searchBooksBM25TopN(String query, int size) {
+    private List<BookDTO> searchBooksBM25TopN(String query, int size) {
         String url = props.getEsUrl() + "/books/_search";
         Map<String, Object> body = new HashMap<>();
         body.put("from", 0);
@@ -43,32 +43,27 @@ public class SearchService {
         mm.put("fields", List.of("title^3", "author^2", "description", "genres"));
         body.put("query", Map.of("multi_match", mm));
         Map<String, Object> resp = postJson(url, body);
-        return toBookDocs(resp);
+        return toBookDTOs(resp);
     }
 
-    private List<BookDoc> searchBooksExternal(String url, String query) {
+    private List<BookDTO> searchBooksExternal(String url, SearchQuery query) {
         HttpHeaders h = new HttpHeaders();
         h.setContentType(MediaType.APPLICATION_JSON);
-        Map<String, Object> req = Map.of("query", query);
-        ResponseEntity<List> resp = http.postForEntity(url, new HttpEntity<>(req, h), List.class);
+        ResponseEntity<List> resp = http.postForEntity(url, new HttpEntity<>(query, h), List.class);
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> arr = (List<Map<String, Object>>) resp.getBody();
-        List<BookDoc> out = new ArrayList<>();
+        List<BookDTO> out = new ArrayList<>();
         if (arr == null) return out;
         for (Map<String, Object> m : arr) {
-            Number sc = (Number) m.get("score");
-            out.add(new BookDoc(
-                    (String) m.get("book_id"),
-                    (String) m.get("title"),
-                    (String) m.get("author"),
-                    (String) m.get("publisher"),
-                    (String) m.get("description"),
-                    (String) m.get("genres"),
-                    (String) m.get("linkToBook"),
-                    (String) m.get("source_uid"),
-                    (String) m.get("isbn"),
-                    sc == null ? null : sc.floatValue()
-            ));
+            BookDTO dto = new BookDTO();
+            dto.setTitle((String) m.get("title"));
+            dto.setAuthor((String) m.get("author"));
+            dto.setDescription((String) m.get("description"));
+            dto.setGenre((String) m.get("genres"));
+            dto.setPublisher((String) m.get("publisher"));
+            dto.setIsbn((String) m.get("isbn"));
+            dto.setLinkToBook((String) m.get("linkToBook"));
+            out.add(dto);
         }
         return out;
     }
@@ -82,8 +77,8 @@ public class SearchService {
     }
 
     @SuppressWarnings("unchecked")
-    private List<BookDoc> toBookDocs(Map<String, Object> body) {
-        List<BookDoc> out = new ArrayList<>();
+    private List<BookDTO> toBookDTOs(Map<String, Object> body) {
+        List<BookDTO> out = new ArrayList<>();
         if (body == null) return out;
         Map<String, Object> hits = (Map<String, Object>) body.get("hits");
         if (hits == null) return out;
@@ -91,21 +86,16 @@ public class SearchService {
         if (list == null) return out;
         for (Map<String, Object> h : list) {
             Map<String, Object> src = (Map<String, Object>) h.get("_source");
-            Number sc = (Number) h.get("_score");
-            Float score = sc == null ? null : sc.floatValue();
             if (src == null) continue;
-            out.add(new BookDoc(
-                    (String) src.get("book_id"),
-                    (String) src.get("title"),
-                    (String) src.get("author"),
-                    (String) src.get("publisher"),
-                    (String) src.get("description"),
-                    (String) src.get("genres"),
-                    (String) src.get("linkToBook"),
-                    (String) src.get("source_uid"),
-                    (String) src.get("isbn"),
-                    score
-            ));
+            BookDTO dto = new BookDTO();
+            dto.setTitle((String) src.get("title"));
+            dto.setAuthor((String) src.get("author"));
+            dto.setDescription((String) src.get("description"));
+            dto.setGenre((String) src.get("genres"));
+            dto.setPublisher((String) src.get("publisher"));
+            dto.setIsbn((String) src.get("isbn"));
+            dto.setLinkToBook((String) src.get("linkToBook"));
+            out.add(dto);
         }
         return out;
     }
