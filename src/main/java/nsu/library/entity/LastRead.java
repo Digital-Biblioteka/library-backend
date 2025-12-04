@@ -4,21 +4,18 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import nsu.library.util.LastReadId;
 
 @Entity
 @RequiredArgsConstructor
 @Getter
 @Setter
+@IdClass(LastReadId.class)
+@Table(name="last_read_books")
 public class LastRead {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long userId;
 
-    @JoinColumn(name="user_id", referencedColumnName = "id")
-    @ManyToOne
-    User user;
-
-    @JoinColumn(name="book_id", referencedColumnName = "id")
-    @ManyToOne
-    Book book;
+    @Id
+    private Long bookId;
 }

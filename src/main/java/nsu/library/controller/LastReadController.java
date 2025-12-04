@@ -2,8 +2,9 @@ package nsu.library.controller;
 
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.BookIdDTO;
+import nsu.library.dto.LastReadBookDTO;
 import nsu.library.entity.LastRead;
-import nsu.library.entity.User;
+import nsu.library.security.CustomUserDetails;
 import nsu.library.service.books.LastReadService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -18,19 +19,19 @@ public class LastReadController {
 
     @PostMapping
     public LastRead addBookToLastRead(BookIdDTO bookId, Authentication auth) {
-        User user = (User) auth.getPrincipal();
-        return lastReadService.addBookToLastRead(bookId.getId(), user.getId());
+        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+        return lastReadService.addBookToLastRead(bookId.getId(), user.getUser().getId());
     }
 
     @GetMapping
-    public List<LastRead> getLastReadListByUser(Authentication auth) {
-        User user = (User) auth.getPrincipal();
-        return lastReadService.getLastReadListByUser(user.getId());
+    public List<LastReadBookDTO> getLastReadListByUser(Authentication auth) {
+        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+        return lastReadService.getLastReadListByUser(user.getUser().getId());
     }
 
     @DeleteMapping
     public LastRead deleteBookFromLastRead(BookIdDTO bookId, Authentication auth) {
-        User user = (User) auth.getPrincipal();
-        return lastReadService.deleteBookFromLastRead(bookId.getId(), user.getId());
+        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+        return lastReadService.deleteBookFromLastRead(bookId.getId(), user.getUser().getId());
     }
 }
