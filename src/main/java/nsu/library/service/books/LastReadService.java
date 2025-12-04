@@ -46,9 +46,10 @@ public class LastReadService {
         LastReadId id = new LastReadId();
         id.setBookId(bookId);
         id.setUserId(userId);
-        LastRead lastRead = lastReadBooksRepository.findById(id).orElseThrow();
-
-        lastReadBooksRepository.deleteById(id);
+        LastRead lastRead = lastReadBooksRepository.findById(id).orElse(null);
+        if (lastRead != null) {
+            lastReadBooksRepository.delete(lastRead);
+        }
 
         return lastRead;
     }
