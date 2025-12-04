@@ -30,8 +30,8 @@ public class LastReadController {
     }
 
     @DeleteMapping
-    public LastRead deleteBookFromLastRead(BookIdDTO bookId, Authentication auth) {
+    public void deleteBookFromLastRead(BookIdDTO bookId, Authentication auth) {
         CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
-        return lastReadService.deleteBookFromLastRead(bookId.getId(), user.getUser().getId());
+        lastReadService.deleteBookFromLastRead(bookId.getId(), user.getUser().getId());
     }
 }
