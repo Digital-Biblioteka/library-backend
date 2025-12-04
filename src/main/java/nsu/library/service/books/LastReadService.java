@@ -19,6 +19,13 @@ public class LastReadService {
     private final BookRepository bookRepository;
     private final BookService bookService;
 
+    /**
+     * Добавить книжку в список прочитанных.
+     *
+     * @param bookId ид книжки
+     * @param userId ид юзера
+     * @return созданный и добавленный в бд объект связи книга-юзер
+     */
     public LastRead addBookToLastRead(Long bookId, Long userId) {
         LastRead lastRead = new LastRead();
         lastRead.setUserId(userId);
@@ -26,6 +33,12 @@ public class LastReadService {
         return lastReadBooksRepository.save(lastRead);
     }
 
+    /**
+     * Получить список прочитанных книг юзера.
+     *
+     * @param userId ид юзера
+     * @return возвращает список дто с ид юзера и книги, а также дто книжки
+     */
     public List<LastReadBookDTO> getLastReadListByUser(Long userId) {
         List<LastRead> readBooks = lastReadBooksRepository.getLastReadByUserId(userId);
         List<LastReadBookDTO> readBooksDTO = new ArrayList<>();
@@ -34,6 +47,7 @@ public class LastReadService {
             if (book != null) {
                 LastReadBookDTO lastReadBookDTO = new LastReadBookDTO();
                 lastReadBookDTO.setUserId(lastRead.getUserId());
+                lastReadBookDTO.setBookId(lastRead.getBookId());
                 lastReadBookDTO.setBook(bookService.convertBookToDTO(book));
                 readBooksDTO.add(lastReadBookDTO);
             }

@@ -17,18 +17,38 @@ import java.util.List;
 public class LastReadController {
     private final LastReadService lastReadService;
 
+    /**
+     * Добавить книжку в список последних прочитанных для юзера.
+     * Автоматически вызывается при открытии книги в читалке
+     *
+     * @param bookId ид книжки
+     * @param auth сессия юзера
+     * @return созданный объект связи - книга-юзер
+     */
     @PostMapping
     public LastRead addBookToLastRead(BookIdDTO bookId, Authentication auth) {
         CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
         return lastReadService.addBookToLastRead(bookId.getId(), user.getUser().getId());
     }
 
+    /**
+     * Получение списка последних прочитанных книг.
+     *
+     * @param auth сессия юзера
+     * @return список дто прочитанных книг: ид юзера и книги + дто книги с метаданными
+     */
     @GetMapping
     public List<LastReadBookDTO> getLastReadListByUser(Authentication auth) {
         CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
         return lastReadService.getLastReadListByUser(user.getUser().getId());
     }
 
+    /**
+     * Удалить книжку из списка прочитанных.
+     *
+     * @param bookId ид книжки
+     * @param auth сессия юзера
+     */
     @DeleteMapping
     public void deleteBookFromLastRead(BookIdDTO bookId, Authentication auth) {
         CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();

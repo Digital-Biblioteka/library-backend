@@ -35,7 +35,7 @@ public class ReaderController {
      */
     @GetMapping("{id}")
     public String getBook(@PathVariable Long id, Authentication auth) {
-        if (auth.isAuthenticated()) {
+        if (auth != null && auth.isAuthenticated()) {
             CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
             lastReadService.addBookToLastRead(id, user.getUser().getId());
         }
