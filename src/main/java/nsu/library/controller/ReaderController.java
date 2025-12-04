@@ -6,10 +6,12 @@ import nsu.library.dto.BookPreviewDTO;
 import nsu.library.entity.ReadingPosition;
 import nsu.library.entity.User;
 import nsu.library.repository.ReadingPositionRepository;
+import nsu.library.security.CustomUserDetails;
 import nsu.library.service.books.ReaderService;
 import nsu.library.service.minio.MinioService;
 import nsu.library.util.ReadingPositionId;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,10 +50,10 @@ public class ReaderController {
     }
 
     @PostMapping("{id}/pos")
-    public ReadingPosition postBookReadingPosition(@PathVariable Long id, @AuthenticationPrincipal User user,
-                       @RequestBody String position) {
-        Long userId = user.getId();
-
+    public ReadingPosition postBookReadingPosition(@PathVariable Long id, Authentication auth,
+                                                   @RequestBody String position) {
+        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+        Long userId = user.getUser().getId();
         ReadingPosition readingPosition = new ReadingPosition();
         readingPosition.setPosition(position);
         readingPosition.setUserId(userId);
