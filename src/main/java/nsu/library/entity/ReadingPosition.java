@@ -16,10 +16,8 @@ import nsu.library.util.ReadingPositionId;
 @Getter
 @Setter
 public class ReadingPosition {
-
     @Id
     private Long userId;
-
     @Id
     private Long bookId;
 
