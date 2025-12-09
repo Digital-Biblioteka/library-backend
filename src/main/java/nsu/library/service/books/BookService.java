@@ -1,7 +1,6 @@
 package nsu.library.service.books;
 
 import lombok.RequiredArgsConstructor;
-import nsu.library.dto.BookDoc;
 import nsu.library.dto.BookDTO;
 import nsu.library.dto.SearchQuery;
 import nsu.library.entity.Book;
@@ -67,10 +66,10 @@ public class BookService {
     }
 
     public List<Book> searchBooks(SearchQuery searchQuery) {
-        List<BookDoc> books = searchService.searchBooks(searchQuery);
+        List<BookDTO> books = searchService.searchBooks(searchQuery);
         List<Book> searchBooks = new ArrayList<>();
-        for (BookDoc bookDoc : books) {
-            searchBooks.add(bookRepository.findByIsbn(bookDoc.isbn()));
+        for (BookDTO dto : books) {
+            searchBooks.add(bookRepository.findByIsbn(dto.getIsbn()));
         }
         return searchBooks;
     }

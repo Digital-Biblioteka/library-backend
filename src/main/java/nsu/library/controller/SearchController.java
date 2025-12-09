@@ -1,6 +1,6 @@
 package nsu.library.controller;
 
-import nsu.library.dto.BookDoc;
+import nsu.library.dto.BookDTO;
 import nsu.library.dto.SearchQuery;
 import nsu.library.service.books.SearchService;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ public class SearchController {
     }
 
     @PostMapping("/books")
-    public ResponseEntity<List<BookDoc>> booksUnified(@RequestBody SearchQuery query) {
+    public ResponseEntity<List<BookDTO>> booksUnified(@RequestBody SearchQuery query) {
         return ResponseEntity.ok(searchService.searchBooks(query));
     }
 }
