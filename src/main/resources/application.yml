@@ -32,3 +32,10 @@ token:
   signing:
     key: ${KEY_TOKEN}
 
+app:
+  es:
+    url: http://localhost:9200
+  embed:
+    url: http://localhost:8000/embed
+  search:
+    url: http://localhost:8001/search/books

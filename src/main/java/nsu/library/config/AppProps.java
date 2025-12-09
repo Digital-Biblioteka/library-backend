@@ -1,8 +1,10 @@
 package nsu.library.config;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+@Getter
 @Component
 public class AppProps {
     @Value("${app.es.url:http://localhost:9200}")
@@ -14,15 +16,4 @@ public class AppProps {
     @Value("${app.search.url:}")
     private String searchUrl;
 
-    public String getEsUrl() {
-        return esUrl;
-    }
-
-    public String getEmbedUrl() {
-        return embedUrl;
-    }
-
-    public String getSearchUrl() {
-        return searchUrl;
-    }
 }
