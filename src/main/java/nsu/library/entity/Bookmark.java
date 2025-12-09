@@ -10,11 +10,11 @@ public class Bookmark {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    @JoinColumn(name = "UserId", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     @ManyToOne
     private User user;
 
-    @JoinColumn(name = "BookId", nullable = false)
+    @JoinColumn(name = "book_id", nullable = false)
     @ManyToOne
     private Book book;
 

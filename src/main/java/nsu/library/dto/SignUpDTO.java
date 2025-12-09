@@ -4,9 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Schema(description = "Запрос на регистрацию")
+@NoArgsConstructor
 public class SignUpDTO {
 
     @Schema(description = "Имя пользователя", example = "Jon")

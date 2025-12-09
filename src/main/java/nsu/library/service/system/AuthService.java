@@ -1,4 +1,4 @@
-package nsu.library.service;
+package nsu.library.service.system;
 
 
 import lombok.RequiredArgsConstructor;
@@ -8,6 +8,7 @@ import nsu.library.dto.SignUpDTO;
 import nsu.library.entity.User;
 import nsu.library.repository.UserRepository;
 import nsu.library.security.CustomUserDetails;
+import nsu.library.service.user.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private final UserService userService;
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;

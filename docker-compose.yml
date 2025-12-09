@@ -9,8 +9,6 @@ services:
       - KEY_TOKEN=${KEY_TOKEN}
     ports:
       - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
   library:
     depends_on:
       - db
@@ -43,6 +41,5 @@ services:
       interval: 30s
       timeout: 5s
       retries: 5
-
 volumes:
   minio-data:

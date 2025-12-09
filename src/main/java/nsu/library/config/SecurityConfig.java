@@ -2,7 +2,7 @@ package nsu.library.config;
 
 import lombok.RequiredArgsConstructor;
 import nsu.library.security.JwtAuthFilter;
-import nsu.library.service.CustomUserDetailsService;
+import nsu.library.service.system.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -48,8 +48,10 @@ public class SecurityConfig {
                         // Можно указать конкретный путь, * - 1 уровень вложенности, ** - любое количество уровней вложенности
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/api/reader/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/search/**").permitAll()
+                        .requestMatchers("/api/reader/**").permitAll()
                         .requestMatchers("/endpoint", "/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))

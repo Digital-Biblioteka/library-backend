@@ -1,29 +1,26 @@
-package nsu.library.service;
+package nsu.library.service.books;
 
 import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubReader;
 import nsu.library.dto.BookDTO;
 import nsu.library.dto.BookPreviewDTO;
-import nsu.library.entity.Book;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.xml.namespace.QName;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.lang.StringBuilder;
 
 @Component
 public class BookImport {
 
-    public nl.siegmann.epublib.domain.Book readEpub(String fileName) throws IOException {
+    public nl.siegmann.epublib.domain.Book readEpub(MultipartFile file) throws IOException {
         EpubReader epubReader = new EpubReader();
-        return epubReader.readEpub(new FileInputStream(fileName));
+        return epubReader.readEpub(file.getInputStream());
     }
 
     public BookDTO parseEpub(nl.siegmann.epublib.domain.Book book, String link) throws IOException {
@@ -35,18 +32,17 @@ public class BookImport {
         ourBook.setPublisher(metadata.getPublishers().isEmpty() ? "" : metadata.getPublishers().getFirst());
         ourBook.setGenre(metadata.getMetaAttribute("genre"));
         ourBook.setIsbn(metadata.getMetaAttribute("isbn"));
-        ourBook.setLinkToBook(link);
 
         return ourBook;
     }
 
-    public BookPreviewDTO getBookPreview(String bookLink){
+    public BookPreviewDTO getBookPreview(MultipartFile file){
         Resource cover;
         BookDTO bookDTO;
         try {
-            nl.siegmann.epublib.domain.Book book = readEpub(bookLink);
+            nl.siegmann.epublib.domain.Book book = readEpub(file);
             cover = book.getCoverImage();
-            bookDTO = parseEpub(book, bookLink);
+            bookDTO = parseEpub(book, file.getOriginalFilename());
         } catch (IOException e) {
             System.err.println("Error reading book in getBookPreview" + e.getMessage());
             return null;

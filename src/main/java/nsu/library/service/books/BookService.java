@@ -1,15 +1,18 @@
-package nsu.library.service;
+package nsu.library.service.books;
 
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.BookDTO;
 import nsu.library.dto.SearchQuery;
 import nsu.library.entity.Book;
 import nsu.library.repository.BookRepository;
+import nsu.library.service.minio.MinioService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 // add toc to book attributes?
 @Service
@@ -18,39 +21,46 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookImport bookImport;
     private final SearchService searchService;
+    private final MinioService minioService;
 
-    public Book addBookManually(BookDTO bookDTO) {
-        Book book = new Book();
-        book.setTitle(bookDTO.getTitle());
-        book.setAuthor(bookDTO.getAuthor());
-        book.setDescription(bookDTO.getDescription());
-        book.setIsbn(bookDTO.getIsbn());
-        book.setPublisher(bookDTO.getPublisher());
-        book.setGenre(bookDTO.getGenre());
-        book.setLinkToBook(bookDTO.getLinkToBook());
+    public Book addBookManually(BookDTO bookDTO, MultipartFile file) {
+        String bookId = UUID.randomUUID().toString() + "." + file.getOriginalFilename();
+
+        String fileName = minioService.loadBookEpub(file, bookId);
+
+        Book book = createBookFromDTO(bookDTO, bookId);
         bookRepository.save(book);
         return book;
     }
 
-    public Book createBookFromDTO(BookDTO dto) {
+    public Book createBookFromDTO(BookDTO bookDTO, String link) {
         Book book = new Book();
-        book.setTitle(dto.getTitle());
-        book.setAuthor(dto.getAuthor());
-        book.setDescription(dto.getDescription());
-        book.setIsbn(dto.getIsbn());
-        book.setPublisher(dto.getPublisher());
-        book.setGenre(dto.getGenre());
-        book.setLinkToBook(dto.getLinkToBook());
+        book.setTitle(bookDTO.getTitle());
+        book.setAuthor(bookDTO.getAuthor());
+        book.setDescription(bookDTO.getDescription());
+        if (bookDTO.getIsbn() != null) {
+            book.setIsbn(bookDTO.getIsbn());
+        }
+        book.setIsbn("12345"); // zaglushka ebani
+        book.setPublisher(bookDTO.getPublisher());
+        //book.setGenre(bookDTO.getGenre());
+        book.setLinkToBook(link);
         return book;
     }
-    public Book addBookAuto(String fileLink) {
+
+    public Book addBookAuto(MultipartFile file) {
+        String bookId = UUID.randomUUID().toString() + "." + file.getOriginalFilename();
+
         BookDTO book;
         try {
-            book = bookImport.parseEpub(bookImport.readEpub(fileLink), fileLink);
+            book = bookImport.parseEpub(bookImport.readEpub(file), bookId);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Book ourBook = createBookFromDTO(book);
+
+        Book ourBook = createBookFromDTO(book, bookId);
+        String fileName = minioService.loadBookEpub(file, bookId);
+
         bookRepository.save(ourBook);
         return ourBook;
     }
@@ -64,12 +74,12 @@ public class BookService {
         return searchBooks;
     }
 
-    public void deleteBook(String isbn) {
-        bookRepository.delete(bookRepository.findByIsbn(isbn));
+    public void deleteBook(Long id) {
+        bookRepository.deleteById(id);
     }
 
-    public Book editBook(String isbn, BookDTO bookDTO) {
-        Book book = bookRepository.findByIsbn(isbn);
+    public Book editBook(Long id, BookDTO bookDTO) {
+        Book book = bookRepository.findById(id).orElseThrow();
         if (bookDTO.getTitle() != null) {
             book.setTitle(bookDTO.getTitle());
         }
@@ -82,12 +92,10 @@ public class BookService {
         if (bookDTO.getIsbn() != null) {
             book.setIsbn(bookDTO.getIsbn());
         }
-        if (bookDTO.getGenre() != null) {
-            book.setGenre(bookDTO.getGenre());
-        }
-        if (bookDTO.getLinkToBook() != null) {
-            book.setLinkToBook(bookDTO.getLinkToBook());
-        }
+//        if (bookDTO.getGenre() != null) {
+//            //book.setGenre(bookDTO.getGenre());
+//        }
+
         if (bookDTO.getPublisher() != null) {
             book.setPublisher(bookDTO.getPublisher());
         }
