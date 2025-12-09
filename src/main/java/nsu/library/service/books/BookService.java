@@ -6,7 +6,7 @@ import nsu.library.dto.BookDTO;
 import nsu.library.dto.SearchQuery;
 import nsu.library.entity.Book;
 import nsu.library.repository.BookRepository;
-import nsu.library.service.minio.MinioService;
+import nsu.library.service.storage.MinioService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,7 +27,7 @@ public class BookService {
     public Book addBookManually(BookDTO bookDTO, MultipartFile file) {
         String bookId = UUID.randomUUID().toString() + "." + file.getOriginalFilename();
 
-        String fileName = minioService.loadBookEpub(file, bookId);
+        String fileName = minioService.addBook(file, bookId);
 
         Book book = createBookFromDTO(bookDTO, bookId);
         bookRepository.save(book);
@@ -60,7 +60,7 @@ public class BookService {
         }
 
         Book ourBook = createBookFromDTO(book, bookId);
-        String fileName = minioService.loadBookEpub(file, bookId);
+        String fileName = minioService.addBook(file, bookId);
 
         bookRepository.save(ourBook);
         return ourBook;
