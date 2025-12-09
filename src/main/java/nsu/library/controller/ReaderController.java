@@ -57,16 +57,19 @@ public class ReaderController {
     }
 
     @GetMapping("{id}/pos")
-    public ReadingPosition getBookReadingPosition(@PathVariable Long id, @AuthenticationPrincipal User user) {
-        Long userId = user.getId();
+    public ReadingPosition getBookReadingPosition(@PathVariable Long id, Authentication auth) {
+        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+        Long userId = user.getUser().getId();
         ReadingPositionId posId = new ReadingPositionId(userId, id);
         return readingPositionRepository.findById(posId).orElseThrow();
     }
 
     @PostMapping("{id}/pos")
-    public ReadingPosition postBookReadingPosition(@PathVariable Long id, @AuthenticationPrincipal User user,
+    public ReadingPosition postBookReadingPosition(@PathVariable Long id, Authentication auth,
                        @RequestBody String position) {
-        Long userId = user.getId();
+
+        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+        Long userId = user.getUser().getId();
 
         ReadingPosition readingPosition = new ReadingPosition();
         readingPosition.setPosition(position);
