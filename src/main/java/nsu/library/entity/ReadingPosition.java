@@ -18,10 +18,8 @@ import nsu.library.util.ReadingPositionId;
 @Setter
 @Table(name="reading_positions")
 public class ReadingPosition {
-
     @Id
     private Long userId;
-
     @Id
     private Long bookId;
 
