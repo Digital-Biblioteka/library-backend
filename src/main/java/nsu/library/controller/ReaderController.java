@@ -6,10 +6,13 @@ import nsu.library.dto.BookPreviewDTO;
 import nsu.library.entity.ReadingPosition;
 import nsu.library.entity.User;
 import nsu.library.repository.ReadingPositionRepository;
+import nsu.library.security.CustomUserDetails;
+import nsu.library.service.books.LastReadService;
 import nsu.library.service.books.ReaderService;
 import nsu.library.service.minio.MinioService;
 import nsu.library.util.ReadingPositionId;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,9 +23,22 @@ public class ReaderController {
     private final MinioService minioService;
     private final ReaderService readerService;
     private final ReadingPositionRepository readingPositionRepository;
+    private final LastReadService lastReadService;
 
+    /**
+     * Получение книжки для читалки.
+     * Если пользователь залогинен в системе, то
+     * автоматически добавляет книгу в список последних прочитанных для него
+     * @param id ид книжки
+     * @param auth сессия пользователя
+     * @return ссылка на книгу в минио
+     */
     @GetMapping("{id}")
-    public String getBook(@PathVariable Long id) {
+    public String getBook(@PathVariable Long id, Authentication auth) {
+        if (auth != null && auth.isAuthenticated()) {
+            CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+            lastReadService.addBookToLastRead(id, user.getUser().getId());
+        }
         return minioService.getUrlOfEpubBook(id);
     }
 
@@ -41,16 +57,19 @@ public class ReaderController {
     }
 
     @GetMapping("{id}/pos")
-    public ReadingPosition getBookReadingPosition(@PathVariable Long id, @AuthenticationPrincipal User user) {
-        Long userId = user.getId();
+    public ReadingPosition getBookReadingPosition(@PathVariable Long id, Authentication auth) {
+        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+        Long userId = user.getUser().getId();
         ReadingPositionId posId = new ReadingPositionId(userId, id);
         return readingPositionRepository.findById(posId).orElseThrow();
     }
 
     @PostMapping("{id}/pos")
-    public ReadingPosition postBookReadingPosition(@PathVariable Long id, @AuthenticationPrincipal User user,
+    public ReadingPosition postBookReadingPosition(@PathVariable Long id, Authentication auth,
                        @RequestBody String position) {
-        Long userId = user.getId();
+
+        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+        Long userId = user.getUser().getId();
 
         ReadingPosition readingPosition = new ReadingPosition();
         readingPosition.setPosition(position);
