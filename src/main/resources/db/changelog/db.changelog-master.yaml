@@ -140,6 +140,10 @@ databaseChangeLog:
   - include:
       file: db/changelog/fix-genres.yaml
   - include:
+      file: db/changelog/add-last-read-table.yaml
+  - include:
+      file: db/changelog/add-reading-pos-table.yaml
+  - include:
       file: db/changelog/add-read-later-table.yaml
 
 
