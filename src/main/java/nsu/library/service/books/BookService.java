@@ -2,17 +2,14 @@ package nsu.library.service.books;
 
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.BookDTO;
-import nsu.library.dto.SearchQuery;
 import nsu.library.entity.Book;
 import nsu.library.repository.BookRepository;
 import nsu.library.repository.GenreRepository;
-import nsu.library.service.SearchService;
 import nsu.library.service.minio.MinioService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,7 +19,6 @@ import java.util.UUID;
 public class BookService {
     private final BookRepository bookRepository;
     private final BookImport bookImport;
-    private final SearchService searchService;
     private final MinioService minioService;
     private final GenreRepository genreRepository;
 
@@ -114,15 +110,6 @@ public class BookService {
             bookDTO.setGenreId(book.getGenre().getId());
         }
         return bookDTO;
-    }
-
-    public List<Book> searchBooks(SearchQuery searchQuery) {
-        List<BookDTO> books = searchService.searchBooks(searchQuery);
-        List<Book> searchBooks = new ArrayList<>();
-        for (BookDTO dto : books) {
-            searchBooks.add(bookRepository.findByIsbn(dto.getIsbn()));
-        }
-        return searchBooks;
     }
 
     public void deleteBook(Long id) {
