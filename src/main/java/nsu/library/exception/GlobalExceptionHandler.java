@@ -53,6 +53,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleNoSuchElement(NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    @ExceptionHandler(MinioErrorException.class)
+    public ResponseEntity<String> handleMinioError(MinioErrorException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
 }
 
 

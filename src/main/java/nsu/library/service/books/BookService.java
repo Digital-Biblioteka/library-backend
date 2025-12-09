@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import nsu.library.dto.BookDTO;
 import nsu.library.dto.SearchQuery;
 import nsu.library.entity.Book;
+import nsu.library.entity.Genre;
 import nsu.library.repository.BookRepository;
+import nsu.library.repository.GenreRepository;
 import nsu.library.service.minio.MinioService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,17 +24,62 @@ public class BookService {
     private final BookImport bookImport;
     private final SearchService searchService;
     private final MinioService minioService;
+    private final GenreRepository genreRepository;
 
+    /**
+     * Ручное добавление книги с заполнением всех полей и ее добавление в минио
+     *
+     * @param bookDTO заполненный админом дто книги
+     * @param file файл самой книжки
+     * @return созданный и сохраненный в бд объект книги
+     */
     public Book addBookManually(BookDTO bookDTO, MultipartFile file) {
         String bookId = UUID.randomUUID().toString() + "." + file.getOriginalFilename();
-
         String fileName = minioService.loadBookEpub(file, bookId);
+
+        byte[] cover = bookImport.getBookPreview(file);
+        String coverName = minioService.loadBookCover(cover, bookId);
 
         Book book = createBookFromDTO(bookDTO, bookId);
         bookRepository.save(book);
         return book;
     }
 
+    /**
+     * Автоматическое извлечение метаданных из книги и ее добавление в бд и минио.
+     * + добавление обложки в минио
+     * + нужно имплементировать автоматическое добавление жанра, если его еще нет
+     *
+     * @param file просто файл книжки
+     * @return созданную книжку
+     */
+    public Book addBookAuto(MultipartFile file) {
+        String bookId = UUID.randomUUID().toString() + "." + file.getOriginalFilename();
+
+        BookDTO book;
+        try {
+            book = bookImport.parseEpub(bookImport.readEpub(file));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Book ourBook = createBookFromDTO(book, bookId);
+
+        String fileName = minioService.loadBookEpub(file, bookId);
+
+        byte[] cover = bookImport.getBookPreview(file);
+        String coverName = minioService.loadBookCover(cover, bookId);
+
+        bookRepository.save(ourBook);
+        return ourBook;
+    }
+
+    /**
+     * Конверт dto в книжку
+     *
+     * @param bookDTO дто
+     * @param link ссылка на книжку в минио
+     * @return созданная книжка
+     */
     public Book createBookFromDTO(BookDTO bookDTO, String link) {
         Book book = new Book();
         book.setTitle(bookDTO.getTitle());
@@ -43,26 +90,28 @@ public class BookService {
         }
         book.setIsbn("12345"); // zaglushka ebani
         book.setPublisher(bookDTO.getPublisher());
-        //book.setGenre(bookDTO.getGenre());
+//        if (bookDTO.getGenreId()!= null) {
+//            Genre genre = genreRepository.getReferenceById(bookDTO.getGenreId());
+//            book.setGenre(genre);
+//        } fix this
         book.setLinkToBook(link);
         return book;
     }
 
-    public Book addBookAuto(MultipartFile file) {
-        String bookId = UUID.randomUUID().toString() + "." + file.getOriginalFilename();
-
-        BookDTO book;
-        try {
-            book = bookImport.parseEpub(bookImport.readEpub(file), bookId);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        Book ourBook = createBookFromDTO(book, bookId);
-        String fileName = minioService.loadBookEpub(file, bookId);
-
-        bookRepository.save(ourBook);
-        return ourBook;
+    /**
+     * Обратная операция. конверт из книги в дто для извлечения метаданных.
+     *
+     * @param book книжка
+     * @return дто
+     */
+    public BookDTO convertBookToDTO(Book book) {
+        BookDTO bookDTO = new BookDTO();
+        bookDTO.setTitle(book.getTitle());
+        bookDTO.setAuthor(book.getAuthor());
+        bookDTO.setDescription(book.getDescription());
+        bookDTO.setPublisher(book.getPublisher());
+        bookDTO.setGenreId(book.getGenre().getId());
+        return bookDTO;
     }
 
     public List<Book> searchBooks(SearchQuery searchQuery) {
@@ -92,9 +141,10 @@ public class BookService {
         if (bookDTO.getIsbn() != null) {
             book.setIsbn(bookDTO.getIsbn());
         }
-//        if (bookDTO.getGenre() != null) {
-//            //book.setGenre(bookDTO.getGenre());
-//        }
+        if (bookDTO.getGenreId() != null) {
+            book.setGenre(genreRepository.findById(bookDTO.getGenreId())
+                    .orElseThrow());
+        }
 
         if (bookDTO.getPublisher() != null) {
             book.setPublisher(bookDTO.getPublisher());
@@ -108,6 +158,6 @@ public class BookService {
     }
 
     public Book getBook(Long id) {
-        return bookRepository.findById(id).orElse(null);
+        return bookRepository.findById(id).orElseThrow();
     }
 }

@@ -46,10 +46,6 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
     implementation 'io.minio:minio:8.5.7'
-
-//    implementation 'com.groupdocs:groupdocs-conversion:25.9'
-//    implementation 'com.groupdocs:groupdocs-parser:25.5'
-
 }
 
 tasks.named('test') {

@@ -31,6 +31,14 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final CustomUserDetailsService userDetailsService;
 
+    /**
+     * настройка спринг секурити с jwt.
+     * настройка доступа к конкретным эндпоинтам
+     *
+     * @param http объект хттп секурити
+     * @return чейн какой то
+     * @throws Exception если все печально
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
