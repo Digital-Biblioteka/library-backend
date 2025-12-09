@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import nsu.library.dto.BookDTO;
 import nsu.library.dto.SearchQuery;
 import nsu.library.entity.Book;
-import nsu.library.entity.Genre;
 import nsu.library.repository.BookRepository;
 import nsu.library.repository.GenreRepository;
 import nsu.library.service.minio.MinioService;
@@ -34,7 +33,7 @@ public class BookService {
      * @return созданный и сохраненный в бд объект книги
      */
     public Book addBookManually(BookDTO bookDTO, MultipartFile file) {
-        String bookId = UUID.randomUUID().toString() + "." + file.getOriginalFilename();
+        String bookId = UUID.randomUUID() + "." + file.getOriginalFilename();
         String fileName = minioService.loadBookEpub(file, bookId);
 
         byte[] cover = bookImport.getBookPreview(file);
@@ -54,7 +53,7 @@ public class BookService {
      * @return созданную книжку
      */
     public Book addBookAuto(MultipartFile file) {
-        String bookId = UUID.randomUUID().toString() + "." + file.getOriginalFilename();
+        String bookId = UUID.randomUUID() + "." + file.getOriginalFilename();
 
         BookDTO book;
         try {
@@ -110,7 +109,9 @@ public class BookService {
         bookDTO.setAuthor(book.getAuthor());
         bookDTO.setDescription(book.getDescription());
         bookDTO.setPublisher(book.getPublisher());
-        bookDTO.setGenreId(book.getGenre().getId());
+        if (book.getGenre() != null) {
+            bookDTO.setGenreId(book.getGenre().getId());
+        }
         return bookDTO;
     }
 
