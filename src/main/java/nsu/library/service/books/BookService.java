@@ -6,6 +6,7 @@ import nsu.library.dto.SearchQuery;
 import nsu.library.entity.Book;
 import nsu.library.repository.BookRepository;
 import nsu.library.repository.GenreRepository;
+import nsu.library.service.SearchService;
 import nsu.library.service.minio.MinioService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
