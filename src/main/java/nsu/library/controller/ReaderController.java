@@ -9,7 +9,6 @@ import nsu.library.service.books.LastReadService;
 import nsu.library.service.books.ReaderService;
 import nsu.library.service.minio.MinioService;
 import nsu.library.util.ReadingPositionId;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,10 +44,7 @@ public class ReaderController {
      * @return bookPreviewDTO(обложка+метаданные)
      */
     @Operation(summary = "Получение превью книги")
-    @GetMapping(
-            value = "{id}/preview",
-            produces = MediaType.IMAGE_JPEG_VALUE
-    )
+    @GetMapping(value = "{id}/preview")
     public String getBookPreview(@PathVariable Long id) {
         return readerService.getBookPreview(id);
     }
