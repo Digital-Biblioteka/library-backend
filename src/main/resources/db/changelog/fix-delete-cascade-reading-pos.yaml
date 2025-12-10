@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: fix-delete-cascade-reading-pos
+      author: Alina
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: reading_positions
+            constraintName: fk_reading_positions_user
+        - dropForeignKeyConstraint:
+            baseTableName: reading_positions
+            constraintName: fk_reading_positions_book
+        - addForeignKeyConstraint:
+            baseTableName: reading_positions
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_reading_positions_user_cascade
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: reading_positions
+            baseColumnNames: book_id
+            referencedTableName: books
+            referencedColumnNames: id
+            constraintName: fk_reading_positions_book_cascade
+            onDelete: CASCADE

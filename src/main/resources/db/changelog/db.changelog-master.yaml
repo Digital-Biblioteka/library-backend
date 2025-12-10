@@ -145,6 +145,12 @@ databaseChangeLog:
       file: db/changelog/add-reading-pos-table.yaml
   - include:
       file: db/changelog/add-read-later-table.yaml
+  - include:
+      file: db/changelog/add-delete-cascade.yaml
+  - include:
+      file: db/changelog/drop-old-foreign-keys.yaml
+  - include:
+      file: db/changelog/fix-delete-cascade-reading-pos.yaml
 
 
 

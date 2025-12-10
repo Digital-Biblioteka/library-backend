@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: drop_old_foreign_keys
+      author: Alina
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: last_read_books
+            constraintName: fg_users_last_read
+        - dropForeignKeyConstraint:
+            baseTableName: last_read_books
+            constraintName: fg_books_last_read
+        - dropForeignKeyConstraint:
+            baseTableName: read_later_books
+            constraintName: fg_book_read_later
+        - dropForeignKeyConstraint:
+            baseTableName: read_later_books
+            constraintName: fg_user_read_later
+        - dropForeignKeyConstraint:
+            baseTableName: reviews
+            constraintName: foreign_user_id_reviews_key
+        - dropForeignKeyConstraint:
+            baseTableName: reviews
+            constraintName: foreign_book_id_reviews_key
+        - dropForeignKeyConstraint:
+            baseTableName: bookmarks
+            constraintName: foreign_book_id_bookmarks_key
+        - dropForeignKeyConstraint:
+            baseTableName: bookmarks
+            constraintName: foreign_user_id_bookmarks_key
