@@ -5,7 +5,6 @@ import io.minio.errors.MinioException;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import nsu.library.repository.BookRepository;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,9 +13,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 
-@Service
+@Service("MinioService")
 @RequiredArgsConstructor
-@Component("MinioService")
 public class MinioService implements Storage {
 
     private final BookRepository bookRepository;

@@ -10,14 +10,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ReaderService {
-    @Autowired
     private final BookRepository bookRepository;
-
-    @Autowired
-    @Qualifier("MinioService")
     private final Storage storage;
 
-    public ReaderService(BookRepository bookRepository, Storage storage) {
+    public ReaderService(BookRepository bookRepository, @Qualifier("MinioService") Storage storage) {
         this.bookRepository = bookRepository;
         this.storage = storage;
     }
