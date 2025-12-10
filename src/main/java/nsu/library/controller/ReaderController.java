@@ -2,9 +2,7 @@ package nsu.library.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import nsu.library.dto.BookPreviewDTO;
 import nsu.library.entity.ReadingPosition;
-import nsu.library.entity.User;
 import nsu.library.repository.ReadingPositionRepository;
 import nsu.library.security.CustomUserDetails;
 import nsu.library.service.books.LastReadService;
@@ -13,7 +11,6 @@ import nsu.library.service.minio.MinioService;
 import nsu.library.util.ReadingPositionId;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -52,7 +49,7 @@ public class ReaderController {
             value = "{id}/preview",
             produces = MediaType.IMAGE_JPEG_VALUE
     )
-    public BookPreviewDTO getBookPreview(@PathVariable Long id) {
+    public String getBookPreview(@PathVariable Long id) {
         return readerService.getBookPreview(id);
     }
 
