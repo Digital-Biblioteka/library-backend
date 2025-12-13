@@ -18,7 +18,7 @@ public class ReadLaterController {
     private final ReadLaterService readLaterService;
 
     @PostMapping
-    public ReadLater addBookToReadLater(BookIdDTO bookId, Authentication auth) {
+    public ReadLater addBookToReadLater(@RequestBody BookIdDTO bookId, Authentication auth) {
         CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
         return readLaterService.addBookToReadLater(user.getUser().getId(), bookId.getId());
     }

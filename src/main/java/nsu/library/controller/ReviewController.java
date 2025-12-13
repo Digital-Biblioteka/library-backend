@@ -27,13 +27,13 @@ public class ReviewController {
      * @return created review
      */
     @PostMapping("/books/reviews/{bookId}")
-    public Review createReview(ReviewDTO reviewDTO, @PathVariable Long bookId, Authentication auth) {
+    public Review createReview(@RequestBody ReviewDTO reviewDTO, @PathVariable Long bookId, Authentication auth) {
         User user = (User) auth.getPrincipal();
         return reviewsService.createReview(reviewDTO, user.getId(), bookId);
     }
 
     @PutMapping("/reviews/{reviewId}")
-    public Review editReview(ReviewDTO reviewDTO, @PathVariable Long reviewId, Authentication auth) {
+    public Review editReview(@RequestBody ReviewDTO reviewDTO, @PathVariable Long reviewId, Authentication auth) {
         User user = (User) auth.getPrincipal();
         return reviewsService.editReview(reviewDTO, user.getId(), reviewId);
     }

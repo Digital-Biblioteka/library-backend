@@ -26,7 +26,7 @@ public class LastReadController {
      * @return созданный объект связи - книга-юзер
      */
     @PostMapping
-    public LastRead addBookToLastRead(BookIdDTO bookId, Authentication auth) {
+    public LastRead addBookToLastRead(@RequestBody BookIdDTO bookId, Authentication auth) {
         CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
         return lastReadService.addBookToLastRead(bookId.getId(), user.getUser().getId());
     }
@@ -49,8 +49,8 @@ public class LastReadController {
      * @param bookId ид книжки
      * @param auth сессия юзера
      */
-    @DeleteMapping
-    public void deleteBookFromLastRead(BookIdDTO bookId, Authentication auth) {
+    @DeleteMapping("{bookId}")
+    public void deleteBookFromLastRead(@PathVariable BookIdDTO bookId, Authentication auth) {
         CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
         lastReadService.deleteBookFromLastRead(bookId.getId(), user.getUser().getId());
     }
