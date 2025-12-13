@@ -50,8 +50,8 @@ public class LastReadController {
      * @param auth сессия юзера
      */
     @DeleteMapping("{bookId}")
-    public void deleteBookFromLastRead(@PathVariable BookIdDTO bookId, Authentication auth) {
+    public void deleteBookFromLastRead(@PathVariable Long bookId, Authentication auth) {
         CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
-        lastReadService.deleteBookFromLastRead(bookId.getId(), user.getUser().getId());
+        lastReadService.deleteBookFromLastRead(bookId, user.getUser().getId());
     }
 }
