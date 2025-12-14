@@ -5,13 +5,13 @@ import nsu.library.entity.Book;
 import nsu.library.repository.BookRepository;
 import nsu.library.service.minio.MinioService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @Service
 @RequiredArgsConstructor
 public class ReaderService {
     private final BookRepository bookRepository;
     private final MinioService minioService;
+    private final BookImport bookImport;
 
     /**
      * Извлекаем превью из книжки.
@@ -20,9 +20,11 @@ public class ReaderService {
      * @param bookId ид книжки
      * @return dto
      */
-    public String getBookPreview(@PathVariable Long bookId) {
+    public String getBookPreview(Long bookId) {
         Book book = bookRepository.findById(bookId).orElseThrow();
         String bookLink = book.getLinkToBook();
         return minioService.getBookCover(bookLink);
     }
+
+
 }
