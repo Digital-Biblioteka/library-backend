@@ -20,6 +20,7 @@ import java.util.List;
 import java.lang.StringBuilder;
 import java.util.Map;
 
+// уххх... зря ты сюда полез...
 @Component
 @RequiredArgsConstructor
 public class BookImport {
@@ -29,6 +30,11 @@ public class BookImport {
     public nl.siegmann.epublib.domain.Book readEpub(MultipartFile file) throws IOException {
         EpubReader epubReader = new EpubReader();
         return epubReader.readEpub(file.getInputStream());
+    }
+
+    public nl.siegmann.epublib.domain.Book readEpubFromStream(InputStream in) throws IOException {
+        EpubReader epubReader = new EpubReader();
+        return epubReader.readEpub(in);
     }
 
     public nl.siegmann.epublib.domain.Book readEpubFile(String filePath) throws IOException {
@@ -45,7 +51,6 @@ public class BookImport {
      *
      * @param book книжка типа епаблиб
      * @return дто книги
-     * @throws IOException если не найдем книжку
      */
     public BookDTO parseEpub(nl.siegmann.epublib.domain.Book book){
         Metadata metadata = book.getMetadata();
@@ -132,10 +137,6 @@ public class BookImport {
         return mapLink;
     }
 
-    public SpineReference getSpineByHref(Map<String, SpineReference> mapLink, String href) {
-        return mapLink.get(href);
-    }
-
     public SpineReference getNextSpine(List<SpineReference> spines, int spineIdx) {
         if (spineIdx < spines.size() && spineIdx >= 0) {
             return spines.get(spineIdx + 1);
@@ -143,8 +144,9 @@ public class BookImport {
         return null;
     }
 
-    public byte[] getHtmlFromSpine(SpineReference spine) throws IOException {
-        return spine.getResource().getData();
+    public byte[] getHtmlFromSpine(BookWrapper bookWrapper, TocItemDTO tocItemDTO) throws IOException {
+        SpineReference ref = bookWrapper.getMapSpineLink().get(tocItemDTO.getResource().getHref());
+        return ref.getResource().getData();
     }
 
     public List<SpineReference> getSpineReferences(nl.siegmann.epublib.domain.Book book){
