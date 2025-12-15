@@ -81,10 +81,6 @@ public class BookService {
         book.setTitle(bookDTO.getTitle());
         book.setAuthor(bookDTO.getAuthor());
         book.setDescription(bookDTO.getDescription());
-        if (bookDTO.getIsbn() != null) {
-            book.setIsbn(bookDTO.getIsbn());
-        }
-        book.setIsbn("12345"); // zaglushka ebani
         book.setPublisher(bookDTO.getPublisher());
 //        if (bookDTO.getGenreId()!= null) {
 //            Genre genre = genreRepository.getReferenceById(bookDTO.getGenreId());
@@ -127,14 +123,10 @@ public class BookService {
         if (bookDTO.getDescription() != null) {
             book.setDescription(bookDTO.getDescription());
         }
-        if (bookDTO.getIsbn() != null) {
-            book.setIsbn(bookDTO.getIsbn());
-        }
         if (bookDTO.getGenreId() != null) {
             book.setGenre(genreRepository.findById(bookDTO.getGenreId())
                     .orElseThrow());
         }
-
         if (bookDTO.getPublisher() != null) {
             book.setPublisher(bookDTO.getPublisher());
         }

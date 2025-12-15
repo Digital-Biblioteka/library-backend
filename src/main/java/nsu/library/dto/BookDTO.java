@@ -16,5 +16,4 @@ public class BookDTO {
     String description;
     Long genreId;
     String publisher;
-    String isbn;
 }

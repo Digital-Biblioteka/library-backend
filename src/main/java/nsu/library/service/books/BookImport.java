@@ -51,8 +51,6 @@ public class BookImport {
             System.out.println(genre.getId());
             ourBook.setGenreId(genre.getId());
         }
-        ourBook.setIsbn(metadata.getMetaAttribute("isbn"));
-
         return ourBook;
     }
 
