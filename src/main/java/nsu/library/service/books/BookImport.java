@@ -104,7 +104,7 @@ public class BookImport {
     public TocItemDTO parseTocToDTO(nl.siegmann.epublib.domain.TOCReference tocReference){
         TocItemDTO dto = new TocItemDTO();
         dto.setTitle(tocReference.getTitle());
-        dto.setResource(tocReference.getResource());
+        dto.setHtmlHref(tocReference.getResource().getHref());
         return dto;
     }
 
@@ -145,7 +145,7 @@ public class BookImport {
     }
 
     public SpineReference getSpineFromToc(BookWrapper bookWrapper, TocItemDTO tocItemDTO) throws IOException {
-        SpineReference ref = bookWrapper.getMapSpineLink().get(tocItemDTO.getResource().getHref());
+        SpineReference ref = bookWrapper.getMapSpineLink().get(tocItemDTO.getHtmlHref());
         return ref;
     }
 

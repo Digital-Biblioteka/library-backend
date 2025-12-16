@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nl.siegmann.epublib.domain.Resource;
 
 import java.util.List;
 
@@ -13,7 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class TocItemDTO {
-    Resource resource;
+    String htmlHref;
     String title;
     List<TocItemDTO> children;
 }
