@@ -1,7 +1,9 @@
 package nsu.library.service.books;
 
 import lombok.RequiredArgsConstructor;
+import nl.siegmann.epublib.domain.SpineReference;
 import nsu.library.dto.BookWrapper;
+import nsu.library.dto.ChapterDTO;
 import nsu.library.dto.TocItemDTO;
 import nsu.library.entity.Book;
 import nsu.library.repository.BookRepository;
@@ -48,15 +50,52 @@ public class ReaderService {
         return bookImport.GetTableOfContents(realBook);
     }
 
-    public byte[] getHtmlChapterByTocItem(Long bookId, TocItemDTO tocItemDTO) {
+    public ChapterDTO getHtmlChapterByTocItem(Long bookId, TocItemDTO tocItemDTO) {
         BookWrapper bookWrapper = readerCacheService.getBookWrapper(bookId);
         byte[] html = null;
+        SpineReference ref;
         try {
-            html = bookImport.getHtmlFromSpine(bookWrapper, tocItemDTO);
+            ref = bookImport.getSpineFromToc(bookWrapper, tocItemDTO);
+            html = ref.getResource().getData();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
-        return null;
+        ChapterDTO dto = new ChapterDTO();
+        dto.setHtml(html);
+        int idx = bookWrapper.getSpines().indexOf(ref);
+        dto.setSpineIdx(idx);
+        if (idx > 0) {
+            dto.setHasPrev(true);
+        }
+        int totalLen = bookWrapper.getSpines().size();
+        if (idx < (totalLen - 1)) {
+            dto.setHasNext(true);
+        }
+        dto.setTotalSpines(totalLen);
+        return dto;
+    }
+
+    public ChapterDTO getHtmlChapterBySpineIdx(Long bookId, Integer spineIdx) {
+        BookWrapper bookWrapper = readerCacheService.getBookWrapper(bookId);
+        byte[] html = null;
+        try {
+            SpineReference spine = bookImport.getSpineByIdx(bookWrapper.getSpines(), spineIdx);
+            html = spine.getResource().getData();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        ChapterDTO dto = new ChapterDTO();
+        dto.setHtml(html);
+        if (spineIdx > 0) {
+            dto.setHasPrev(true);
+        }
+        int totalLen = bookWrapper.getSpines().size();
+        if (spineIdx < (totalLen - 1)) {
+            dto.setHasNext(true);
+        }
+        dto.setTotalSpines(totalLen);
+        return dto;
     }
 }

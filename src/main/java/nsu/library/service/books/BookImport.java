@@ -137,16 +137,16 @@ public class BookImport {
         return mapLink;
     }
 
-    public SpineReference getNextSpine(List<SpineReference> spines, int spineIdx) {
-        if (spineIdx < spines.size() && spineIdx >= 0) {
-            return spines.get(spineIdx + 1);
+    public SpineReference getSpineByIdx(List<SpineReference> spines, int spineIdx) {
+        if (spineIdx > 0 && spineIdx < spines.size()) {
+            return spines.get(spineIdx);
         }
         return null;
     }
 
-    public byte[] getHtmlFromSpine(BookWrapper bookWrapper, TocItemDTO tocItemDTO) throws IOException {
+    public SpineReference getSpineFromToc(BookWrapper bookWrapper, TocItemDTO tocItemDTO) throws IOException {
         SpineReference ref = bookWrapper.getMapSpineLink().get(tocItemDTO.getResource().getHref());
-        return ref.getResource().getData();
+        return ref;
     }
 
     public List<SpineReference> getSpineReferences(nl.siegmann.epublib.domain.Book book){
