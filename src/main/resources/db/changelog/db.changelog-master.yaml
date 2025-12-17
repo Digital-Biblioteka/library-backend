@@ -56,11 +56,6 @@ databaseChangeLog:
                   name: publisher
                   type: VARCHAR(255)
               - column:
-                  name: isbn
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-              - column:
                   name: description
                   type: VARCHAR(500)
               - column:

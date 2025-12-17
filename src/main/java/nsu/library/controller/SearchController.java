@@ -21,7 +21,7 @@ public class SearchController {
 //    @PostMapping("/books")
 //    public ResponseEntity<List<BookDTO>> booksUnified(@RequestBody SearchQuery query) {
 //        return ResponseEntity.ok(searchService.searchBooks(query));
-//    } это моя заглушка, тут надо ждать пока поиск заработает
+//    }
 
     @GetMapping("/books")
     public List<Book> getBooks() {
