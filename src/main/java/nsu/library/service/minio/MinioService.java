@@ -1,17 +1,19 @@
 package nsu.library.service.minio;
 
 import io.minio.*;
-import io.minio.errors.MinioException;
+import io.minio.errors.*;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import nsu.library.entity.Book;
 import nsu.library.exception.MinioErrorException;
 import nsu.library.repository.BookRepository;
+import org.apache.commons.collections4.Get;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -154,5 +156,17 @@ public class MinioService {
             throw new MinioErrorException(e.getMessage());
         }
         return url;
+    }
+
+    public InputStream getRealBook(String bookLink) {
+        GetObjectResponse obj = null;
+        try {
+            obj = minioClient.getObject(
+                    GetObjectArgs.builder().bucket(epubBucketName).object(bookLink).build()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return obj;
     }
 }

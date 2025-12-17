@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubReader;
 import nsu.library.dto.BookDTO;
+import nsu.library.dto.BookWrapper;
+import nsu.library.dto.TocItemDTO;
 import nsu.library.entity.Genre;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,18 +15,34 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.lang.StringBuilder;
+import java.util.Map;
 
+// уххх... зря ты сюда полез...
 @Component
 @RequiredArgsConstructor
 public class BookImport {
 
-    private final GenreService genreService;
+    //private final GenreService genreService;
 
     public nl.siegmann.epublib.domain.Book readEpub(MultipartFile file) throws IOException {
         EpubReader epubReader = new EpubReader();
         return epubReader.readEpub(file.getInputStream());
+    }
+
+    public nl.siegmann.epublib.domain.Book readEpubFromStream(InputStream in) throws IOException {
+        EpubReader epubReader = new EpubReader();
+        return epubReader.readEpub(in);
+    }
+
+    public nl.siegmann.epublib.domain.Book readEpubFile(String filePath) throws IOException {
+        File initialFile = new File(filePath);
+        InputStream targetStream = new FileInputStream(initialFile);
+
+        EpubReader epubReader = new EpubReader();
+        return epubReader.readEpub(targetStream);
     }
 
     /**
@@ -33,9 +51,8 @@ public class BookImport {
      *
      * @param book книжка типа епаблиб
      * @return дто книги
-     * @throws IOException если не найдем книжку
      */
-    public BookDTO parseEpub(nl.siegmann.epublib.domain.Book book) throws IOException {
+    public BookDTO parseEpub(nl.siegmann.epublib.domain.Book book){
         Metadata metadata = book.getMetadata();
         BookDTO ourBook = new BookDTO();
         ourBook.setAuthor(metadata.getAuthors().isEmpty() ? "" : metadata.getAuthors().getFirst().toString());
@@ -44,13 +61,15 @@ public class BookImport {
         ourBook.setPublisher(metadata.getPublishers().isEmpty() ? "" : metadata.getPublishers().getFirst());
         String genreName = metadata.getMetaAttribute("genre");
         System.out.println("i will kill myself");
-        if (genreName != null) {
-            // dont create new genre here
-            Genre genre = genreService.AddGenre(metadata.getMetaAttribute("genre"));
-            System.out.println(genre);
-            System.out.println(genre.getId());
-            ourBook.setGenreId(genre.getId());
-        }
+//        if (genreName != null) {
+//            // dont create new genre here
+//            Genre genre = genreService.AddGenre(metadata.getMetaAttribute("genre"));
+//            System.out.println(genre);
+//            System.out.println(genre.getId());
+//            ourBook.setGenreId(genre.getId());
+//        }
+        ourBook.setIsbn(metadata.getMetaAttribute("isbn"));
+
         return ourBook;
     }
 
@@ -82,7 +101,55 @@ public class BookImport {
         return coverBytes;
     }
 
-    public List<SpineReference> parseChapters(nl.siegmann.epublib.domain.Book book){
+    public TocItemDTO parseTocToDTO(nl.siegmann.epublib.domain.TOCReference tocReference){
+        TocItemDTO dto = new TocItemDTO();
+        dto.setTitle(tocReference.getTitle());
+        dto.setHtmlHref(tocReference.getResource().getHref());
+        return dto;
+    }
+
+    public List<TocItemDTO> GetTableOfContents(nl.siegmann.epublib.domain.Book book) {
+        List<TocItemDTO> tocReferences = new ArrayList<>();
+        for (TOCReference ref :  book.getTableOfContents().getTocReferences()) {
+            TocItemDTO dto = ParseTocChildren(ref);
+            tocReferences.add(dto);
+        }
+        return tocReferences;
+    }
+
+    public TocItemDTO ParseTocChildren(TOCReference tocReference) {
+        TocItemDTO dto = parseTocToDTO(tocReference);
+        List<TocItemDTO> childrenDTO = new ArrayList<>();
+        for (TOCReference ref: tocReference.getChildren()) {
+            TocItemDTO childDTO = parseTocToDTO(ref);
+            ParseTocChildren(ref);
+            childrenDTO.add(childDTO);
+        }
+        dto.setChildren(childrenDTO);
+        return dto;
+    }
+
+    public Map<String, SpineReference>createMapLinkSpine(Book book) {
+        Map<String, SpineReference> mapLink = new HashMap<>();
+        for (SpineReference ref: book.getSpine().getSpineReferences()) {
+            mapLink.putIfAbsent(ref.getResource().getHref(), ref);
+        }
+        return mapLink;
+    }
+
+    public SpineReference getSpineByIdx(List<SpineReference> spines, int spineIdx) {
+        if (spineIdx > 0 && spineIdx < spines.size()) {
+            return spines.get(spineIdx);
+        }
+        return null;
+    }
+
+    public SpineReference getSpineFromToc(BookWrapper bookWrapper, TocItemDTO tocItemDTO) throws IOException {
+        SpineReference ref = bookWrapper.getMapSpineLink().get(tocItemDTO.getHtmlHref());
+        return ref;
+    }
+
+    public List<SpineReference> getSpineReferences(nl.siegmann.epublib.domain.Book book){
         Spine spine = book.getSpine();
         return spine.getSpineReferences();
     }
@@ -102,5 +169,26 @@ public class BookImport {
         List<String> paragraphs = new ArrayList<>();
         elems.forEach(element -> paragraphs.add(element.text()));
         return paragraphs;
+    }
+
+    public BookWrapper CreateBookWrapperFromBook(nl.siegmann.epublib.domain.Book book) {
+        BookWrapper bookWrapper = new BookWrapper();
+        BookDTO ourBook = parseEpub(book);
+        bookWrapper.setBook(ourBook);
+        bookWrapper.setSpines(getSpineReferences(book));
+        bookWrapper.setMapSpineLink(createMapLinkSpine(book));
+        return bookWrapper;
+    }
+
+    public static void main(String[] args) throws IOException {
+        BookImport bookImport = new BookImport();
+        Book book = bookImport.readEpubFile("dogman.epub");
+//        System.out.println(book);
+//        for (TocItemDTO dto: bookImport.GetTableOfContents(book)) {
+//            System.out.println(dto.getTitle());
+//            System.out.println(dto.getChildren());
+//        }
+        BookWrapper wrapper = bookImport.CreateBookWrapperFromBook(book);
+        System.out.println(wrapper.getBook().getTitle());
     }
 }

@@ -30,7 +30,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     compileOnly 'org.projectlombok:lombok:1.18.34'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -41,11 +41,15 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'com.positiondev.epublib:epublib-core:3.1'
     implementation 'org.jsoup:jsoup:1.21.2'
-    implementation 'org.liquibase:liquibase-core:4.24.0'
+    implementation 'org.liquibase:liquibase-core:4.26.0'
     implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
     implementation 'io.minio:minio:8.5.7'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+
 }
 
 tasks.named('test') {
