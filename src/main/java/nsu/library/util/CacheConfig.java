@@ -13,7 +13,7 @@ public class CacheConfig {
 
     @Bean
     public CacheManager cacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager("bookWrapperCache");
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager("Bookwrapper");
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .maximumSize(100)          // максимум 100 книг в кэше
                 .expireAfterAccess(30, TimeUnit.MINUTES)); // время жизни

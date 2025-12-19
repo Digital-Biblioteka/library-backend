@@ -18,7 +18,7 @@ public class ReaderCacheService {
     private final MinioService minioService;
     private final BookImport bookImport;
 
-    @Cacheable("Bookwrappers")
+    @Cacheable("Bookwrapper")
     public BookWrapper getBookWrapper(Long bookId) {
         Book book = bookRepository.findById(bookId).orElseThrow();
         String bookLink = book.getLinkToBook();

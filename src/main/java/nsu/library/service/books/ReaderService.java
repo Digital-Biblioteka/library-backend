@@ -78,9 +78,13 @@ public class ReaderService {
 
     public ChapterDTO getHtmlChapterBySpineIdx(Long bookId, Integer spineIdx) {
         BookWrapper bookWrapper = readerCacheService.getBookWrapper(bookId);
+        System.out.println(bookWrapper.getSpines());
         byte[] html = null;
         try {
             SpineReference spine = bookImport.getSpineByIdx(bookWrapper.getSpines(), spineIdx);
+            if (spine == null) {
+                return null;
+            }
             html = spine.getResource().getData();
         } catch (Exception e) {
             e.printStackTrace();
@@ -91,11 +95,13 @@ public class ReaderService {
         if (spineIdx > 0) {
             dto.setHasPrev(true);
         }
+        dto.setSpineIdx(spineIdx);
         int totalLen = bookWrapper.getSpines().size();
         if (spineIdx < (totalLen - 1)) {
             dto.setHasNext(true);
         }
         dto.setTotalSpines(totalLen);
+        System.out.println(dto.getTotalSpines());
         return dto;
     }
 }
