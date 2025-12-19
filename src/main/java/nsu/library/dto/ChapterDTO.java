@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChapterDTO {
-    byte[] html;
+    String html;
     int spineIdx;
     int totalSpines;
     boolean hasNext;

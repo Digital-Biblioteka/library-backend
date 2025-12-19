@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -62,7 +64,7 @@ public class ReaderService {
             return null;
         }
         ChapterDTO dto = new ChapterDTO();
-        dto.setHtml(html);
+        dto.setHtml(new String(html, StandardCharsets.UTF_8));
         int idx = bookWrapper.getSpines().indexOf(ref);
         dto.setSpineIdx(idx);
         if (idx > 0) {
@@ -91,7 +93,7 @@ public class ReaderService {
             return null;
         }
         ChapterDTO dto = new ChapterDTO();
-        dto.setHtml(html);
+        dto.setHtml(new String(html, StandardCharsets.UTF_8));
         if (spineIdx > 0) {
             dto.setHasPrev(true);
         }

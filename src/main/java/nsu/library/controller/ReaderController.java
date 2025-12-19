@@ -1,6 +1,7 @@
 package nsu.library.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.ChapterDTO;
 import nsu.library.dto.TocItemDTO;
@@ -84,31 +85,19 @@ public class ReaderController {
     }
 
     @PostMapping("{id}/toc/chapter")
-    public ResponseEntity<byte[]> getHtmlChapterByTocItem(@PathVariable Long id, @RequestBody TocItemDTO tocItemDTO) {
+    public ChapterDTO getHtmlChapterByTocItem(@PathVariable Long id, @RequestBody TocItemDTO tocItemDTO) {
         ChapterDTO dto = readerService.getHtmlChapterByTocItem(id, tocItemDTO);
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_HTML)
-                .header("X-Spine-Index", String.valueOf(dto.getSpineIdx()))
-                .header("X-Total-Spines", String.valueOf(dto.getTotalSpines()))
-                .header("X-Has-Next", String.valueOf(dto.isHasNext()))
-                .header("X-Has-Prev", String.valueOf(dto.isHasPrev()))
-                .body(dto.getHtml());
+        return dto;
     }
 
     @Operation(summary = "Get a chapter of book by spine index")
     @GetMapping("/{id}/chapter/{spineIdx}")
-    public ResponseEntity<byte[]> getChapter(@PathVariable Long id, @PathVariable int spineIdx) {
+    public ChapterDTO getChapter(@PathVariable Long id, @PathVariable int spineIdx) {
         ChapterDTO dto = readerService.getHtmlChapterBySpineIdx(id, spineIdx);
         if (dto == null) {
-            return ResponseEntity.notFound().build();
+            throw new EntityNotFoundException();
         }
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_HTML)
-                .header("X-Spine-Index", String.valueOf(dto.getSpineIdx()))
-                .header("X-Total-Spines", String.valueOf(dto.getTotalSpines()))
-                .header("X-Has-Next", String.valueOf(dto.isHasNext()))
-                .header("X-Has-Prev", String.valueOf(dto.isHasPrev()))
-                .body(dto.getHtml());
+        return dto;
     }
 }
