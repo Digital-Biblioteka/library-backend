@@ -96,10 +96,13 @@ public class ReaderController {
                 .body(dto.getHtml());
     }
 
+    @Operation(summary = "Get a chapter of book by spine index")
     @GetMapping("/{id}/chapter/{spineIdx}")
     public ResponseEntity<byte[]> getChapter(@PathVariable Long id, @PathVariable int spineIdx) {
         ChapterDTO dto = readerService.getHtmlChapterBySpineIdx(id, spineIdx);
-
+        if (dto == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_HTML)
                 .header("X-Spine-Index", String.valueOf(dto.getSpineIdx()))
