@@ -62,16 +62,8 @@ public class SearchService {
             dto.setTitle((String) m.get("title"));
             dto.setAuthor((String) m.get("author"));
             dto.setDescription((String) m.get("description"));
-            //dto.setGenre((String) m.get("genres")); add id here later
-            if (m.get("genres") != null) {
-                Genre genre = genreService.GetGenreByName((String)m.get("genres"));
-                if (genre == null) {
-                    genre = genreService.AddGenre((String)m.get("genres"));
-                }
-                dto.setGenreId(genre.getId());
-                System.out.println(genre);
-                System.out.println(genre.getId());
-            }
+            dto.setGenre((String) m.get("genres"));
+
             dto.setPublisher((String) m.get("publisher"));
             dto.setIsbn((String) m.get("isbn"));
             //dto.setLinkToBook((String) m.get("linkToBook")); в дто нет такого поля

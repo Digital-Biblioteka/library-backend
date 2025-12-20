@@ -62,16 +62,7 @@ public class BookImport {
         ourBook.setPublisher(metadata.getPublishers().isEmpty() ? "" : metadata.getPublishers().getFirst());
         String genreName = metadata.getMetaAttribute("genre");
         System.out.println("i will kill myself");
-        if (genreName != null) {
-            Genre genre = genreService.GetGenreByName(genreName);
-            if (genre == null) {
-                genre = genreService.AddGenre(genreName);
-            }
-            ourBook.setGenreId(genre.getId());
-            System.out.println(genre);
-            System.out.println(genre.getId());
-        }
-
+        ourBook.setGenre(genreName);
         return ourBook;
     }
 
