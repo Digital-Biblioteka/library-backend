@@ -1,7 +1,7 @@
 package nsu.library.service.books;
 
 import lombok.RequiredArgsConstructor;
-import nsu.library.dto.BookWrapper;
+import nsu.library.dto.reader.BookWrapper;
 import nsu.library.entity.Book;
 import nsu.library.repository.BookRepository;
 import nsu.library.service.minio.MinioService;

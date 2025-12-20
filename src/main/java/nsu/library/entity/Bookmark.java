@@ -1,10 +1,13 @@
 package nsu.library.entity;
 
 import jakarta.persistence.*;
-import lombok.NonNull;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "bookmarks")
+@Getter
+@Setter
 public class Bookmark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +22,7 @@ public class Bookmark {
     private Book book;
 
     @Column(nullable = false)
-    String spine_reference;
+    int spine_reference;
 
     @Column(nullable = false)
     int paragraph_index;

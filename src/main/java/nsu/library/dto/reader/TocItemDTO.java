@@ -1,4 +1,4 @@
-package nsu.library.dto;
+package nsu.library.dto.reader;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

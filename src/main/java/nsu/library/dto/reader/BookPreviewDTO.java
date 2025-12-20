@@ -1,10 +1,10 @@
-package nsu.library.dto;
+package nsu.library.dto.reader;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nl.siegmann.epublib.domain.Resource;
+import nsu.library.dto.book.BookDTO;
 
 /**
  * Превью книжки.

@@ -2,13 +2,12 @@ package nsu.library.service.system;
 
 
 import lombok.RequiredArgsConstructor;
-import nsu.library.dto.JwtAuthResponse;
-import nsu.library.dto.SignInDTO;
-import nsu.library.dto.SignUpDTO;
+import nsu.library.dto.user.JwtAuthResponse;
+import nsu.library.dto.user.SignInDTO;
+import nsu.library.dto.user.SignUpDTO;
 import nsu.library.entity.User;
 import nsu.library.repository.UserRepository;
 import nsu.library.security.CustomUserDetails;
-import nsu.library.service.user.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

@@ -2,8 +2,8 @@ package nsu.library.service.user;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-import nsu.library.dto.CreateUserDTO;
-import nsu.library.dto.UserDTO;
+import nsu.library.dto.user.CreateUserDTO;
+import nsu.library.dto.user.UserDTO;
 import nsu.library.entity.User;
 import nsu.library.exception.UserExistsException;
 import nsu.library.repository.UserRepository;

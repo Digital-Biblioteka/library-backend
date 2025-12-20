@@ -1,7 +1,7 @@
 package nsu.library.service.books;
 
 import lombok.RequiredArgsConstructor;
-import nsu.library.dto.BookDTO;
+import nsu.library.dto.book.BookDTO;
 import nsu.library.entity.Book;
 import nsu.library.repository.BookRepository;
 import nsu.library.repository.GenreRepository;
@@ -31,10 +31,10 @@ public class BookService {
      */
     public Book addBookManually(BookDTO bookDTO, MultipartFile file) {
         String bookId = UUID.randomUUID() + "." + file.getOriginalFilename();
-        String fileName = minioService.loadBookEpub(file, bookId);
+        minioService.loadBookEpub(file, bookId);
 
         byte[] cover = bookImport.getBookPreview(file);
-        String coverName = minioService.loadBookCover(cover, bookId);
+        minioService.loadBookCover(cover, bookId);
 
         Book book = createBookFromDTO(bookDTO, bookId);
         bookRepository.save(book);
@@ -60,10 +60,10 @@ public class BookService {
         }
         Book ourBook = createBookFromDTO(book, bookId);
 
-        String fileName = minioService.loadBookEpub(file, bookId);
+        minioService.loadBookEpub(file, bookId);
 
         byte[] cover = bookImport.getBookPreview(file);
-        String coverName = minioService.loadBookCover(cover, bookId);
+        minioService.loadBookCover(cover, bookId);
 
         bookRepository.save(ourBook);
         return ourBook;

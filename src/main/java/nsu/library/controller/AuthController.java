@@ -4,9 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import nsu.library.dto.JwtAuthResponse;
-import nsu.library.dto.SignInDTO;
-import nsu.library.dto.SignUpDTO;
+import nsu.library.dto.user.JwtAuthResponse;
+import nsu.library.dto.user.SignInDTO;
+import nsu.library.dto.user.SignUpDTO;
 import nsu.library.service.system.AuthService;
 import org.springframework.web.bind.annotation.*;
 

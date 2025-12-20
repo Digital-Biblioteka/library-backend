@@ -1,7 +1,7 @@
 package nsu.library.service.books;
 
 import lombok.RequiredArgsConstructor;
-import nsu.library.dto.LastReadBookDTO;
+import nsu.library.dto.list.LastReadBookDTO;
 import nsu.library.entity.Book;
 import nsu.library.entity.LastRead;
 import nsu.library.repository.BookRepository;

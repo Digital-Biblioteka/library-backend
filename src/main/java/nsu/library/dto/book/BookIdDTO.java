@@ -1,4 +1,4 @@
-package nsu.library.dto;
+package nsu.library.dto.book;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ReviewDTO {
-    int rating;
-    String comment;
+public class BookIdDTO {
+    Long id;
 }
