@@ -1,10 +1,9 @@
-package nsu.library.dto;
+package nsu.library.dto.book;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -14,6 +13,6 @@ public class BookDTO {
     String title;
     String author;
     String description;
-    Long genreId;
+    String genre;
     String publisher;
 }

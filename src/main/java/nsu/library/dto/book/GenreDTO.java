@@ -1,4 +1,4 @@
-package nsu.library.dto;
+package nsu.library.dto.book;
 
 import lombok.*;
 

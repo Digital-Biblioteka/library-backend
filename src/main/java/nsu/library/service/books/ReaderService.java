@@ -2,9 +2,9 @@ package nsu.library.service.books;
 
 import lombok.RequiredArgsConstructor;
 import nl.siegmann.epublib.domain.SpineReference;
-import nsu.library.dto.BookWrapper;
-import nsu.library.dto.ChapterDTO;
-import nsu.library.dto.TocItemDTO;
+import nsu.library.dto.reader.BookWrapper;
+import nsu.library.dto.reader.ChapterDTO;
+import nsu.library.dto.reader.TocItemDTO;
 import nsu.library.entity.Book;
 import nsu.library.repository.BookRepository;
 import nsu.library.service.minio.MinioService;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 
 @Service

@@ -1,4 +1,4 @@
-package nsu.library.dto;
+package nsu.library.dto.search;
 
 public record SearchQuery(
         String query,

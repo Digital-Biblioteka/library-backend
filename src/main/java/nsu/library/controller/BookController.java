@@ -2,7 +2,7 @@ package nsu.library.controller;
 
 import lombok.RequiredArgsConstructor;
 import nl.siegmann.epublib.domain.Book;
-import nsu.library.dto.TocItemDTO;
+import nsu.library.dto.reader.TocItemDTO;
 import nsu.library.service.books.BookImport;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;

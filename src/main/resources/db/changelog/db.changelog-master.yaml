@@ -146,6 +146,8 @@ databaseChangeLog:
       file: db/changelog/drop-old-foreign-keys.yaml
   - include:
       file: db/changelog/fix-delete-cascade-reading-pos.yaml
+  - include:
+      file: db/changelog/remove-isbn-add-rating.yaml
 
 
 

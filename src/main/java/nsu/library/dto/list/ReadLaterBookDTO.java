@@ -1,6 +1,7 @@
-package nsu.library.dto;
+package nsu.library.dto.list;
 
 import lombok.*;
+import nsu.library.dto.book.BookDTO;
 
 @AllArgsConstructor
 @NoArgsConstructor

@@ -1,7 +1,7 @@
 package nsu.library.controller;
 
 import lombok.RequiredArgsConstructor;
-import nsu.library.dto.GenreDTO;
+import nsu.library.dto.book.GenreDTO;
 import nsu.library.entity.Genre;
 import nsu.library.service.books.GenreService;
 import org.springframework.web.bind.annotation.*;

@@ -3,9 +3,9 @@ package nsu.library.service.books;
 import lombok.RequiredArgsConstructor;
 import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubReader;
-import nsu.library.dto.BookDTO;
-import nsu.library.dto.BookWrapper;
-import nsu.library.dto.TocItemDTO;
+import nsu.library.dto.book.BookDTO;
+import nsu.library.dto.reader.BookWrapper;
+import nsu.library.dto.reader.TocItemDTO;
 import nsu.library.entity.Genre;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,6 +24,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class BookImport {
+    private final GenreService genreService;
 
     //private final GenreService genreService;
 
@@ -61,14 +62,7 @@ public class BookImport {
         ourBook.setPublisher(metadata.getPublishers().isEmpty() ? "" : metadata.getPublishers().getFirst());
         String genreName = metadata.getMetaAttribute("genre");
         System.out.println("i will kill myself");
-//        if (genreName != null) {
-//            // dont create new genre here
-//            Genre genre = genreService.AddGenre(metadata.getMetaAttribute("genre"));
-//            System.out.println(genre);
-//            System.out.println(genre.getId());
-//            ourBook.setGenreId(genre.getId());
-//        }
-
+        ourBook.setGenre(genreName);
         return ourBook;
     }
 
@@ -144,8 +138,7 @@ public class BookImport {
     }
 
     public SpineReference getSpineFromToc(BookWrapper bookWrapper, TocItemDTO tocItemDTO) throws IOException {
-        SpineReference ref = bookWrapper.getMapSpineLink().get(tocItemDTO.getHtmlHref());
-        return ref;
+        return bookWrapper.getMapSpineLink().get(tocItemDTO.getHtmlHref());
     }
 
     public List<SpineReference> getSpineReferences(nl.siegmann.epublib.domain.Book book){
@@ -179,15 +172,15 @@ public class BookImport {
         return bookWrapper;
     }
 
-    public static void main(String[] args) throws IOException {
-        BookImport bookImport = new BookImport();
-        Book book = bookImport.readEpubFile("dogman.epub");
-//        System.out.println(book);
-//        for (TocItemDTO dto: bookImport.GetTableOfContents(book)) {
-//            System.out.println(dto.getTitle());
-//            System.out.println(dto.getChildren());
-//        }
-        BookWrapper wrapper = bookImport.CreateBookWrapperFromBook(book);
-        System.out.println(wrapper.getBook().getTitle());
-    }
+//    public static void main(String[] args) throws IOException {
+//        BookImport bookImport = new BookImport();
+//        Book book = bookImport.readEpubFile("dogman.epub");
+////        System.out.println(book);
+////        for (TocItemDTO dto: bookImport.GetTableOfContents(book)) {
+////            System.out.println(dto.getTitle());
+////            System.out.println(dto.getChildren());
+////        }
+//        BookWrapper wrapper = bookImport.CreateBookWrapperFromBook(book);
+//        System.out.println(wrapper.getBook().getTitle());
+//    }
 }

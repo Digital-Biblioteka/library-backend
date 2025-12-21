@@ -24,6 +24,8 @@ public class Book {
     @Column
     String publisher;
 
+    @Column
+    Double rating;
 
     @Column
     String description;

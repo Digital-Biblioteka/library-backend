@@ -1,4 +1,4 @@
-package nsu.library.dto;
+package nsu.library.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,9 +8,9 @@ import nsu.library.entity.User;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDTO {
-    Long id;
-    String userName;
+public class CreateUserDTO {
+    String name;
+    String password;
     String email;
     User.ROLE role;
 }
