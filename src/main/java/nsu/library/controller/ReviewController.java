@@ -3,7 +3,7 @@ package nsu.library.controller;
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.review.ReviewDTO;
 import nsu.library.entity.Review;
-import nsu.library.entity.User;
+import nsu.library.security.CustomUserDetails;
 import nsu.library.service.books.ReviewsService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -28,20 +28,20 @@ public class ReviewController {
      */
     @PostMapping("/books/reviews/{bookId}")
     public Review createReview(@RequestBody ReviewDTO reviewDTO, @PathVariable Long bookId, Authentication auth) {
-        User user = (User) auth.getPrincipal();
-        return reviewsService.createReview(reviewDTO, user.getId(), bookId);
+        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+        return reviewsService.createReview(reviewDTO, user.getUser().getId(), bookId);
     }
 
     @PutMapping("/reviews/{reviewId}")
     public Review editReview(@RequestBody ReviewDTO reviewDTO, @PathVariable Long reviewId, Authentication auth) {
-        User user = (User) auth.getPrincipal();
-        return reviewsService.editReview(reviewDTO, user.getId(), reviewId);
+        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+        return reviewsService.editReview(reviewDTO, user.getUser().getId(), reviewId);
     }
 
     @GetMapping("/profile/reviews")
     public List<Review> getUserReviews(Authentication auth) {
-        User user = (User) auth.getPrincipal();
-        return reviewsService.getReviewsByUser(user.getId());
+        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+        return reviewsService.getReviewsByUser(user.getUser().getId());
     }
 
     @GetMapping("/books/reviews/{bookId}")
@@ -56,7 +56,7 @@ public class ReviewController {
 
     @DeleteMapping("/reviews/{reviewId}")
     public Review deleteReview(@PathVariable Long reviewId, Authentication auth) {
-        User user = (User) auth.getPrincipal();
-        return reviewsService.deleteReview(user.getId(), reviewId);
+        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+        return reviewsService.deleteReview(user.getUser().getId(), reviewId);
     }
 }

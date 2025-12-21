@@ -13,7 +13,7 @@ public class AppProps {
     @Value("${app.embed.url:http://localhost:8000/embed}")
     private String embedUrl;
 
-    @Value("${app.search.url:}")
+    @Value("${app.search.url:http://localhost:8001/search/books}")
     private String searchUrl;
 
 }
