@@ -3,6 +3,7 @@ package nsu.library.controller;
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.review.ReviewDTO;
 import nsu.library.entity.Review;
+import nsu.library.entity.User;
 import nsu.library.security.CustomUserDetails;
 import nsu.library.service.books.ReviewsService;
 import org.springframework.security.core.Authentication;
@@ -32,7 +33,7 @@ public class ReviewController {
         return reviewsService.createReview(reviewDTO, user.getUser().getId(), bookId);
     }
 
-    @PutMapping("/reviews/{reviewId}")
+    @PutMapping("/books/reviews/{reviewId}")
     public Review editReview(@RequestBody ReviewDTO reviewDTO, @PathVariable Long reviewId, Authentication auth) {
         CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
         return reviewsService.editReview(reviewDTO, user.getUser().getId(), reviewId);
@@ -49,12 +50,12 @@ public class ReviewController {
         return reviewsService.getReviewsByBook(bookId);
     }
 
-    @GetMapping("/reviews/{reviewId}")
+    @GetMapping("/books/reviews/{reviewId}")
     public Review getReview(@PathVariable Long reviewId) {
         return reviewsService.getReview(reviewId);
     }
 
-    @DeleteMapping("/reviews/{reviewId}")
+    @DeleteMapping("/books/reviews/{reviewId}")
     public Review deleteReview(@PathVariable Long reviewId, Authentication auth) {
         CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
         return reviewsService.deleteReview(user.getUser().getId(), reviewId);
