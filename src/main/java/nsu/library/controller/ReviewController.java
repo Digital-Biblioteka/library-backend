@@ -50,12 +50,12 @@ public class ReviewController {
         return reviewsService.getReviewsByBook(bookId);
     }
 
-    @GetMapping("/books/reviews/{reviewId}")
+    @GetMapping("/reviews/{reviewId}")
     public Review getReview(@PathVariable Long reviewId) {
         return reviewsService.getReview(reviewId);
     }
 
-    @DeleteMapping("/books/reviews/{reviewId}")
+    @DeleteMapping("/reviews/{reviewId}")
     public Review deleteReview(@PathVariable Long reviewId, Authentication auth) {
         CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
         return reviewsService.deleteReview(user.getUser().getId(), reviewId);
