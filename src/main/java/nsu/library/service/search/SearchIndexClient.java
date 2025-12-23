@@ -35,9 +35,8 @@ public class SearchIndexClient {
         body.put("author", book.getAuthor());
         body.put("publisher", book.getPublisher());
         body.put("description", book.getDescription());
-        body.put("genres", null);
+        body.put("genre", null);
         body.put("linkToBook", book.getLinkToBook());
-        body.put("isbn", book.getIsbn());
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -47,7 +46,6 @@ public class SearchIndexClient {
         try {
             restTemplate.postForEntity(url, request, Void.class);
         } catch (Exception e) {
-            // для учебного проекта: просто логируем/игнорируем ошибку индексации
             System.err.println("Failed to index book in search service: " + e.getMessage());
         }
     }
