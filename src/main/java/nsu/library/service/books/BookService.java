@@ -6,6 +6,7 @@ import nsu.library.entity.Book;
 import nsu.library.repository.BookRepository;
 import nsu.library.repository.GenreRepository;
 import nsu.library.service.minio.MinioService;
+import nsu.library.service.search.SearchIndexClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +22,7 @@ public class BookService {
     private final BookImport bookImport;
     private final MinioService minioService;
     private final GenreRepository genreRepository;
+    private final SearchIndexClient searchIndexClient;
 
     /**
      * Ручное добавление книги с заполнением всех полей и ее добавление в минио
@@ -37,8 +39,9 @@ public class BookService {
         minioService.loadBookCover(cover, bookId);
 
         Book book = createBookFromDTO(bookDTO, bookId);
-        bookRepository.save(book);
-        return book;
+        Book saved = bookRepository.save(book);
+        searchIndexClient.indexBook(saved);
+        return saved;
     }
 
     /**
@@ -65,8 +68,9 @@ public class BookService {
         byte[] cover = bookImport.getBookPreview(file);
         minioService.loadBookCover(cover, bookId);
 
-        bookRepository.save(ourBook);
-        return ourBook;
+        Book saved = bookRepository.save(ourBook);
+        searchIndexClient.indexBook(saved);
+        return saved;
     }
 
     /**
