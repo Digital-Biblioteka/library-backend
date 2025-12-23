@@ -6,7 +6,6 @@ import nl.siegmann.epublib.epub.EpubReader;
 import nsu.library.dto.book.BookDTO;
 import nsu.library.dto.reader.BookWrapper;
 import nsu.library.dto.reader.TocItemDTO;
-import nsu.library.entity.Genre;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -24,9 +23,6 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class BookImport {
-    private final GenreService genreService;
-
-    //private final GenreService genreService;
 
     public nl.siegmann.epublib.domain.Book readEpub(MultipartFile file) throws IOException {
         EpubReader epubReader = new EpubReader();
@@ -75,7 +71,6 @@ public class BookImport {
      */
     public byte[] getBookPreview(MultipartFile file){
         Resource cover;
-        BookDTO bookDTO;
         try {
             nl.siegmann.epublib.domain.Book book = readEpub(file);
             cover = book.getCoverImage();
@@ -83,6 +78,7 @@ public class BookImport {
             System.err.println("Error reading book in getBookPreview" + e.getMessage());
             return null;
         }
+        if (cover == null) return null;
         cover.getSize();
         byte[] coverBytes;
         try {

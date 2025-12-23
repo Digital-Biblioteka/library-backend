@@ -15,4 +15,5 @@ public class BookDTO {
     String description;
     String genre;
     String publisher;
+    Double rating;
 }
