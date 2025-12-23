@@ -1,8 +1,8 @@
 package nsu.library.controller;
 
 import lombok.RequiredArgsConstructor;
-import nsu.library.dto.BookIdDTO;
-import nsu.library.dto.ReadLaterBookDTO;
+import nsu.library.dto.book.BookIdDTO;
+import nsu.library.dto.list.ReadLaterBookDTO;
 import nsu.library.entity.ReadLater;
 import nsu.library.security.CustomUserDetails;
 import nsu.library.service.books.ReadLaterService;

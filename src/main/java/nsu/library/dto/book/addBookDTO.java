@@ -1,7 +1,6 @@
-package nsu.library.dto;
+package nsu.library.dto.book;
 
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @NoArgsConstructor
@@ -13,6 +12,6 @@ public class addBookDTO {
 
     public enum ADDMode{
         manual,
-        auto;
+        auto
     }
 }

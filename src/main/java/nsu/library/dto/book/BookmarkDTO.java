@@ -1,4 +1,4 @@
-package nsu.library.dto;
+package nsu.library.dto.book;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class BookIdDTO {
-    Long id;
+public class BookmarkDTO {
+    int spineRef;
+    int paragraphIdx;
+    String text;
 }

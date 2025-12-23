@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-rating-remove-isbn-books
+      author: Alina
+      preConditions:
+        - onFail: CONTINUE
+        - columnExists:
+            tableName: books
+            columnName: isbn
+      changes:
+        - dropColumn:
+            tableName: books
+            columnName: isbn
+  - changeSet:
+      id: add-rating-book
+      author: Alina
+      changes:
+        - addColumn:
+            tableName: books
+            columns:
+              - column:
+                  name: rating
+                  type: double
+  - changeSet:
+      id: make-spine-idx-int
+      author: Alina
+      changes:
+        - modifyDataType:
+            tableName: bookmarks
+            columnName: spine_reference
+            newDataType: BIGINT

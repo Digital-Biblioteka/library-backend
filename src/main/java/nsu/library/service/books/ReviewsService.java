@@ -1,7 +1,7 @@
 package nsu.library.service.books;
 
 import lombok.RequiredArgsConstructor;
-import nsu.library.dto.ReviewDTO;
+import nsu.library.dto.review.ReviewDTO;
 import nsu.library.entity.Book;
 import nsu.library.entity.Review;
 import nsu.library.entity.User;

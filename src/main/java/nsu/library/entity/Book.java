@@ -24,8 +24,8 @@ public class Book {
     @Column
     String publisher;
 
-    @Column(nullable = false)
-    String isbn;
+    @Column
+    Double rating;
 
     @Column
     String description;

@@ -1,7 +1,10 @@
 package nsu.library.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import nsu.library.dto.reader.ChapterDTO;
+import nsu.library.dto.reader.TocItemDTO;
 import nsu.library.entity.ReadingPosition;
 import nsu.library.repository.ReadingPositionRepository;
 import nsu.library.security.CustomUserDetails;
@@ -11,6 +14,8 @@ import nsu.library.service.minio.MinioService;
 import nsu.library.util.ReadingPositionId;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/reader")
@@ -70,5 +75,27 @@ public class ReaderController {
         readingPosition.setBookId(id);
         readingPositionRepository.save(readingPosition);
         return readingPosition;
+    }
+
+    @GetMapping("{id}/toc")
+    public List<TocItemDTO> getTableOfContents(@PathVariable Long id) {
+        return readerService.getTableOfContents(id);
+    }
+
+    @PostMapping("{id}/toc/chapter")
+    public ChapterDTO getHtmlChapterByTocItem(@PathVariable Long id, @RequestBody TocItemDTO tocItemDTO) {
+        ChapterDTO dto = readerService.getHtmlChapterByTocItem(id, tocItemDTO);
+
+        return dto;
+    }
+
+    @Operation(summary = "Get a chapter of book by spine index")
+    @GetMapping("/{id}/chapter/{spineIdx}")
+    public ChapterDTO getChapter(@PathVariable Long id, @PathVariable int spineIdx) {
+        ChapterDTO dto = readerService.getHtmlChapterBySpineIdx(id, spineIdx);
+        if (dto == null) {
+            throw new EntityNotFoundException();
+        }
+        return dto;
     }
 }

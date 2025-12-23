@@ -1,8 +1,8 @@
  package nsu.library.service.books;
 
 import nsu.library.config.AppProps;
-import nsu.library.dto.SearchQuery;
-import nsu.library.dto.BookDTO;
+import nsu.library.dto.search.SearchQuery;
+import nsu.library.dto.book.BookDTO;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -19,10 +19,12 @@ import java.util.Map;
 public class SearchService {
     private final RestTemplate http;
     private final AppProps props;
+    private final GenreService genreService;
 
-    public SearchService(RestTemplate http, AppProps props) {
+    public SearchService(RestTemplate http, AppProps props, GenreService genreService) {
         this.http = http;
         this.props = props;
+        this.genreService = genreService;
     }
 
     public List<BookDTO> searchBooks(SearchQuery q) {
@@ -59,9 +61,9 @@ public class SearchService {
             dto.setTitle((String) m.get("title"));
             dto.setAuthor((String) m.get("author"));
             dto.setDescription((String) m.get("description"));
-            //dto.setGenre((String) m.get("genres")); add id here later
+            dto.setGenre((String) m.get("genres"));
+
             dto.setPublisher((String) m.get("publisher"));
-            dto.setIsbn((String) m.get("isbn"));
             //dto.setLinkToBook((String) m.get("linkToBook")); в дто нет такого поля
             out.add(dto);
         }
@@ -93,7 +95,6 @@ public class SearchService {
             dto.setDescription((String) src.get("description"));
             //dto.setGenre((String) src.get("genres")); fix to id
             dto.setPublisher((String) src.get("publisher"));
-            dto.setIsbn((String) src.get("isbn"));
             //dto.setLinkToBook((String) src.get("linkToBook")); no such method at all
             out.add(dto);
         }

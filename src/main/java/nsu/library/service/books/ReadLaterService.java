@@ -1,7 +1,7 @@
 package nsu.library.service.books;
 
 import lombok.RequiredArgsConstructor;
-import nsu.library.dto.ReadLaterBookDTO;
+import nsu.library.dto.list.ReadLaterBookDTO;
 import nsu.library.entity.Book;
 import nsu.library.entity.ReadLater;
 import nsu.library.repository.BookRepository;
