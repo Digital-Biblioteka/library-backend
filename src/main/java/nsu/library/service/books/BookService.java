@@ -5,7 +5,9 @@ import nsu.library.dto.book.BookDTO;
 import nsu.library.entity.Book;
 import nsu.library.entity.Genre;
 import nsu.library.repository.BookRepository;
+import nsu.library.repository.GenreRepository;
 import nsu.library.service.minio.MinioService;
+import nsu.library.service.search.SearchIndexClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +22,8 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookImport bookImport;
     private final MinioService minioService;
+    private final GenreRepository genreRepository;
+    private final SearchIndexClient searchIndexClient;
     private final GenreService genreService;
 
     /**
@@ -39,8 +43,9 @@ public class BookService {
         }
 
         Book book = createBookFromDTO(bookDTO, bookId);
-        bookRepository.save(book);
-        return book;
+        Book saved = bookRepository.save(book);
+        searchIndexClient.indexBook(saved);
+        return saved;
     }
 
     /**
@@ -69,8 +74,9 @@ public class BookService {
             minioService.loadBookCover(cover, bookId);
         }
 
-        bookRepository.save(ourBook);
-        return ourBook;
+        Book saved = bookRepository.save(ourBook);
+        searchIndexClient.indexBook(saved);
+        return saved;
     }
 
     /**
@@ -86,10 +92,6 @@ public class BookService {
         book.setAuthor(bookDTO.getAuthor());
         book.setDescription(bookDTO.getDescription());
         book.setPublisher(bookDTO.getPublisher());
-//        if (bookDTO.getGenreId()!= null) {
-//            Genre genre = genreRepository.getReferenceById(bookDTO.getGenreId());
-//            book.setGenre(genre);
-//        } fix this
         if (bookDTO.getGenre() != null) {
             Genre genre = genreService.GetGenreByName(bookDTO.getGenre());
             if (genre == null) {

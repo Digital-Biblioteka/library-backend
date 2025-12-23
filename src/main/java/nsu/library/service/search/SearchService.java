@@ -1,8 +1,9 @@
- package nsu.library.service.books;
+ package nsu.library.service.search;
 
 import nsu.library.config.AppProps;
 import nsu.library.dto.search.SearchQuery;
 import nsu.library.dto.book.BookDTO;
+import nsu.library.service.books.GenreService;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
