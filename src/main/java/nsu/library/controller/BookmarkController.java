@@ -25,7 +25,7 @@ public class BookmarkController {
      * @return created bookmark
      */
     @PostMapping("/{bookId}")
-    public Bookmark addBookmark(@PathVariable Long bookId, Authentication auth, BookmarkDTO dto) {
+    public Bookmark addBookmark(@PathVariable Long bookId, Authentication auth, @RequestBody BookmarkDTO dto) {
         if (auth == null) {
             throw new AccessDeniedException("User not logged in");
         }

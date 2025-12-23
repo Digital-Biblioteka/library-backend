@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Genre {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;

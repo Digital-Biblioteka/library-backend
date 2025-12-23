@@ -3,7 +3,6 @@ package nsu.library.controller;
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.review.ReviewDTO;
 import nsu.library.entity.Review;
-import nsu.library.entity.User;
 import nsu.library.security.CustomUserDetails;
 import nsu.library.service.books.ReviewsService;
 import org.springframework.security.core.Authentication;
