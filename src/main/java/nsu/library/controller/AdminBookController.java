@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import nsu.library.dto.book.BookDTO;
 import nsu.library.dto.book.addBookDTO;
 import nsu.library.service.books.BookService;
+import nsu.library.service.search.SearchIndexClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import nsu.library.entity.Book;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminBookController {
     private final BookService bookService;
+    private final SearchIndexClient searchIndexClient;
 
     @GetMapping("admin/books")
     public List<Book> getBooks() {
@@ -63,4 +65,12 @@ public class AdminBookController {
         return bookService.editBook(id, dto);
     }
 
+    @GetMapping("admin/books/elastic")
+    public List<Book> putBooksInElastic() {
+        List<Book> books = getBooks();
+        for (Book book : books) {
+            searchIndexClient.indexBook(book);
+        }
+        return books;
+    }
 }
