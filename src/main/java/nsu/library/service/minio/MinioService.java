@@ -40,6 +40,7 @@ public class MinioService {
         String url = null;
         String linkToBook;
         Book book = bookRepository.findById(id).orElse(null);
+        System.out.println(book);
         if (book == null) {
             linkToBook = "hitman.epub";
         } else {
