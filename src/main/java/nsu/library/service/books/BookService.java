@@ -3,6 +3,7 @@ package nsu.library.service.books;
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.book.BookDTO;
 import nsu.library.entity.Book;
+import nsu.library.entity.Genre;
 import nsu.library.repository.BookRepository;
 import nsu.library.repository.GenreRepository;
 import nsu.library.service.minio.MinioService;
@@ -23,6 +24,7 @@ public class BookService {
     private final MinioService minioService;
     private final GenreRepository genreRepository;
     private final SearchIndexClient searchIndexClient;
+    private final GenreService genreService;
 
     /**
      * Ручное добавление книги с заполнением всех полей и ее добавление в минио
@@ -36,7 +38,9 @@ public class BookService {
         minioService.loadBookEpub(file, bookId);
 
         byte[] cover = bookImport.getBookPreview(file);
-        minioService.loadBookCover(cover, bookId);
+        if (cover != null) {
+            minioService.loadBookCover(cover, bookId);
+        }
 
         Book book = createBookFromDTO(bookDTO, bookId);
         Book saved = bookRepository.save(book);
@@ -66,7 +70,9 @@ public class BookService {
         minioService.loadBookEpub(file, bookId);
 
         byte[] cover = bookImport.getBookPreview(file);
-        minioService.loadBookCover(cover, bookId);
+        if (cover != null) {
+            minioService.loadBookCover(cover, bookId);
+        }
 
         Book saved = bookRepository.save(ourBook);
         searchIndexClient.indexBook(saved);
@@ -85,15 +91,16 @@ public class BookService {
         book.setTitle(bookDTO.getTitle());
         book.setAuthor(bookDTO.getAuthor());
         book.setDescription(bookDTO.getDescription());
-        if (bookDTO.getIsbn() != null) {
-            book.setIsbn(bookDTO.getIsbn());
-        }
-        book.setIsbn("12345"); // zaglushka ebani
         book.setPublisher(bookDTO.getPublisher());
-//        if (bookDTO.getGenreId()!= null) {
-//            Genre genre = genreRepository.getReferenceById(bookDTO.getGenreId());
-//            book.setGenre(genre);
-//        } fix this
+        if (bookDTO.getGenre() != null) {
+            Genre genre = genreService.GetGenreByName(bookDTO.getGenre());
+            if (genre == null) {
+                genre = genreService.AddGenre(bookDTO.getGenre());
+            }
+            book.setGenre(genre);
+            System.out.println(genre);
+            System.out.println(genre.getId());
+        }
         book.setLinkToBook(link);
         return book;
     }
@@ -110,8 +117,9 @@ public class BookService {
         bookDTO.setAuthor(book.getAuthor());
         bookDTO.setDescription(book.getDescription());
         bookDTO.setPublisher(book.getPublisher());
+        bookDTO.setRating(book.getRating());
         if (book.getGenre() != null) {
-            bookDTO.setGenreId(book.getGenre().getId());
+            bookDTO.setGenre(book.getGenre().getGenreName());
         }
         return bookDTO;
     }
@@ -131,12 +139,8 @@ public class BookService {
         if (bookDTO.getDescription() != null) {
             book.setDescription(bookDTO.getDescription());
         }
-        if (bookDTO.getIsbn() != null) {
-            book.setIsbn(bookDTO.getIsbn());
-        }
-        if (bookDTO.getGenreId() != null) {
-            book.setGenre(genreRepository.findById(bookDTO.getGenreId())
-                    .orElseThrow());
+        if (bookDTO.getGenre() != null) {
+            book.setGenre(genreService.GetGenreByName(bookDTO.getGenre()));
         }
 
         if (bookDTO.getPublisher() != null) {
