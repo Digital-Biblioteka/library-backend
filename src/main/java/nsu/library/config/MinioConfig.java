@@ -13,9 +13,20 @@ public class MinioConfig {
      */
     @Bean
     public MinioClient minioClient() {
+        String endpoint = getenvOr("MINIO_ENDPOINT", "http://minio:9000");
+        if (!endpoint.contains("://")) {
+            endpoint = "http://" + endpoint;
+        }
+        String access = getenvOr("MINIO_ACCESS_KEY", getenvOr("MINIO_ROOT_USER", "minioadmin"));
+        String secret = getenvOr("MINIO_SECRET_KEY", getenvOr("MINIO_ROOT_PASSWORD", "minioadmin"));
         return MinioClient.builder()
-                .endpoint("http://localhost:9000")
-                .credentials("minioadmin", "minioadmin")
+                .endpoint(endpoint)
+                .credentials(access, secret)
                 .build();
+    }
+
+    private static String getenvOr(String k, String def) {
+        String v = System.getenv(k);
+        return v != null && !v.isEmpty() ? v : def;
     }
 }

@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import nsu.library.entity.Book;
 import nsu.library.exception.MinioErrorException;
 import nsu.library.repository.BookRepository;
-import org.apache.commons.collections4.Get;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +16,7 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -28,6 +28,32 @@ public class MinioService {
     String coverBucketName = "cover";
 
     private final MinioClient minioClient;
+
+    private MinioClient presignClient;
+
+    private static String getenvOr(String k, String def) {
+        String v = System.getenv(k);
+        return v != null && !v.isEmpty() ? v : def;
+    }
+
+    private MinioClient getPresignClient() {
+        if (presignClient != null) {
+            return presignClient;
+        }
+
+        String endpoint = getenvOr("MINIO_PUBLIC_ENDPOINT", "http://localhost:9000");
+        if (!endpoint.contains("://")) {
+            endpoint = "http://" + endpoint;
+        }
+        String access = getenvOr("MINIO_ACCESS_KEY", getenvOr("MINIO_ROOT_USER", "minioadmin"));
+        String secret = getenvOr("MINIO_SECRET_KEY", getenvOr("MINIO_ROOT_PASSWORD", "minioadmin"));
+
+        presignClient = MinioClient.builder()
+                .endpoint(endpoint)
+                .credentials(access, secret)
+                .build();
+        return presignClient;
+    }
 
     /**
      * Получаем ссылку на книгу в минио.
@@ -41,13 +67,14 @@ public class MinioService {
         String linkToBook;
         Book book = bookRepository.findById(id).orElse(null);
         System.out.println(book);
+
         if (book == null) {
             linkToBook = "hitman.epub";
         } else {
             linkToBook = book.getLinkToBook();
         }
         try {
-            url = minioClient.getPresignedObjectUrl(
+            url = getPresignClient().getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
                             .method(Method.GET).
                             bucket(epubBucketName).
@@ -112,12 +139,12 @@ public class MinioService {
         String imageName = bookId + ".jpg";
         try {
             minioClient.putObject(
-                PutObjectArgs.builder()
-                        .bucket(coverBucketName)
-                        .object(imageName)
-                        .stream(new ByteArrayInputStream(cover), cover.length, -1)
-                        .contentType("image/jpeg")
-                        .build());
+                    PutObjectArgs.builder()
+                            .bucket(coverBucketName)
+                            .object(imageName)
+                            .stream(new ByteArrayInputStream(cover), cover.length, -1)
+                            .contentType("image/jpeg")
+                            .build());
         } catch (MinioException e) {
             System.out.println("Error occurred: " + e);
             System.out.println("HTTP trace: " + e.httpTrace());
@@ -142,7 +169,7 @@ public class MinioService {
         String url;
         String imageName = bookLink + ".jpg";
         try {
-            url = minioClient.getPresignedObjectUrl(
+            url = getPresignClient().getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
                             .method(Method.GET).
                             bucket(coverBucketName).
@@ -163,6 +190,19 @@ public class MinioService {
         try {
             obj = minioClient.getObject(
                     GetObjectArgs.builder().bucket(epubBucketName).object(bookLink).build()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return obj;
+    }
+
+    public InputStream getRealCover(String bookLink) {
+        String imageName = bookLink + ".jpg";
+        GetObjectResponse obj;
+        try {
+            obj = minioClient.getObject(
+                    GetObjectArgs.builder().bucket(coverBucketName).object(imageName).build()
             );
         } catch (Exception e) {
             throw new RuntimeException(e);

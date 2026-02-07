@@ -32,8 +32,12 @@ public class ReaderService {
      */
     public String getBookPreview(Long bookId) {
         Book book = bookRepository.findById(bookId).orElseThrow();
-        String bookLink = book.getLinkToBook();
-        return minioService.getBookCover(bookLink);
+        return book.getLinkToBook();
+    }
+
+    public String getBookLink(Long bookId) {
+        Book book = bookRepository.findById(bookId).orElseThrow();
+        return book.getLinkToBook();
     }
 
 

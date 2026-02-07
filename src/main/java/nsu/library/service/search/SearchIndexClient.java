@@ -35,7 +35,7 @@ public class SearchIndexClient {
         body.put("author", book.getAuthor());
         body.put("publisher", book.getPublisher());
         body.put("description", book.getDescription());
-        body.put("genre", null);
+        body.put("genres", book.getGenre() != null ? book.getGenre().getGenreName() : null);
         body.put("linkToBook", book.getLinkToBook());
 
         HttpHeaders headers = new HttpHeaders();

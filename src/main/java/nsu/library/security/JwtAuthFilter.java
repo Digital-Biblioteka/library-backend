@@ -1,5 +1,6 @@
 package nsu.library.security;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,14 +57,28 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
         // Обрезаем префикс и получаем имя пользователя из токена
         var jwt = authHeader.substring(BEARER_PREFIX.length());
-        var username = jwtService.extractUserName(jwt);
+        final String username;
+        try {
+            username = jwtService.extractUserName(jwt);
+        } catch (JwtException | IllegalArgumentException e) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (StringUtils.hasLength(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = customUserDetailsService
                     .loadUserByUsername(username);
 
             // Если токен валиден, то аутентифицируем пользователя
-            if (jwtService.isTokenValid(jwt, userDetails)) {
+            final boolean tokenValid;
+            try {
+                tokenValid = jwtService.isTokenValid(jwt, userDetails);
+            } catch (JwtException | IllegalArgumentException e) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            if (tokenValid) {
                 System.out.println("VALID TOKEN");
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
 

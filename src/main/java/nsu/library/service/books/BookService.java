@@ -113,6 +113,7 @@ public class BookService {
      */
     public BookDTO convertBookToDTO(Book book) {
         BookDTO bookDTO = new BookDTO();
+        bookDTO.setId(book.getId());
         bookDTO.setTitle(book.getTitle());
         bookDTO.setAuthor(book.getAuthor());
         bookDTO.setDescription(book.getDescription());
