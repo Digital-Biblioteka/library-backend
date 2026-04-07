@@ -19,3 +19,4 @@
 #### from the root folder (digital-library) run:
 
   ` docker-compose -f library-backend/docker-compose.yml -f library-search/docker-compose.yml `
+
