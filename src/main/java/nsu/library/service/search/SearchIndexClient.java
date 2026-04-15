@@ -1,8 +1,8 @@
 package nsu.library.service.search;
 
 import lombok.RequiredArgsConstructor;
+import nsu.library.config.AppProps;
 import nsu.library.entity.Book;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,18 +16,17 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SearchIndexClient {
     private final RestTemplate restTemplate;
-
-    @Value("${search.service.url:http://localhost:8001}")
-    private String searchServiceUrl;
+    private final AppProps appProps;
 
     public void indexBook(Book book) {
         if (book == null || book.getId() == null) {
             return;
         }
 
-        String url = searchServiceUrl.endsWith("/")
-                ? searchServiceUrl + "index/book"
-                : searchServiceUrl + "/index/book";
+        String base = appProps.getSearchIndexUrl();
+        String url = base.endsWith("/")
+                ? base + "index/book"
+                : base + "/index/book";
 
         Map<String, Object> body = new HashMap<>();
         body.put("book_id", book.getId());
@@ -47,6 +46,23 @@ public class SearchIndexClient {
             restTemplate.postForEntity(url, request, Void.class);
         } catch (Exception e) {
             System.err.println("Failed to index book in search service: " + e.getMessage());
+        }
+    }
+
+    public void deleteBook(Long bookId) {
+        if (bookId == null) {
+            return;
+        }
+
+        String base = appProps.getSearchIndexUrl();
+        String url = base.endsWith("/")
+                ? base + "index/book/" + bookId
+                : base + "/index/book/" + bookId;
+
+        try {
+            restTemplate.delete(url);
+        } catch (Exception e) {
+            System.err.println("Failed to delete book from search service: " + e.getMessage());
         }
     }
 }

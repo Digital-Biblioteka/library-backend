@@ -127,6 +127,7 @@ public class BookService {
 
     public void deleteBook(Long id) {
         bookRepository.deleteById(id);
+        searchIndexClient.deleteBook(id);
     }
 
     public Book editBook(Long id, BookDTO bookDTO) {
@@ -148,6 +149,7 @@ public class BookService {
             book.setPublisher(bookDTO.getPublisher());
         }
         bookRepository.save(book);
+        searchIndexClient.indexBook(book);
         return book;
     }
 
