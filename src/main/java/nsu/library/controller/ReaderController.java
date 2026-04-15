@@ -36,16 +36,11 @@ public class ReaderController {
 
     private record ReadingPosDTO(Integer spineIdx) {}
 
-    private ResponseEntity<String> toChapterResponse(ChapterDTO dto) {
+    private ResponseEntity<ChapterDTO> toChapterResponse(ChapterDTO dto) {
         if (dto == null) {
             return ResponseEntity.notFound().build();
         }
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Spine-Index", String.valueOf(dto.getSpineIdx()));
-        headers.add("X-Total-Spines", String.valueOf(dto.getTotalSpines()));
-        headers.add("X-Has-Next", String.valueOf(dto.isHasNext()));
-        headers.add("X-Has-Prev", String.valueOf(dto.isHasPrev()));
-        return ResponseEntity.ok().headers(headers).body(dto.getHtml());
+        return ResponseEntity.ok(dto);
     }
 
     /**
@@ -161,14 +156,14 @@ public class ReaderController {
     }
 
     @PostMapping("{id}/toc/chapter")
-    public ResponseEntity<String> getHtmlChapterByTocItem(@PathVariable Long id, @RequestBody TocItemDTO tocItemDTO) {
+    public ResponseEntity<ChapterDTO> getHtmlChapterByTocItem(@PathVariable Long id, @RequestBody TocItemDTO tocItemDTO) {
         ChapterDTO dto = readerService.getHtmlChapterByTocItem(id, tocItemDTO);
         return toChapterResponse(dto);
     }
 
     @Operation(summary = "Get a chapter of book by spine index")
     @GetMapping("/{id}/chapter/{spineIdx}")
-    public ResponseEntity<String> getChapter(@PathVariable Long id, @PathVariable int spineIdx) {
+    public ResponseEntity<ChapterDTO> getChapter(@PathVariable Long id, @PathVariable int spineIdx) {
         ChapterDTO dto = readerService.getHtmlChapterBySpineIdx(id, spineIdx);
         return toChapterResponse(dto);
     }
