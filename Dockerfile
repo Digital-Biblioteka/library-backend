@@ -1,7 +1,9 @@
-FROM eclipse-temurin:21-jdk
-
+FROM eclipse-temurin:21-jdk AS build
 WORKDIR /library
+COPY . .
+RUN sed -i 's/\r$//' gradlew && sh gradlew bootJar --no-daemon -x test
 
-COPY ./build/libs/library-backend-0.0.1-SNAPSHOT.jar .
-
-ENTRYPOINT ["java", "-jar", "library-backend-0.0.1-SNAPSHOT.jar"]
+FROM eclipse-temurin:21-jre
+WORKDIR /library
+COPY --from=build /library/build/libs/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]

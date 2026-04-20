@@ -2,7 +2,7 @@ package nsu.library.controller;
 
 import nsu.library.dto.book.BookDTO;
 import nsu.library.dto.search.SearchQuery;
-import nsu.library.service.books.SearchService;
+import nsu.library.service.search.SearchService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,8 +1,9 @@
- package nsu.library.service.books;
+ package nsu.library.service.search;
 
 import nsu.library.config.AppProps;
 import nsu.library.dto.search.SearchQuery;
 import nsu.library.dto.book.BookDTO;
+import nsu.library.service.books.GenreService;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -58,6 +59,19 @@ public class SearchService {
         if (arr == null) return out;
         for (Map<String, Object> m : arr) {
             BookDTO dto = new BookDTO();
+            Object bookId = m.get("book_id");
+            if (bookId == null) {
+                bookId = m.get("id");
+            }
+            if (bookId instanceof Number n) {
+                dto.setId(n.longValue());
+            } else if (bookId instanceof String s) {
+                try {
+                    dto.setId(Long.parseLong(s));
+                } catch (NumberFormatException ignored) {
+                    // ignore
+                }
+            }
             dto.setTitle((String) m.get("title"));
             dto.setAuthor((String) m.get("author"));
             dto.setDescription((String) m.get("description"));
@@ -90,10 +104,23 @@ public class SearchService {
             Map<String, Object> src = (Map<String, Object>) h.get("_source");
             if (src == null) continue;
             BookDTO dto = new BookDTO();
+            Object bookId = src.get("book_id");
+            if (bookId == null) {
+                bookId = src.get("id");
+            }
+            if (bookId instanceof Number n) {
+                dto.setId(n.longValue());
+            } else if (bookId instanceof String s) {
+                try {
+                    dto.setId(Long.parseLong(s));
+                } catch (NumberFormatException ignored) {
+                    // ignore
+                }
+            }
             dto.setTitle((String) src.get("title"));
             dto.setAuthor((String) src.get("author"));
             dto.setDescription((String) src.get("description"));
-            //dto.setGenre((String) src.get("genres")); fix to id
+            dto.setGenre((String) src.get("genres"));
             dto.setPublisher((String) src.get("publisher"));
             //dto.setLinkToBook((String) src.get("linkToBook")); no such method at all
             out.add(dto);

@@ -127,7 +127,7 @@ public class BookImport {
     }
 
     public SpineReference getSpineByIdx(List<SpineReference> spines, int spineIdx) {
-        if (spineIdx > 0 && spineIdx < spines.size()) {
+        if (spineIdx >= 0 && spineIdx < spines.size()) {
             return spines.get(spineIdx);
         }
         return null;

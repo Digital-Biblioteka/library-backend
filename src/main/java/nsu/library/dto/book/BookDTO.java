@@ -10,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookDTO {
+    Long id;
     String title;
     String author;
     String description;
