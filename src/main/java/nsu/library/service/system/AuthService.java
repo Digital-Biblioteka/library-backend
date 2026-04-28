@@ -60,7 +60,6 @@ public class AuthService {
 
         var user = customUserDetailsService.getByEmail(request.getEmail());
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
         var jwt = jwtService.generateToken(user);
         return new JwtAuthResponse(jwt);
     }
