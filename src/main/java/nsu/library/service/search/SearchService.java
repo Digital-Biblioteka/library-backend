@@ -1,6 +1,8 @@
  package nsu.library.service.search;
 
 import nsu.library.config.AppProps;
+import nsu.library.dto.search.ContentSearchQuery;
+import nsu.library.dto.search.ContentSearchResult;
 import nsu.library.dto.search.SearchQuery;
 import nsu.library.dto.book.BookDTO;
 import nsu.library.service.books.GenreService;
@@ -34,6 +36,34 @@ public class SearchService {
             return searchBooksExternal(delegate, q);
         }
         return searchBooksBM25TopN(q.query(), 20);
+    }
+
+    public List<ContentSearchResult> searchContent(ContentSearchQuery q) {
+        String url = props.getSearchContentUrl();
+        if (url == null || url.isBlank()) {
+            return List.of();
+        }
+        HttpHeaders h = new HttpHeaders();
+        h.setContentType(MediaType.APPLICATION_JSON);
+        ResponseEntity<List> resp = http.postForEntity(url, new HttpEntity<>(q, h), List.class);
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> arr = (List<Map<String, Object>>) resp.getBody();
+        List<ContentSearchResult> out = new ArrayList<>();
+        if (arr == null) return out;
+        for (Map<String, Object> m : arr) {
+            ContentSearchResult r = new ContentSearchResult();
+            r.setBookId(String.valueOf(m.getOrDefault("book_id", "")));
+            r.setTitle((String) m.getOrDefault("title", ""));
+            r.setAuthor((String) m.getOrDefault("author", ""));
+            r.setChapter((String) m.getOrDefault("chapter", ""));
+            r.setChapterIndex(m.get("chapter_index") instanceof Number n ? n.intValue() : 0);
+            r.setSpineIndex(m.get("spine_index") instanceof Number n ? n.intValue() : -1);
+            r.setParagraphIndex(m.get("paragraph_index") instanceof Number n ? n.intValue() : 0);
+            r.setTextSnippet((String) m.getOrDefault("text_snippet", ""));
+            r.setScore(m.get("score") instanceof Number n ? n.doubleValue() : 0.0);
+            out.add(r);
+        }
+        return out;
     }
 
     private List<BookDTO> searchBooksBM25TopN(String query, int size) {
