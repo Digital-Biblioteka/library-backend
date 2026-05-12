@@ -44,3 +44,4 @@ app:
   search:
     url: http://search-python:8001/search/books
     index-url: http://search-python:8001
+    content-url: http://search-python:8001/search/content

@@ -18,4 +18,7 @@ public class AppProps {
 
     @Value("${app.search.index-url:http://localhost:8001}")
     private String searchIndexUrl;
+
+    @Value("${app.search.content-url:http://localhost:8001/search/content}")
+    private String searchContentUrl;
 }
