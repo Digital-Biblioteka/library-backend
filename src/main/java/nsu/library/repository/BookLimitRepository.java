@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BookLimitRepository extends JpaRepository<BookLimit, Long> {
     BookLimit findByBookAndGroup(Book book, Group group);
+    BookLimit findByBook_IdAndGroup_Id(Long bookId, String groupId);
 }

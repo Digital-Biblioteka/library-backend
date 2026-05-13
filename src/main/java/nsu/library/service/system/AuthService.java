@@ -31,15 +31,15 @@ public class AuthService {
      * @return токен
      */
     public JwtAuthResponse signUp(SignUpDTO request) {
-        if (userRepository.getUsersByUsername(request.getUsername()) != null) {
-            throw new IllegalArgumentException("Пользователь с таким именем уже существует");
+        if (userRepository.getUsersByEmail(request.getEmail()) != null) {
+            throw new IllegalArgumentException("Пользователь с таким именем уже зарегистрирован");
         }
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(User.ROLE.ROLE_USER);
         user.setEmail(request.getEmail());
-        userRepository.save(user); //.......bruh
+        userRepository.save(user); //.......bruh ??
         System.out.println("user created!");
         CustomUserDetails userDetails = new CustomUserDetails(user);
         var jwt = jwtService.generateToken(userDetails);

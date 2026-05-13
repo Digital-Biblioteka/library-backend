@@ -24,4 +24,14 @@ public class BookAccessRequest {
     @ManyToOne
     @JoinColumn(name="group_id", referencedColumnName = "id", nullable = false)
     Group group;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    RequestStatus status;
+
+    public enum RequestStatus {
+        PENDING,
+        APPROVED,
+        REJECTED,
+    }
 }

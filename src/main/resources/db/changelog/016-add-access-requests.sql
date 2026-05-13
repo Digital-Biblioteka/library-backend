@@ -6,4 +6,4 @@ CREATE TABLE IF NOT EXISTS access_requests(
     user_id bigint NOT NULL REFERENCES users(id),
     group_id uuid NOT NULL REFERENCES groups(id)
 )
---rollback DROP TABLE IF EXISTS access_requests
+--rollback DROP TABLE IF EXISTS access_requests;

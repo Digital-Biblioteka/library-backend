@@ -38,7 +38,7 @@ public class GroupService {
     }
 
     @Transactional
-    public void AddUserToGroup(Long userID, String groupID) {
+    public UserGroup AddUserToGroup(Long userID, String groupID) {
         if (!userRepository.existsById(userID)) {
             throw new EntityNotFoundException("User with ID " + userID + " not found");
         }
@@ -54,7 +54,7 @@ public class GroupService {
         newUserGroup.setUser(user);
         newUserGroup.setGroup(group);
 
-        userGroupRepository.save(newUserGroup);
+        return userGroupRepository.save(newUserGroup);
     }
 
     @Transactional
