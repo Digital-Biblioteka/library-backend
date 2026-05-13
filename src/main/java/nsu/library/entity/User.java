@@ -2,7 +2,6 @@ package nsu.library.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Entity
@@ -28,6 +27,6 @@ public class User {
     private ROLE role;
 
     public enum ROLE {
-        ROLE_USER, ROLE_ADMIN
+        ROLE_USER, ROLE_ADMIN, ROLE_LIBRARIAN
     }
 }

@@ -58,7 +58,7 @@ public class BookmarkController {
      * @return edited bookmark
      */
     @PutMapping("/{id}")
-    public Bookmark editBookmark(@PathVariable Long id, Authentication auth, BookmarkDTO dto) {
+    public Bookmark editBookmark(@PathVariable Long id, Authentication auth, @RequestBody BookmarkDTO dto) {
         if (auth == null) {
             throw new AccessDeniedException("User not logged in");
         }
