@@ -21,8 +21,13 @@ public class AdminBookController {
     private final BookService bookService;
     private final SearchIndexClient searchIndexClient;
 
-    @GetMapping("admin/books")
+    @GetMapping("books")
     public List<Book> getBooks() {
+        return bookService.getBooks();
+    }
+
+    @GetMapping("admin/books")
+    public List<Book> getBooksAdmin() {
         return bookService.getBooks();
     }
 

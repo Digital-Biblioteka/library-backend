@@ -148,8 +148,8 @@ databaseChangeLog:
       file: db/changelog/fix-delete-cascade-reading-pos.yaml
   - include:
       file: db/changelog/remove-isbn-add-rating.yaml
-
-
+  - include:
+      file: db/changelog/widen-description-and-author.yaml
 
 
 

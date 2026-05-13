@@ -1,10 +1,13 @@
- package nsu.library.service.search;
+package nsu.library.service.search;
 
 import nsu.library.config.AppProps;
 import nsu.library.dto.search.ContentSearchQuery;
 import nsu.library.dto.search.ContentSearchResult;
 import nsu.library.dto.search.SearchQuery;
 import nsu.library.dto.book.BookDTO;
+import nsu.library.entity.Book;
+import nsu.library.repository.BookRepository;
+import nsu.library.repository.ReviewRepository;
 import nsu.library.service.books.GenreService;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,29 +16,92 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SearchService {
     private final RestTemplate http;
     private final AppProps props;
     private final GenreService genreService;
+    private final ReviewRepository reviewRepository;
+    private final BookRepository bookRepository;
 
-    public SearchService(RestTemplate http, AppProps props, GenreService genreService) {
+    public SearchService(RestTemplate http, AppProps props, GenreService genreService,
+                         ReviewRepository reviewRepository, BookRepository bookRepository) {
         this.http = http;
         this.props = props;
         this.genreService = genreService;
+        this.reviewRepository = reviewRepository;
+        this.bookRepository = bookRepository;
     }
 
     public List<BookDTO> searchBooks(SearchQuery q) {
-        String delegate = props.getSearchUrl();
-        if (delegate != null && !delegate.isBlank()) {
-            return searchBooksExternal(delegate, q);
+        Set<Long> reviewBookIds = null;
+        if (q.reviewQuery() != null && !q.reviewQuery().isBlank()) {
+            List<Long> ids = reviewRepository.findBookIdsByReviewTextContaining(q.reviewQuery());
+            reviewBookIds = new HashSet<>(ids);
         }
-        return searchBooksBM25TopN(q.query(), 20);
+        final Set<Long> finalReviewBookIds = reviewBookIds;
+
+        boolean hasTextSearch = q.query() != null && !q.query().isBlank()
+                || q.title() != null && !q.title().isBlank()
+                || q.author() != null && !q.author().isBlank()
+                || q.genre() != null && !q.genre().isBlank()
+                || q.description() != null && !q.description().isBlank();
+
+        List<BookDTO> results;
+        if (hasTextSearch) {
+            String delegate = props.getSearchUrl();
+            if (delegate != null && !delegate.isBlank()) {
+                results = searchBooksExternal(delegate, q);
+            } else {
+                results = searchBooksBM25TopN(q.query(), 100);
+            }
+        } else {
+            results = bookRepository.findAll().stream()
+                    .map(this::toBookDTO)
+                    .collect(Collectors.toList());
+        }
+
+        if (finalReviewBookIds != null) {
+            results = results.stream()
+                    .filter(b -> finalReviewBookIds.contains(b.getId()))
+                    .collect(Collectors.toList());
+        }
+
+        if (q.minRating() != null && q.minRating() > 0) {
+            List<Object[]> avgRatings = reviewRepository.findAverageRatingPerBook();
+            Map<Long, Double> bookAvgRating = new HashMap<>();
+            for (Object[] row : avgRatings) {
+                Long bookId = (Long) row[0];
+                Double avg = row[1] instanceof Number n ? n.doubleValue() : 0.0;
+                bookAvgRating.put(bookId, avg);
+            }
+            double minR = q.minRating();
+            results = results.stream()
+                    .filter(b -> {
+                        Double avg = bookAvgRating.get(b.getId());
+                        return avg != null && avg >= minR;
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        return results;
+    }
+
+    private BookDTO toBookDTO(Book book) {
+        BookDTO dto = new BookDTO();
+        dto.setId(book.getId());
+        dto.setTitle(book.getTitle());
+        dto.setAuthor(book.getAuthor());
+        dto.setDescription(book.getDescription());
+        dto.setPublisher(book.getPublisher());
+        dto.setRating(book.getRating());
+        if (book.getGenre() != null) {
+            dto.setGenre(book.getGenre().getGenreName());
+        }
+        return dto;
     }
 
     public List<ContentSearchResult> searchContent(ContentSearchQuery q) {
@@ -99,16 +165,13 @@ public class SearchService {
                 try {
                     dto.setId(Long.parseLong(s));
                 } catch (NumberFormatException ignored) {
-                    // ignore
                 }
             }
             dto.setTitle((String) m.get("title"));
             dto.setAuthor((String) m.get("author"));
             dto.setDescription((String) m.get("description"));
             dto.setGenre((String) m.get("genres"));
-
             dto.setPublisher((String) m.get("publisher"));
-            //dto.setLinkToBook((String) m.get("linkToBook")); в дто нет такого поля
             out.add(dto);
         }
         return out;
@@ -144,7 +207,6 @@ public class SearchService {
                 try {
                     dto.setId(Long.parseLong(s));
                 } catch (NumberFormatException ignored) {
-                    // ignore
                 }
             }
             dto.setTitle((String) src.get("title"));
@@ -152,7 +214,6 @@ public class SearchService {
             dto.setDescription((String) src.get("description"));
             dto.setGenre((String) src.get("genres"));
             dto.setPublisher((String) src.get("publisher"));
-            //dto.setLinkToBook((String) src.get("linkToBook")); no such method at all
             out.add(dto);
         }
         return out;

@@ -55,6 +55,18 @@ public class ReaderService {
         return bookImport.GetTableOfContents(realBook);
     }
 
+    private String fixEncoding(byte[] html) {
+        String s = new String(html, StandardCharsets.UTF_8);
+        System.out.println("Original UTF-8 string (first 200 chars): " + s.substring(0, Math.min(200, s.length())));
+        
+        if (s.contains("ï¿½") || s.contains("Ð") || s.contains("Ñ") || s.contains("Ã") || s.contains("Â")) {
+            String fixed = new String(s.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+            System.out.println("Fixed string (first 200 chars): " + fixed.substring(0, Math.min(200, fixed.length())));
+            return fixed;
+        }
+        return s;
+    }
+
     public ChapterDTO getHtmlChapterByTocItem(Long bookId, TocItemDTO tocItemDTO) {
         BookWrapper bookWrapper = readerCacheService.getBookWrapper(bookId);
         byte[] html = null;
@@ -67,7 +79,7 @@ public class ReaderService {
             return null;
         }
         ChapterDTO dto = new ChapterDTO();
-        dto.setHtml(new String(html, StandardCharsets.UTF_8));
+        dto.setHtml(fixEncoding(html));
         int idx = bookWrapper.getSpines().indexOf(ref);
         dto.setSpineIdx(idx);
         if (idx > 0) {
@@ -96,7 +108,7 @@ public class ReaderService {
             return null;
         }
         ChapterDTO dto = new ChapterDTO();
-        dto.setHtml(new String(html, StandardCharsets.UTF_8));
+        dto.setHtml(fixEncoding(html));
         if (spineIdx > 0) {
             dto.setHasPrev(true);
         }

@@ -5,5 +5,7 @@ public record SearchQuery(
         String title,
         String author,
         String genre,
-        String description
+        String description,
+        Double minRating,
+        String reviewQuery
 ) {}
