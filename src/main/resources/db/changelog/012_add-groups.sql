@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset add-groups
+--changeset Alina:add-groups
 create table groups (
     id UUID PRIMARY KEY ,
     librarian_id int8 REFERENCES users(id),
@@ -9,7 +9,7 @@ create table groups (
 );
 --rollback drop table groups;
 
---changeset add user-group table
+--changeset Alina:add user-group table
 CREATE TABLE user_group(
     user_id int8 NOT NULL REFERENCES users(id),
     group_id uuid NOT NULL REFERENCES groups(id),

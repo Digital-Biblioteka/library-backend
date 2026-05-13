@@ -150,3 +150,11 @@ databaseChangeLog:
       file: db/changelog/remove-isbn-add-rating.yaml
   - include:
       file: db/changelog/012_add-groups.sql
+  - include:
+      file: db/changelog/013-add-book-permissions.sql
+  - include:
+      file: db/changelog/014-add-book-limits.sql
+  - include:
+      file: db/changelog/015-add-timestamp-last-read-table.sql
+  - include:
+      file: db/changelog/016-add-access-requests.sql
