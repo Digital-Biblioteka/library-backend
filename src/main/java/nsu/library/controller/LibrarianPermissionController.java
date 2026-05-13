@@ -29,7 +29,7 @@ public class LibrarianPermissionController {
     private final GroupService groupService;
 
     //TODO: юзер делает реквест и библиотекарь его аппрувит по идее? дто нужна
-    @GetMapping("requests/groups/{groupID}")
+    @GetMapping("/requests/groups/{groupID}")
     public List<BookAccessRequest> ListAccessRequestsByGroup(@PathVariable String groupID, Authentication auth) {
         if (auth == null) {
             throw new AccessDeniedException("User not logged in");
@@ -96,6 +96,4 @@ public class LibrarianPermissionController {
 
         return groupService.AddUserToGroup(req.getUserID(), req.getGroupID());
     }
-
-
 }
