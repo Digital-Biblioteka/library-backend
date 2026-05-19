@@ -10,6 +10,7 @@ import nsu.library.entity.User;
 import nsu.library.entity.UserGroup;
 import nsu.library.security.CustomUserDetails;
 import nsu.library.service.bookpermissions.AccessControlService;
+import nsu.library.service.bookpermissions.PermissionService;
 import nsu.library.service.groups.GroupService;
 import nsu.library.service.user.UserService;
 import org.springframework.security.access.AccessDeniedException;
@@ -26,6 +27,7 @@ public class LibrarianPermissionController {
     private final AccessControlService accessControlService;
     private final GroupService groupService;
     private final UserService userService;
+    private final PermissionService permissionService;
 
     //TODO: юзер делает реквест и библиотекарь его аппрувит по идее? дто нужна
     @Operation(summary = "Получить список запросов на доступ своей группы")
@@ -52,6 +54,8 @@ public class LibrarianPermissionController {
         }
 
         RequireLibrarianAccess(request.getGroup(), user);
+
+        permissionService.GiveBookPermission(request.getBook().getId(), request.getUser().getId(), request.getGroup().getId());
 
         request.setStatus(BookAccessRequest.RequestStatus.APPROVED);
 

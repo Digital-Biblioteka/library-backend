@@ -40,6 +40,10 @@ public class LimitService {
         return bookLimitRepository.findByBook_IdAndGroup_Id(bookID, groupID);
     }
 
+    public List<BookLimit> GetBookLimits() {
+        return bookLimitRepository.findAll();
+    }
+
     public List<BookLimit> GetBookLimitsForGroup(String groupID) {
         Group group = groupService.getGroupById(groupID);
         return bookLimitRepository.findBookLimitsByGroup(group);
