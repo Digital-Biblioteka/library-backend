@@ -4,5 +4,8 @@ import nsu.library.entity.UserGroup;
 import nsu.library.util.UserGroupId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface UserGroupRepository extends JpaRepository<UserGroup, UserGroupId> {
+    List<UserGroup> findUserGroupByGroup_Librarian_Id(Long id);
 }

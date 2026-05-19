@@ -9,8 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AccessRequest {
-    Long bookID;
-    Long userID;
+public class AccessRequestDTO {
     String groupID;
 }

@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface AccessRequestRepository extends JpaRepository<BookAccessRequest, String> {
     List<BookAccessRequest> getAccessRequestsByGroup_Id(String groupID);
+    List<BookAccessRequest> getAccessRequestsByUser_Id(Long userId);
 }

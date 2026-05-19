@@ -1,11 +1,11 @@
 package nsu.library.service.books;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.book.BookDTO;
 import nsu.library.entity.Book;
 import nsu.library.entity.Genre;
 import nsu.library.repository.BookRepository;
-import nsu.library.repository.GenreRepository;
 import nsu.library.service.minio.MinioService;
 import nsu.library.service.search.SearchIndexClient;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,6 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookImport bookImport;
     private final MinioService minioService;
-    private final GenreRepository genreRepository;
     private final SearchIndexClient searchIndexClient;
     private final GenreService genreService;
 
@@ -158,6 +157,6 @@ public class BookService {
     }
 
     public Book getBook(Long id) {
-        return bookRepository.findById(id).orElseThrow();
+        return bookRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 }

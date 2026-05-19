@@ -10,6 +10,7 @@ import nsu.library.repository.GroupRepository;
 import nsu.library.repository.UserGroupRepository;
 import nsu.library.repository.UserRepository;
 import nsu.library.util.UserGroupId;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +28,23 @@ public class GroupService {
 
     public Group getGroupById(String id) {
         return groupRepository.getReferenceById(id);
+    }
+
+    public UserGroup getUserGroupByUserAndGroup(Long userID, String groupID) {
+        if (!userRepository.existsById(userID)) {
+            throw new EntityNotFoundException("User with ID " + userID + " not found");
+        }
+        if (!groupRepository.existsById(groupID)) {
+            throw new EntityNotFoundException("Group with ID " + groupID + " not found");
+        }
+
+        return userGroupRepository.findById(new UserGroupId(userID, groupID)).
+                orElseThrow( () -> new AccessDeniedException("User with ID " + userID +
+                        "is not associated with group with ID " + groupID));
+    }
+
+    public List<UserGroup> GetUsersByLibrarian(Long librarianId) {
+        return userGroupRepository.findUserGroupByGroup_Librarian_Id(librarianId);
     }
 
     public List<Group> getAllGroups() {

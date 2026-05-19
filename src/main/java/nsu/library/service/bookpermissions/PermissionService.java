@@ -1,6 +1,5 @@
 package nsu.library.service.bookpermissions;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import nsu.library.entity.*;
 import nsu.library.repository.*;
@@ -16,32 +15,9 @@ import java.util.List;
 public class PermissionService {
     private final BookPermissionRepository bookPermissionRepository;
     private final BookLimitRepository bookLimitsRepository;
-    private final AccessRequestRepository accessRequestRepository;
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
     private final GroupRepository groupRepository;
-
-    public List<BookAccessRequest> GetAccessRequestsByGroup(String groupID) {
-        return accessRequestRepository.getAccessRequestsByGroup_Id(groupID);
-    }
-
-    public void DeleteAccessRequestsByID(String id) {
-        accessRequestRepository.deleteById(id);
-    }
-
-    public BookAccessRequest GetAccessRequestByID(String id) {
-        return accessRequestRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-    }
-
-    public BookAccessRequest AddAccessRequest(Long bookID, Long userID, String groupID) {
-        BookAccessRequest accessRequest = new BookAccessRequest();
-
-        accessRequest.setBook(bookRepository.getReferenceById(bookID));
-        accessRequest.setUser(userRepository.getReferenceById(userID));
-        accessRequest.setGroup(groupRepository.getReferenceById(groupID));
-
-        return accessRequestRepository.save(accessRequest);
-    }
 
     //TODO: при добавлении permission, нужно лимиты уменьшить
     @Transactional

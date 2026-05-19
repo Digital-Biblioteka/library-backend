@@ -2,13 +2,11 @@ package nsu.library.service.bookpermissions;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import nsu.library.entity.Book;
-import nsu.library.entity.BookPermission;
-import nsu.library.entity.User;
-import nsu.library.repository.BookLimitRepository;
-import nsu.library.repository.BookPermissionRepository;
-import nsu.library.repository.BookRepository;
-import nsu.library.repository.UserRepository;
+import nsu.library.entity.*;
+import nsu.library.repository.*;
+import nsu.library.service.books.BookService;
+import nsu.library.service.groups.GroupService;
+import nsu.library.service.user.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,10 +14,42 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class AccessControlService {
-    private final BookLimitRepository bookLimitRepository;
     private final UserRepository userRepository;
     private final BookPermissionRepository bookPermissionRepository;
     private final BookRepository bookRepository;
+    private final AccessRequestRepository accessRequestRepository;
+    private final BookService bookService;
+    private final GroupService groupService;
+    private final UserService userService;
+
+    public List<BookAccessRequest> GetAccessRequestsByGroup(String groupID) {
+        return accessRequestRepository.getAccessRequestsByGroup_Id(groupID);
+    }
+
+    public void DeleteAccessRequestsByID(String id) {
+        accessRequestRepository.deleteById(id);
+    }
+
+    public BookAccessRequest GetAccessRequestByID(String id) {
+        return accessRequestRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    }
+
+    public BookAccessRequest AddAccessRequest(Long bookID, Long userID, String groupID) {
+        Book book = bookService.getBook(bookID);
+        Group group = groupService.getGroupById(groupID);
+        UserGroup ug = groupService.getUserGroupByUserAndGroup(userID, groupID);
+        User user = userService.getUserById(userID);
+
+        BookAccessRequest accessRequest = new BookAccessRequest();
+        accessRequest.setBook(book);
+        accessRequest.setGroup(group);
+        accessRequest.setUser(user);
+        return accessRequestRepository.save(accessRequest);
+    }
+
+    public List<BookAccessRequest> GetAccessRequestsByUserId(Long userID) {
+        return accessRequestRepository.getAccessRequestsByUser_Id(userID);
+    }
 
     public List<BookPermission> ListBookPermissionsByUserId(Long userId) {
         User user = userRepository.findById(userId).orElse(null);
