@@ -3,6 +3,7 @@ package nsu.library.service.groups;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import nsu.library.dto.group.GroupDTO;
 import nsu.library.entity.Group;
 import nsu.library.entity.User;
 import nsu.library.entity.UserGroup;
@@ -13,6 +14,7 @@ import nsu.library.util.UserGroupId;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,12 +24,31 @@ public class GroupService {
     private final UserGroupRepository userGroupRepository;
     private final UserRepository userRepository;
 
-    public Group createGroup(Group group) {
+    public Group createGroup(Long librarianID, String name, String description) {
+        Group group = new Group();
+        User librarian = userRepository.findById(librarianID).orElseThrow(EntityNotFoundException::new);
+        group.setLibrarian(librarian);
+        group.setName(name);
+        group.setDescription(description);
+        return groupRepository.save(group);
+    }
+
+    public Group updateGroup(String groupID, GroupDTO req) {
+        Group group = groupRepository.findById(groupID).orElseThrow(EntityNotFoundException::new);
+        if (req.getLibrarianID() != null) {
+            group.setLibrarian(userRepository.findById(req.getLibrarianID()).orElseThrow(EntityNotFoundException::new));
+        }
+        if (req.getName() != null) {
+            group.setName(req.getName());
+        }
+        if (req.getDescription() != null) {
+            group.setDescription(req.getDescription());
+        }
         return groupRepository.save(group);
     }
 
     public Group getGroupById(String id) {
-        return groupRepository.getReferenceById(id);
+        return groupRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     public UserGroup getUserGroupByUserAndGroup(Long userID, String groupID) {
@@ -53,6 +74,15 @@ public class GroupService {
 
     public Group getGroupByName(String name) {
         return groupRepository.getGroupsByName(name);
+    }
+
+    public List<Group> getGroupsByUser(User user) {
+        List<UserGroup> userGroups = userGroupRepository.findByUser(user);
+        List<Group> groups = new ArrayList<>();
+        for (UserGroup userGroup : userGroups) {
+            groups.add(userGroup.getGroup());
+        }
+        return groups;
     }
 
     @Transactional

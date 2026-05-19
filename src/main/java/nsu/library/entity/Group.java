@@ -3,11 +3,13 @@ package nsu.library.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "groups")
 @RequiredArgsConstructor
 @Getter
+@Setter
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

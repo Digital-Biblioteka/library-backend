@@ -30,7 +30,7 @@ public class LibrarianPermissionController {
     //TODO: юзер делает реквест и библиотекарь его аппрувит по идее? дто нужна
     @Operation(summary = "Получить список запросов на доступ своей группы")
     @GetMapping("/requests/groups/{groupID}")
-    @PreAuthorize("hasRole('LIBRARIAN')")
+    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
     public List<BookAccessRequest> ListAccessRequestsByGroup(@PathVariable String groupID, @AuthenticationPrincipal CustomUserDetails user) {
         Group group = groupService.getGroupById(groupID);
         if (group == null) {
@@ -44,7 +44,7 @@ public class LibrarianPermissionController {
 
     @Operation(summary = "Одобрить запрос на доступ к книге")
     @PostMapping("/requests/{requestID}")
-    @PreAuthorize("hasRole('LIBRARIAN')")
+    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
     public BookAccessRequest ApproveRequest(@PathVariable String requestID, @AuthenticationPrincipal CustomUserDetails user) {
         BookAccessRequest request = accessControlService.GetAccessRequestByID(requestID);
         if  (request == null) {
@@ -80,7 +80,7 @@ public class LibrarianPermissionController {
 
     @Operation(summary = "Удалить пользователя из группы")
     @DeleteMapping("groups/{userId}")
-    @PreAuthorize("hasRole('LIBRARIAN')")
+    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
     public void DeleteUserFromGroup(@PathVariable String userId, @AuthenticationPrincipal CustomUserDetails user) {
         Group group = groupService.getGroupById(userId);
         RequireLibrarianAccess(group, user);
@@ -88,7 +88,7 @@ public class LibrarianPermissionController {
         groupService.RemoveUserFromGroup(user.getUser().getId(), group.getId());
     }
 
-    @PreAuthorize("hasRole('LIBRARIAN')")
+    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
     void RequireLibrarianAccess(Group group, CustomUserDetails user) {
         if (!user.getUser().getId().equals(group.getLibrarian().getId())) {
             throw new AccessDeniedException("Access denied. Does not have permission to access this request");
