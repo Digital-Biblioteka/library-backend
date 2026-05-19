@@ -52,6 +52,10 @@ public class UserService {
         return userRepository.findById(id).orElseThrow( () -> new EntityNotFoundException("Пользователя с " + id + "не существует"));
     }
 
+    public User getUserByEmail(String email) {
+        return userRepository.getUsersByEmail(email);
+    }
+
     public UserDTO convertDTO(User user) {
         return new UserDTO(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
     }
