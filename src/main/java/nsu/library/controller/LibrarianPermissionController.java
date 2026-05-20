@@ -70,16 +70,16 @@ public class LibrarianPermissionController {
     }
 
     @Operation(summary = "Добавить пользователя в группу")
-    @PostMapping("/groups")
+    @PostMapping("/groups/{groupID}")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    public UserGroup AddUserToGroup(@RequestBody AddUserToGroupDTO req, @AuthenticationPrincipal CustomUserDetails user) {
-        Group group = groupService.getGroupById(req.getGroupID());
+    public UserGroup AddUserToGroup(@PathVariable String groupID, @RequestBody AddUserToGroupDTO req, @AuthenticationPrincipal CustomUserDetails user) {
+        Group group = groupService.getGroupById(groupID);
         RequireLibrarianAccess(group, user);
         User addedUser = userService.getUserByEmail(req.getEmail());
         if (addedUser == null) {
             throw new EntityNotFoundException("User not found");
         }
-        return groupService.AddUserToGroup(addedUser.getId(), req.getGroupID());
+        return groupService.AddUserToGroup(addedUser.getId(), groupID);
     }
 
     @Operation(summary = "Удалить пользователя из группы")

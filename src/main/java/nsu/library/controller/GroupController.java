@@ -44,26 +44,26 @@ public class GroupController {
     }
 
     @Operation(summary = "Получить все группы")
-    @GetMapping
+    @GetMapping("")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<Group> GetGroups(@AuthenticationPrincipal CustomUserDetails user) {
         return groupService.getAllGroups();
     }
 
     @Operation(summary = "Добавить пользователя в группу")
-    @PostMapping("/groups")
+    @PostMapping("{groupID}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public UserGroup AddUserToGroup(@RequestBody AddUserToGroupDTO req, @AuthenticationPrincipal CustomUserDetails user) {
-        Group group = groupService.getGroupById(req.getGroupID());
+    public UserGroup AddUserToGroup(@PathVariable String groupID, @RequestBody AddUserToGroupDTO req, @AuthenticationPrincipal CustomUserDetails user) {
+        Group group = groupService.getGroupById(groupID);
         User addedUser = userService.getUserByEmail(req.getEmail());
         if (addedUser == null) {
             throw new EntityNotFoundException("User not found");
         }
-        return groupService.AddUserToGroup(addedUser.getId(), req.getGroupID());
+        return groupService.AddUserToGroup(addedUser.getId(), groupID);
     }
 
     @Operation(summary = "Удалить пользователя из группы")
-    @DeleteMapping("groups/{userId}")
+    @DeleteMapping("{userId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void DeleteUserFromGroup(@PathVariable String userId, @AuthenticationPrincipal CustomUserDetails user) {
         Group group = groupService.getGroupById(userId);
