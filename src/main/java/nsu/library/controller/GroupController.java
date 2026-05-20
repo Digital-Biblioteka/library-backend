@@ -20,6 +20,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequestMapping("api/groups")
 @RequiredArgsConstructor
@@ -53,7 +54,7 @@ public class GroupController {
     @Operation(summary = "Добавить пользователя в группу")
     @PostMapping("{groupID}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public UserGroup AddUserToGroup(@PathVariable String groupID, @RequestBody AddUserToGroupDTO req, @AuthenticationPrincipal CustomUserDetails user) {
+    public UserGroup AddUserToGroup(@PathVariable UUID groupID, @RequestBody AddUserToGroupDTO req, @AuthenticationPrincipal CustomUserDetails user) {
         Group group = groupService.getGroupById(groupID);
         User addedUser = userService.getUserByEmail(req.getEmail());
         if (addedUser == null) {
@@ -62,24 +63,25 @@ public class GroupController {
         return groupService.AddUserToGroup(addedUser.getId(), groupID);
     }
 
-    @Operation(summary = "Удалить пользователя из группы")
-    @DeleteMapping("{userId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void DeleteUserFromGroup(@PathVariable String userId, @AuthenticationPrincipal CustomUserDetails user) {
-        Group group = groupService.getGroupById(userId);
-
-        groupService.RemoveUserFromGroup(user.getUser().getId(), group.getId());
-    }
+    //TODO: fix this
+//    @Operation(summary = "Удалить пользователя из группы")
+//    @DeleteMapping("{groupId}")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    public void DeleteUserFromGroup(@PathVariable String groupId, @AuthenticationPrincipal CustomUserDetails user) {
+//        Group group = groupService.getGroupById(userId);
+//
+//        groupService.RemoveUserFromGroup(user.getUser().getId(), group.getId());
+//    }
 
     @PutMapping("/{groupID}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public Group UpdateGroup(@PathVariable String groupID, @RequestBody GroupDTO req, @AuthenticationPrincipal CustomUserDetails user) {
+    public Group UpdateGroup(@PathVariable UUID groupID, @RequestBody GroupDTO req, @AuthenticationPrincipal CustomUserDetails user) {
         return groupService.updateGroup(groupID, req);
     }
 
     @PostMapping("{groupID}/books/limits")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public BookLimit GiveGroupBooklimit(@PathVariable String groupID, @RequestBody BookLimitDTO req, @AuthenticationPrincipal CustomUserDetails user) {
+    public BookLimit GiveGroupBooklimit(@PathVariable UUID groupID, @RequestBody BookLimitDTO req, @AuthenticationPrincipal CustomUserDetails user) {
         return limitService.AddBookLimit(groupID, req.getBookID(), req.getLimit());
     }
 
@@ -91,7 +93,7 @@ public class GroupController {
 
     @GetMapping("{groupID}/books/limits")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public List<BookLimit> GetGroupBookLimits(@PathVariable String groupID) {
+    public List<BookLimit> GetGroupBookLimits(@PathVariable UUID groupID) {
         return limitService.GetBookLimitsForGroup(groupID);
     }
 

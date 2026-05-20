@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "groups")
 @RequiredArgsConstructor
@@ -13,7 +15,7 @@ import lombok.Setter;
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+    UUID id;
 
     @ManyToOne
     @JoinColumn(name = "librarian_id", referencedColumnName = "id")

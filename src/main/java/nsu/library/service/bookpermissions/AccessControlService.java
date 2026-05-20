@@ -10,6 +10,7 @@ import nsu.library.service.user.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -22,19 +23,19 @@ public class AccessControlService {
     private final GroupService groupService;
     private final UserService userService;
 
-    public List<BookAccessRequest> GetAccessRequestsByGroup(String groupID) {
+    public List<BookAccessRequest> GetAccessRequestsByGroup(UUID groupID) {
         return accessRequestRepository.getAccessRequestsByGroup_Id(groupID);
     }
 
-    public void DeleteAccessRequestsByID(String id) {
+    public void DeleteAccessRequestsByID(UUID id) {
         accessRequestRepository.deleteById(id);
     }
 
-    public BookAccessRequest GetAccessRequestByID(String id) {
+    public BookAccessRequest GetAccessRequestByID(UUID id) {
         return accessRequestRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
-    public BookAccessRequest AddAccessRequest(Long bookID, Long userID, String groupID) {
+    public BookAccessRequest AddAccessRequest(Long bookID, Long userID, UUID groupID) {
         Book book = bookService.getBook(bookID);
         Group group = groupService.getGroupById(groupID);
         UserGroup ug = groupService.getUserGroupByUserAndGroup(userID, groupID);

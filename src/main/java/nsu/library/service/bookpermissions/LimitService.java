@@ -11,6 +11,7 @@ import nsu.library.service.books.BookService;
 import nsu.library.service.groups.GroupService;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class LimitService {
     private final BookService bookService;
     private final GroupService groupService;
 
-    public BookLimit AddBookLimit(String groupID, Long bookID, Long limit) {
+    public BookLimit AddBookLimit(UUID groupID, Long bookID, Long limit) {
         BookLimit bookLimit = new BookLimit();
         Book book = bookService.getBook(bookID);
         Group group = groupService.getGroupById(groupID);
@@ -36,7 +37,7 @@ public class LimitService {
         return bookLimitRepository.save(bookLimit);
     }
 
-    public BookLimit GetBookLimit(String groupID, Long bookID) {
+    public BookLimit GetBookLimit(UUID groupID, Long bookID) {
         return bookLimitRepository.findByBook_IdAndGroup_Id(bookID, groupID);
     }
 
@@ -44,7 +45,7 @@ public class LimitService {
         return bookLimitRepository.findAll();
     }
 
-    public List<BookLimit> GetBookLimitsForGroup(String groupID) {
+    public List<BookLimit> GetBookLimitsForGroup(UUID groupID) {
         Group group = groupService.getGroupById(groupID);
         return bookLimitRepository.findBookLimitsByGroup(group);
     }

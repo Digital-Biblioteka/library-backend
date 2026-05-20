@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class GroupService {
         return groupRepository.save(group);
     }
 
-    public Group updateGroup(String groupID, GroupDTO req) {
+    public Group updateGroup(UUID groupID, GroupDTO req) {
         Group group = groupRepository.findById(groupID).orElseThrow(EntityNotFoundException::new);
         if (req.getLibrarianID() != null) {
             group.setLibrarian(userRepository.findById(req.getLibrarianID()).orElseThrow(EntityNotFoundException::new));
@@ -47,11 +48,11 @@ public class GroupService {
         return groupRepository.save(group);
     }
 
-    public Group getGroupById(String id) {
+    public Group getGroupById(UUID id) {
         return groupRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
-    public UserGroup getUserGroupByUserAndGroup(Long userID, String groupID) {
+    public UserGroup getUserGroupByUserAndGroup(Long userID, UUID groupID) {
         if (!userRepository.existsById(userID)) {
             throw new EntityNotFoundException("User with ID " + userID + " not found");
         }
@@ -86,7 +87,7 @@ public class GroupService {
     }
 
     @Transactional
-    public UserGroup AddUserToGroup(Long userID, String groupID) {
+    public UserGroup AddUserToGroup(Long userID, UUID groupID) {
         if (!userRepository.existsById(userID)) {
             throw new EntityNotFoundException("User with ID " + userID + " not found");
         }
@@ -106,7 +107,7 @@ public class GroupService {
     }
 
     @Transactional
-    public void RemoveUserFromGroup(Long userID, String groupID) {
+    public void RemoveUserFromGroup(Long userID, UUID groupID) {
         UserGroupId id = new UserGroupId(userID, groupID);
         if (!userGroupRepository.existsById(id)) {
             throw new EntityNotFoundException("User is not in group " + id);

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class PermissionService {
 
     //TODO: при добавлении permission, нужно лимиты уменьшить
     @Transactional
-    public BookPermission GiveBookPermission(Long bookID, Long userID, String groupID) {
+    public BookPermission GiveBookPermission(Long bookID, Long userID, UUID groupID) {
         BookPermission bookPermission = new BookPermission();
         bookPermission.setBook(bookRepository.getReferenceById(bookID));
         bookPermission.setUser(userRepository.getReferenceById(userID));

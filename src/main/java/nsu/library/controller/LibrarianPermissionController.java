@@ -19,6 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/librarian")
@@ -33,7 +34,7 @@ public class LibrarianPermissionController {
     @Operation(summary = "Получить список запросов на доступ своей группы")
     @GetMapping("/requests/groups/{groupID}")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    public List<BookAccessRequest> ListAccessRequestsByGroup(@PathVariable String groupID, @AuthenticationPrincipal CustomUserDetails user) {
+    public List<BookAccessRequest> ListAccessRequestsByGroup(@PathVariable UUID groupID, @AuthenticationPrincipal CustomUserDetails user) {
         Group group = groupService.getGroupById(groupID);
         if (group == null) {
             throw new EntityNotFoundException("Group not found");
@@ -47,7 +48,7 @@ public class LibrarianPermissionController {
     @Operation(summary = "Одобрить запрос на доступ к книге")
     @PostMapping("/requests/{requestID}")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    public BookAccessRequest ApproveRequest(@PathVariable String requestID, @AuthenticationPrincipal CustomUserDetails user) {
+    public BookAccessRequest ApproveRequest(@PathVariable UUID requestID, @AuthenticationPrincipal CustomUserDetails user) {
         BookAccessRequest request = accessControlService.GetAccessRequestByID(requestID);
         if  (request == null) {
             throw new EntityNotFoundException("Request not found");
@@ -72,7 +73,7 @@ public class LibrarianPermissionController {
     @Operation(summary = "Добавить пользователя в группу")
     @PostMapping("/groups/{groupID}")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    public UserGroup AddUserToGroup(@PathVariable String groupID, @RequestBody AddUserToGroupDTO req, @AuthenticationPrincipal CustomUserDetails user) {
+    public UserGroup AddUserToGroup(@PathVariable UUID groupID, @RequestBody AddUserToGroupDTO req, @AuthenticationPrincipal CustomUserDetails user) {
         Group group = groupService.getGroupById(groupID);
         RequireLibrarianAccess(group, user);
         User addedUser = userService.getUserByEmail(req.getEmail());
@@ -82,15 +83,16 @@ public class LibrarianPermissionController {
         return groupService.AddUserToGroup(addedUser.getId(), groupID);
     }
 
-    @Operation(summary = "Удалить пользователя из группы")
-    @DeleteMapping("groups/{userId}")
-    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    public void DeleteUserFromGroup(@PathVariable String userId, @AuthenticationPrincipal CustomUserDetails user) {
-        Group group = groupService.getGroupById(userId);
-        RequireLibrarianAccess(group, user);
-
-        groupService.RemoveUserFromGroup(user.getUser().getId(), group.getId());
-    }
+    //TODO: fix this
+//    @Operation(summary = "Удалить пользователя из группы")
+//    @DeleteMapping("groups/{userId}")
+//    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
+//    public void DeleteUserFromGroup(@PathVariable String userId, @AuthenticationPrincipal CustomUserDetails user) {
+//        Group group = groupService.getGroupById(userId);
+//        RequireLibrarianAccess(group, user);
+//
+//        groupService.RemoveUserFromGroup(user.getUser().getId(), group.getId());
+//    }
 
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
     void RequireLibrarianAccess(Group group, CustomUserDetails user) {
