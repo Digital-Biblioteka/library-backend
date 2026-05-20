@@ -158,3 +158,5 @@ databaseChangeLog:
       file: db/changelog/015-add-timestamp-last-read-table.sql
   - include:
       file: db/changelog/016-add-access-requests.sql
+  - include:
+      file: db/changelog/017-add-status_to_access_requests.sql
