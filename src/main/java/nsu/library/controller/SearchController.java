@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/search")
@@ -27,5 +28,12 @@ public class SearchController {
     @PostMapping("/content")
     public ResponseEntity<List<ContentSearchResult>> contentSearch(@RequestBody ContentSearchQuery query) {
         return ResponseEntity.ok(searchService.searchContent(query));
+    }
+
+    @GetMapping("/suggest")
+    public ResponseEntity<List<Map<String, Object>>> suggest(
+            @RequestParam(defaultValue = "") String prefix,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(searchService.suggest(prefix, size));
     }
 }

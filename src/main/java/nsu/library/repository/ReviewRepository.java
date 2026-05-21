@@ -16,4 +16,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("SELECT r.book.id FROM Review r WHERE LOWER(r.review_text) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<Long> findBookIdsByReviewTextContaining(@Param("query") String query);
+
+    @Query("SELECT r.book.id, r.review_text FROM Review r WHERE LOWER(r.review_text) LIKE LOWER(CONCAT('%', :query, '%'))")
+    List<Object[]> findBookReviewSnippetsByText(@Param("query") String query);
 }

@@ -1,6 +1,7 @@
 package nsu.library.service.books;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import nsu.library.dto.review.ReviewDTO;
 import nsu.library.entity.Book;
 import nsu.library.entity.Review;
@@ -14,15 +15,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * crud for reviews
- */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReviewsService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
+    private final ReviewIndexerService reviewIndexerService;
 
     /**
      * create review tied to both user and book.
@@ -40,7 +40,13 @@ public class ReviewsService {
         Book book = bookRepository.findById(bookId).orElseThrow();
         review.setUser(user);
         review.setBook(book);
-        return reviewRepository.save(review);
+        Review saved = reviewRepository.save(review);
+        try {
+            reviewIndexerService.indexReview(saved);
+        } catch (Exception e) {
+            log.warn("Failed to auto-index review {}: {}", saved.getId(), e.getMessage());
+        }
+        return saved;
     }
 
     public Review getReview(Long id) {
@@ -77,13 +83,24 @@ public class ReviewsService {
         if (dto.getComment() != null) {
             review.setReview_text(dto.getComment());
         }
-        return reviewRepository.save(review);
+        Review saved = reviewRepository.save(review);
+        try {
+            reviewIndexerService.indexReview(saved);
+        } catch (Exception e) {
+            log.warn("Failed to auto-reindex review {}: {}", saved.getId(), e.getMessage());
+        }
+        return saved;
     }
 
     public Review deleteReview(Long userId, Long id) {
         Review review = getReview(id);
         if (!Objects.equals(review.getUser().getId(), userId)) {
             throw new AccessDeniedException("You do not have permission to delete this review");
+        }
+        try {
+            reviewIndexerService.deleteReview(id);
+        } catch (Exception e) {
+            log.warn("Failed to auto-delete review {} from ES: {}", id, e.getMessage());
         }
         reviewRepository.delete(review);
         return review;

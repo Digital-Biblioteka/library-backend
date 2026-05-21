@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,11 +40,45 @@ public class SearchService {
 
     public List<BookDTO> searchBooks(SearchQuery q) {
         Set<Long> reviewBookIds = null;
+        Map<Long, List<String>> reviewSnippetsMap = null;
         if (q.reviewQuery() != null && !q.reviewQuery().isBlank()) {
-            List<Long> ids = reviewRepository.findBookIdsByReviewTextContaining(q.reviewQuery());
-            reviewBookIds = new HashSet<>(ids);
+            String reviewUrl = props.getSearchReviewUrl();
+            if (reviewUrl != null && !reviewUrl.isBlank()) {
+                try {
+                    HttpHeaders h = new HttpHeaders();
+                    h.setContentType(MediaType.APPLICATION_JSON);
+                    Map<String, Object> reviewBody = new HashMap<>();
+                    reviewBody.put("query", q.reviewQuery());
+                    reviewBody.put("size", 20);
+                    ResponseEntity<List> resp = http.postForEntity(reviewUrl, new HttpEntity<>(reviewBody, h), List.class);
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, Object>> reviewResults = (List<Map<String, Object>>) resp.getBody();
+                    if (reviewResults != null) {
+                        reviewBookIds = new HashSet<>();
+                        reviewSnippetsMap = new HashMap<>();
+                        for (Map<String, Object> r : reviewResults) {
+                            Object bid = r.get("book_id");
+                            if (bid != null) {
+                                Long bookId = bid instanceof Number n ? n.longValue() : Long.parseLong(bid.toString());
+                                reviewBookIds.add(bookId);
+                                String text = (String) r.getOrDefault("review_text", "");
+                                if (!text.isBlank()) {
+                                    reviewSnippetsMap.computeIfAbsent(bookId, k -> new ArrayList<>()).add(text);
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    List<Long> ids = reviewRepository.findBookIdsByReviewTextContaining(q.reviewQuery());
+                    reviewBookIds = new HashSet<>(ids);
+                }
+            } else {
+                List<Long> ids = reviewRepository.findBookIdsByReviewTextContaining(q.reviewQuery());
+                reviewBookIds = new HashSet<>(ids);
+            }
         }
         final Set<Long> finalReviewBookIds = reviewBookIds;
+        final Map<Long, List<String>> finalReviewSnippets = reviewSnippetsMap;
 
         boolean hasTextSearch = q.query() != null && !q.query().isBlank()
                 || q.title() != null && !q.title().isBlank()
@@ -85,6 +121,59 @@ public class SearchService {
                         return avg != null && avg >= minR;
                     })
                     .collect(Collectors.toList());
+        }
+
+        if (q.reviewQuery() != null && !q.reviewQuery().isBlank()) {
+            if (finalReviewSnippets != null) {
+                for (BookDTO dto : results) {
+                    List<String> snippets = finalReviewSnippets.get(dto.getId());
+                    if (snippets != null && !snippets.isEmpty()) {
+                        dto.setReviewSnippets(snippets);
+                    }
+                }
+            } else {
+                List<Object[]> reviewData = reviewRepository.findBookReviewSnippetsByText(q.reviewQuery());
+                String queryLower = q.reviewQuery().toLowerCase();
+                String[] queryTerms = queryLower.split("\\s+");
+                Map<Long, List<Map.Entry<String, Integer>>> bookScored = new HashMap<>();
+                for (Object[] row : reviewData) {
+                    Long bookId = (Long) row[0];
+                    String text = (String) row[1];
+                    if (text == null || text.isBlank()) continue;
+                    String textLower = text.toLowerCase();
+                    int score = 0;
+                    for (String term : queryTerms) {
+                        if (term.length() < 2) continue;
+                        int idx = 0;
+                        int cnt = 0;
+                        while ((idx = textLower.indexOf(term, idx)) != -1) {
+                            cnt++;
+                            idx += term.length();
+                        }
+                        score += cnt;
+                    }
+                    bookScored.computeIfAbsent(bookId, k -> new ArrayList<>()).add(Map.entry(text, score));
+                }
+                for (BookDTO dto : results) {
+                    List<Map.Entry<String, Integer>> scored = bookScored.get(dto.getId());
+                    if (scored != null) {
+                        scored.sort((a, b) -> b.getValue().compareTo(a.getValue()));
+                        List<String> sortedSnippets = scored.stream()
+                                .map(Map.Entry::getKey)
+                                .collect(Collectors.toList());
+                        dto.setReviewSnippets(sortedSnippets);
+                    }
+                }
+            }
+        }
+
+        if (q.sortOrder() != null && !q.sortOrder().isBlank()) {
+            Comparator<Double> ratingDir = q.sortOrder().equalsIgnoreCase("asc")
+                    ? Comparator.naturalOrder()
+                    : Comparator.reverseOrder();
+            Comparator<BookDTO> byRating = Comparator.comparing(
+                    BookDTO::getRating, Comparator.nullsLast(ratingDir));
+            results.sort(byRating);
         }
 
         return results;
@@ -130,6 +219,18 @@ public class SearchService {
             out.add(r);
         }
         return out;
+    }
+
+    public List<Map<String, Object>> suggest(String prefix, int size) {
+        String url = props.getSuggestUrl();
+        if (url == null || url.isBlank()) {
+            return List.of();
+        }
+        String fullUrl = url + "?prefix=" + java.net.URLEncoder.encode(prefix, java.nio.charset.StandardCharsets.UTF_8) + "&size=" + size;
+        ResponseEntity<List> resp = http.getForEntity(fullUrl, List.class);
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> arr = (List<Map<String, Object>>) resp.getBody();
+        return arr != null ? arr : List.of();
     }
 
     private List<BookDTO> searchBooksBM25TopN(String query, int size) {

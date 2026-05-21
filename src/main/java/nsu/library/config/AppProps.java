@@ -21,4 +21,10 @@ public class AppProps {
 
     @Value("${app.search.content-url:http://localhost:8001/search/content}")
     private String searchContentUrl;
+
+    @Value("${app.search.review-search-url:http://localhost:8001/search/reviews}")
+    private String searchReviewUrl;
+
+    @Value("${app.search.suggest-url:http://localhost:8001/suggest}")
+    private String suggestUrl;
 }
