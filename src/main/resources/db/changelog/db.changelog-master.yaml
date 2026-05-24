@@ -149,6 +149,8 @@ databaseChangeLog:
   - include:
       file: db/changelog/remove-isbn-add-rating.yaml
   - include:
+      file: db/changelog/widen-description-and-author.yaml
+  - include:
       file: db/changelog/012_add-groups.sql
   - include:
       file: db/changelog/013-add-book-permissions.sql

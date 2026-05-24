@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: widen-description-to-text
+      author: fix
+      changes:
+        - modifyDataType:
+            tableName: books
+            columnName: description
+            newDataType: TEXT
+        - modifyDataType:
+            tableName: books
+            columnName: author
+            newDataType: VARCHAR(1000)
+        - modifyDataType:
+            tableName: books
+            columnName: publisher
+            newDataType: VARCHAR(1000)

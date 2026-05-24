@@ -21,8 +21,13 @@ public class AdminBookController {
     private final BookService bookService;
     private final SearchIndexClient searchIndexClient;
 
-    @GetMapping("admin/books")
+    @GetMapping("books")
     public List<Book> getBooks() {
+        return bookService.getBooks();
+    }
+
+    @GetMapping("admin/books")
+    public List<Book> getBooksAdmin() {
         return bookService.getBooks();
     }
 
@@ -44,6 +49,23 @@ public class AdminBookController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Book addBook(@RequestPart("file") MultipartFile file, @RequestPart("addBookDTO") String dtoJson)
             throws JsonProcessingException {
+        // MIME-type whitelist: only accept EPUB files
+        String contentType = file.getContentType();
+        String filename = file.getOriginalFilename();
+
+        if (contentType == null || !"application/epub+zip".equals(contentType)) {
+            throw new IllegalArgumentException(
+                    "Недопустимый MIME-тип файла: " + contentType +
+                    ". Разрешены только EPUB-файлы (application/epub+zip)."
+            );
+        }
+        if (filename == null || !filename.toLowerCase().endsWith(".epub")) {
+            throw new IllegalArgumentException(
+                    "Недопустимое расширение файла: " + filename +
+                    ". Разрешены только файлы с расширением .epub."
+            );
+        }
+
         addBookDTO dto = new ObjectMapper().readValue(dtoJson, addBookDTO.class);
 
         if (dto.getMode() == addBookDTO.ADDMode.auto) {

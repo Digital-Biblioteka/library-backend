@@ -106,7 +106,7 @@ public class ReaderController {
             InputStreamResource res = new InputStreamResource(minioService.getRealCover(bookLink));
             return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(res);
         } catch (Exception e) {
-            throw new MinioErrorException(e.getMessage());
+            return ResponseEntity.notFound().build();
         }
     }
 

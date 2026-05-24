@@ -27,7 +27,7 @@ public class Book {
     @Column
     Double rating;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     String description;
 
     @JoinColumn(name = "genre", referencedColumnName = "id")
