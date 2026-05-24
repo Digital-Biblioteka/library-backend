@@ -3,6 +3,8 @@ package nsu.library.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "access_requests")
 @NoArgsConstructor
@@ -11,7 +13,7 @@ import lombok.*;
 public class BookAccessRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String ID;
+    UUID ID;
 
     @ManyToOne
     @JoinColumn(name="book_id", referencedColumnName = "id", nullable = false)

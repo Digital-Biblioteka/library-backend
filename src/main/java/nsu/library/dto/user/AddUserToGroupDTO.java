@@ -10,6 +10,5 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class AddUserToGroupDTO {
-    Long userID;
-    String groupID;
+    String email;
 }

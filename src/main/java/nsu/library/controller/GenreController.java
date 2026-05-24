@@ -19,7 +19,7 @@ public class GenreController {
         return genreService.getGenres();
     }
 
-    @GetMapping("{id}")
+    @GetMapping("genres/{id}")
     public Genre getGenre(@PathVariable Long id) {
         return genreService.getGenre(id);
     }
@@ -34,7 +34,7 @@ public class GenreController {
         return genreService.AddGenre(dto.getGenreName());
     }
 
-    @DeleteMapping("admin/genres{id}")
+    @DeleteMapping("admin/genres/{id}")
     public void deleteGenre(@PathVariable Long id) {
         genreService.DeleteGenre(id);
     }

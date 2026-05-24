@@ -158,3 +158,19 @@ databaseChangeLog:
       file: db/changelog/015-add-timestamp-last-read-table.sql
   - include:
       file: db/changelog/016-add-access-requests.sql
+  - include:
+      file: db/changelog/017-add-status_to_access_requests.sql
+  - include:
+      file: db/changelog/018-add-limit-requests.sql
+  - include:
+      file: db/changelog/019-add-book-categories.sql
+  - include:
+      file: db/changelog/020-add-book-category-assignments.sql
+  - include:
+      file: db/changelog/021-add-category-limits.sql
+  - include:
+      file: db/changelog/022-add-category-limit-requests.sql
+  - include:
+      file: db/changelog/023-add-category-access-requests.sql
+  - include:
+      file: db/changelog/024-add-category-permissions.sql

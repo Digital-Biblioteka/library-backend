@@ -11,7 +11,6 @@ import java.util.List;
 
 @Repository
 public interface BookPermissionRepository extends JpaRepository<BookPermission, Long> {
-    List<BookPermission> book(Book book);
     List<BookPermission> getBookPermissionsByUser(User user);
     List<BookPermission> getBookPermissionsByBook(Book book);
     List<BookPermission> findBookPermissionsByBookAndUser(Book book, User user);

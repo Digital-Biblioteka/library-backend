@@ -1,4 +1,4 @@
-package nsu.library.dto.permissions;
+package nsu.library.dto.group;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AccessRequest {
-    Long bookID;
-    Long userID;
-    String groupID;
+public class GroupDTO {
+    Long librarianID;
+    String name;
+    String description;
 }

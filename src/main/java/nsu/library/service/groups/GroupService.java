@@ -3,6 +3,7 @@ package nsu.library.service.groups;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import nsu.library.dto.group.GroupDTO;
 import nsu.library.entity.Group;
 import nsu.library.entity.User;
 import nsu.library.entity.UserGroup;
@@ -10,9 +11,12 @@ import nsu.library.repository.GroupRepository;
 import nsu.library.repository.UserGroupRepository;
 import nsu.library.repository.UserRepository;
 import nsu.library.util.UserGroupId;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,12 +25,57 @@ public class GroupService {
     private final UserGroupRepository userGroupRepository;
     private final UserRepository userRepository;
 
-    public Group createGroup(Group group) {
+    public Group createGroup(Long librarianID, String name, String description) {
+        Group group = new Group();
+        User librarian = userRepository.findById(librarianID).orElseThrow(EntityNotFoundException::new);
+        librarian.setRole(User.ROLE.ROLE_LIBRARIAN);
+        userRepository.save(librarian);
+
+        group.setLibrarian(librarian);
+        group.setName(name);
+        group.setDescription(description);
         return groupRepository.save(group);
     }
 
-    public Group getGroupById(String id) {
-        return groupRepository.getReferenceById(id);
+    public Group updateGroup(UUID groupID, GroupDTO req) {
+        Group group = groupRepository.findById(groupID).orElseThrow(EntityNotFoundException::new);
+        if (req.getLibrarianID() != null) {
+            group.setLibrarian(userRepository.findById(req.getLibrarianID()).orElseThrow(EntityNotFoundException::new));
+        }
+        if (req.getName() != null) {
+            group.setName(req.getName());
+        }
+        if (req.getDescription() != null) {
+            group.setDescription(req.getDescription());
+        }
+        return groupRepository.save(group);
+    }
+
+    public Group getGroupById(UUID id) {
+        return groupRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    }
+
+    public UserGroup getUserGroupByUserAndGroup(Long userID, UUID groupID) {
+        if (!userRepository.existsById(userID)) {
+            throw new EntityNotFoundException("User with ID " + userID + " not found");
+        }
+        if (!groupRepository.existsById(groupID)) {
+            throw new EntityNotFoundException("Group with ID " + groupID + " not found");
+        }
+
+        return userGroupRepository.findById(new UserGroupId(userID, groupID)).
+                orElseThrow( () -> new AccessDeniedException("User with ID " + userID +
+                        "is not associated with group with ID " + groupID));
+    }
+
+    public List<UserGroup> GetUsersByGroup(UUID groupID) {
+        Group group = groupRepository.findById(groupID).orElseThrow(EntityNotFoundException::new);
+
+        return userGroupRepository.findByGroup(group);
+    }
+
+    public List<Group> getGroupsByLibrarian(Long librarianId) {
+        return groupRepository.findGroupsByLibrarian_Id(librarianId);
     }
 
     public List<Group> getAllGroups() {
@@ -37,8 +86,17 @@ public class GroupService {
         return groupRepository.getGroupsByName(name);
     }
 
+    public List<Group> getGroupsByUser(User user) {
+        List<UserGroup> userGroups = userGroupRepository.findByUser(user);
+        List<Group> groups = new ArrayList<>();
+        for (UserGroup userGroup : userGroups) {
+            groups.add(userGroup.getGroup());
+        }
+        return groups;
+    }
+
     @Transactional
-    public UserGroup AddUserToGroup(Long userID, String groupID) {
+    public UserGroup AddUserToGroup(Long userID, UUID groupID) {
         if (!userRepository.existsById(userID)) {
             throw new EntityNotFoundException("User with ID " + userID + " not found");
         }
@@ -58,7 +116,7 @@ public class GroupService {
     }
 
     @Transactional
-    public void RemoveUserFromGroup(Long userID, String groupID) {
+    public void RemoveUserFromGroup(Long userID, UUID groupID) {
         UserGroupId id = new UserGroupId(userID, groupID);
         if (!userGroupRepository.existsById(id)) {
             throw new EntityNotFoundException("User is not in group " + id);
