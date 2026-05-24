@@ -9,12 +9,13 @@ services:
       - KEY_TOKEN=${KEY_TOKEN}
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
   library:
     depends_on:
       - db
     build:
       context: .
-    restart: on-failure
     container_name: library
     environment:
       - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
@@ -43,3 +44,4 @@ services:
       retries: 5
 volumes:
   minio-data:
+  postgres_data:

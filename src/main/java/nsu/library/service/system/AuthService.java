@@ -10,8 +10,6 @@ import nsu.library.repository.UserRepository;
 import nsu.library.security.CustomUserDetails;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,15 +29,15 @@ public class AuthService {
      * @return токен
      */
     public JwtAuthResponse signUp(SignUpDTO request) {
-        if (userRepository.getUsersByUsername(request.getUsername()) != null) {
-            throw new IllegalArgumentException("Пользователь с таким именем уже существует");
+        if (userRepository.getUsersByEmail(request.getEmail()) != null) {
+            throw new IllegalArgumentException("Пользователь с таким именем уже зарегистрирован");
         }
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(User.ROLE.ROLE_USER);
         user.setEmail(request.getEmail());
-        userRepository.save(user); //.......bruh
+        userRepository.save(user); //.......bruh ??
         System.out.println("user created!");
         CustomUserDetails userDetails = new CustomUserDetails(user);
         var jwt = jwtService.generateToken(userDetails);
@@ -59,8 +57,6 @@ public class AuthService {
         ));
 
         var user = customUserDetailsService.getByEmail(request.getEmail());
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
         var jwt = jwtService.generateToken(user);
         return new JwtAuthResponse(jwt);
     }

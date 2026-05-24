@@ -7,6 +7,7 @@ import nsu.library.dto.user.UserDTO;
 import nsu.library.entity.User;
 import nsu.library.exception.UserExistsException;
 import nsu.library.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public User createUser(CreateUserDTO createUserDTO) {
         if (userRepository.getUsersByUsername(createUserDTO.getName()) != null) {
@@ -22,7 +24,8 @@ public class UserService {
         }
         User user = new User();
         user.setUsername(createUserDTO.getName());
-        user.setPassword(createUserDTO.getPassword());
+        user.setEmail(createUserDTO.getEmail());
+        user.setPassword(passwordEncoder.encode(createUserDTO.getPassword()));
         user.setRole(createUserDTO.getRole());
         userRepository.save(user);
         return user;
@@ -47,6 +50,10 @@ public class UserService {
 
     public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow( () -> new EntityNotFoundException("Пользователя с " + id + "не существует"));
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.getUsersByEmail(email);
     }
 
     public UserDTO convertDTO(User user) {

@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import nsu.library.util.LastReadId;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @RequiredArgsConstructor
@@ -18,4 +21,8 @@ public class LastRead {
 
     @Id
     private Long bookId;
+
+    @CreationTimestamp
+    @Column(name = "last_read_at", updatable = false)
+    private LocalDateTime lastReadAt;
 }

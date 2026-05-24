@@ -10,6 +10,7 @@ import nsu.library.exception.MinioErrorException;
 import nsu.library.entity.ReadingPosition;
 import nsu.library.repository.ReadingPositionRepository;
 import nsu.library.security.CustomUserDetails;
+import nsu.library.service.bookpermissions.AccessControlService;
 import nsu.library.service.books.LastReadService;
 import nsu.library.service.books.ReaderService;
 import nsu.library.service.minio.MinioService;
@@ -18,7 +19,9 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -33,6 +36,7 @@ public class ReaderController {
     private final ReadingPositionRepository readingPositionRepository;
     private final LastReadService lastReadService;
     private final ObjectMapper objectMapper;
+    private final AccessControlService accessControlService;
 
     private record ReadingPosDTO(Integer spineIdx) {}
 
@@ -48,15 +52,17 @@ public class ReaderController {
      * Если пользователь залогинен в системе, то
      * автоматически добавляет книгу в список последних прочитанных для него
      * @param id ид книжки
-     * @param auth сессия пользователя
+     * @param user сессия пользователя
      * @return ссылка на книгу в минио
      */
     @GetMapping("{id}")
-    public String getBook(@PathVariable Long id, Authentication auth) {
-        if (auth != null && auth.isAuthenticated()) {
-            CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
-            lastReadService.addBookToLastRead(id, user.getUser().getId());
+    @PreAuthorize("isAuthenticated()")
+    public String getBook(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
+        if (!accessControlService.CheckPermissionToBook(id, user.getUser().getId())) {
+            throw new AccessDeniedException("You do not have access to this resource");
         }
+        lastReadService.addBookToLastRead(id, user.getUser().getId());
+
         return ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/reader/")
                 .path(String.valueOf(id))
@@ -65,7 +71,11 @@ public class ReaderController {
     }
 
     @GetMapping(value = "{id}/file", produces = "application/epub+zip")
-    public ResponseEntity<InputStreamResource> downloadBook(@PathVariable Long id) {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<InputStreamResource> downloadBook(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
+        if (!accessControlService.CheckPermissionToBook(id, user.getUser().getId())) {
+            throw new AccessDeniedException("You do not have access to this resource");
+        }
         String bookLink = readerService.getBookLink(id);
         InputStreamResource res = new InputStreamResource(minioService.getRealBook(bookLink));
         return ResponseEntity.ok()
@@ -101,13 +111,13 @@ public class ReaderController {
     }
 
     @GetMapping("{id}/pos")
-    public ResponseEntity<String> getBookReadingPosition(@PathVariable Long id, Authentication auth) {
-        if (auth == null || !auth.isAuthenticated()) {
-            return ResponseEntity.status(401).build();
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<String> getBookReadingPosition(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
+        if (!accessControlService.CheckPermissionToBook(id, user.getUser().getId())) {
+            throw new AccessDeniedException("You do not have access to this resource");
         }
-        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
-        Long userId = user.getUser().getId();
-        ReadingPositionId posId = new ReadingPositionId(userId, id);
+
+        ReadingPositionId posId = new ReadingPositionId(user.getUser().getId(), id);
 
         ReadingPosition pos = readingPositionRepository.findById(posId).orElse(null);
         if (pos == null || pos.getPosition() == null || pos.getPosition().isBlank()) {
@@ -132,14 +142,14 @@ public class ReaderController {
     }
 
     @PostMapping("{id}/pos")
-    public ReadingPosition postBookReadingPosition(@PathVariable Long id, Authentication auth,
+    @PreAuthorize("isAuthenticated()")
+    public ReadingPosition postBookReadingPosition(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user,
                        @RequestBody String position) {
 
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new org.springframework.security.access.AccessDeniedException("Unauthorized");
-        }
+//        if (auth == null || !auth.isAuthenticated()) {
+//            throw new org.springframework.security.access.AccessDeniedException("Unauthorized");
+//        }
 
-        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
         Long userId = user.getUser().getId();
 
         ReadingPosition readingPosition = new ReadingPosition();
