@@ -53,6 +53,9 @@ public class BookmarkService {
         if (dto.getParagraphIdx() != 0) {
             bookmark.setParagraph_index(dto.getParagraphIdx());
         }
+        if (dto.getSpineRef() != 0) {
+            bookmark.setSpine_reference(dto.getSpineRef());
+        }
         bookmarkRepository.save(bookmark);
         return bookmark;
     }

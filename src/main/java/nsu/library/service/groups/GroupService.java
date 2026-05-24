@@ -28,6 +28,9 @@ public class GroupService {
     public Group createGroup(Long librarianID, String name, String description) {
         Group group = new Group();
         User librarian = userRepository.findById(librarianID).orElseThrow(EntityNotFoundException::new);
+        librarian.setRole(User.ROLE.ROLE_LIBRARIAN);
+        userRepository.save(librarian);
+
         group.setLibrarian(librarian);
         group.setName(name);
         group.setDescription(description);
@@ -65,8 +68,14 @@ public class GroupService {
                         "is not associated with group with ID " + groupID));
     }
 
-    public List<UserGroup> GetUsersByLibrarian(Long librarianId) {
-        return userGroupRepository.findUserGroupByGroup_Librarian_Id(librarianId);
+    public List<UserGroup> GetUsersByGroup(UUID groupID) {
+        Group group = groupRepository.findById(groupID).orElseThrow(EntityNotFoundException::new);
+
+        return userGroupRepository.findByGroup(group);
+    }
+
+    public List<Group> getGroupsByLibrarian(Long librarianId) {
+        return groupRepository.findGroupsByLibrarian_Id(librarianId);
     }
 
     public List<Group> getAllGroups() {

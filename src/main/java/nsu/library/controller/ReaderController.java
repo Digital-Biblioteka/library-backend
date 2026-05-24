@@ -58,10 +58,10 @@ public class ReaderController {
     @GetMapping("{id}")
     @PreAuthorize("isAuthenticated()")
     public String getBook(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
-        lastReadService.addBookToLastRead(id, user.getUser().getId());
         if (!accessControlService.CheckPermissionToBook(id, user.getUser().getId())) {
             throw new AccessDeniedException("You do not have access to this resource");
         }
+        lastReadService.addBookToLastRead(id, user.getUser().getId());
 
         return ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/reader/")
@@ -71,7 +71,11 @@ public class ReaderController {
     }
 
     @GetMapping(value = "{id}/file", produces = "application/epub+zip")
-    public ResponseEntity<InputStreamResource> downloadBook(@PathVariable Long id) {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<InputStreamResource> downloadBook(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
+        if (!accessControlService.CheckPermissionToBook(id, user.getUser().getId())) {
+            throw new AccessDeniedException("You do not have access to this resource");
+        }
         String bookLink = readerService.getBookLink(id);
         InputStreamResource res = new InputStreamResource(minioService.getRealBook(bookLink));
         return ResponseEntity.ok()
