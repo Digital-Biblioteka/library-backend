@@ -209,4 +209,45 @@ public class MinioService {
         }
         return obj;
     }
+
+    public void deleteBook(String bookLink) {
+        try {
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(epubBucketName)
+                            .object(bookLink)
+                            .build());
+            System.out.println(bookLink + "removed from bucket");
+        } catch (MinioException e) {
+            System.out.println("Error occurred: " + e);
+            System.out.println("HTTP trace: " + e.httpTrace());
+            throw new MinioErrorException(e.getMessage());
+        } catch (IOException e) {
+            System.out.println("Error occurred: " + e);
+            throw new MinioErrorException(e.getMessage());
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new MinioErrorException(e.getMessage());
+        }
+    }
+
+    public void deleteBookCover(String bookLink) {
+        String imageName = bookLink+ ".jpg";
+        try {
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(coverBucketName)
+                            .object(imageName)
+                            .build());
+            System.out.println(imageName + "removed from bucket");
+        } catch (MinioException e) {
+            System.out.println("Error occurred: " + e);
+            System.out.println("HTTP trace: " + e.httpTrace());
+            throw new MinioErrorException(e.getMessage());
+        } catch (IOException e) {
+            System.out.println("Error occurred: " + e);
+            throw new MinioErrorException(e.getMessage());
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new MinioErrorException(e.getMessage());
+        }
+    }
 }

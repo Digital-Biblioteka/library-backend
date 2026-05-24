@@ -9,6 +9,7 @@ import nsu.library.repository.BookRepository;
 import nsu.library.service.minio.MinioService;
 import nsu.library.service.search.SearchIndexClient;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -32,18 +33,32 @@ public class BookService {
      * @param file файл самой книжки
      * @return созданный и сохраненный в бд объект книги
      */
+    @Transactional
     public Book addBookManually(BookDTO bookDTO, MultipartFile file) {
         String bookId = UUID.randomUUID() + "." + file.getOriginalFilename();
         minioService.loadBookEpub(file, bookId);
 
-        byte[] cover = bookImport.getBookPreview(file);
-        if (cover != null) {
-            minioService.loadBookCover(cover, bookId);
-        }
-
         Book book = createBookFromDTO(bookDTO, bookId);
-        Book saved = bookRepository.save(book);
-        searchIndexClient.indexBook(saved);
+        Book saved;
+        try {
+            minioService.loadBookEpub(file, bookId);
+
+            byte[] cover = bookImport.getBookPreview(file);
+            if (cover != null) {
+                minioService.loadBookCover(cover, bookId);
+            }
+
+            saved = bookRepository.save(book);
+            searchIndexClient.indexBook(saved);
+        } catch (Exception e) {
+            try {
+                minioService.deleteBook(bookId);
+                minioService.deleteBookCover(bookId);
+            }  catch (Exception cleanupEx) {
+                e.addSuppressed(cleanupEx);
+            }
+            throw e;
+        }
         return saved;
     }
 
@@ -55,6 +70,7 @@ public class BookService {
      * @param file просто файл книжки
      * @return созданную книжку
      */
+    @Transactional
     public Book addBookAuto(MultipartFile file) {
         String bookId = UUID.randomUUID() + "." + file.getOriginalFilename();
 
@@ -65,16 +81,26 @@ public class BookService {
             throw new RuntimeException(e);
         }
         Book ourBook = createBookFromDTO(book, bookId);
+        Book saved;
+        try {
+            minioService.loadBookEpub(file, bookId);
 
-        minioService.loadBookEpub(file, bookId);
+            byte[] cover = bookImport.getBookPreview(file);
+            if (cover != null) {
+                minioService.loadBookCover(cover, bookId);
+            }
 
-        byte[] cover = bookImport.getBookPreview(file);
-        if (cover != null) {
-            minioService.loadBookCover(cover, bookId);
+            saved = bookRepository.save(ourBook);
+            searchIndexClient.indexBook(saved);
+        } catch (Exception e) {
+            try {
+                minioService.deleteBook(bookId);
+                minioService.deleteBookCover(bookId);
+            }  catch (Exception cleanupEx) {
+                e.addSuppressed(cleanupEx);
+            }
+            throw e;
         }
-
-        Book saved = bookRepository.save(ourBook);
-        searchIndexClient.indexBook(saved);
         return saved;
     }
 

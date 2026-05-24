@@ -90,11 +90,13 @@ public class AccessControlService {
         Book book = bookRepository.findById(bookID).orElseThrow(() -> new EntityNotFoundException("Book with id " + bookID + " not found"));
         User user = userRepository.findById(userID).orElseThrow(() -> new EntityNotFoundException("User with id " + userID + " not found"));
 
-        // 1. Direct book permission
+        if (book.getPublicity() == Book.PublicityType.PUBLIC) {
+            return true;
+        }
+
         List<BookPermission> bookPermission = bookPermissionRepository.findBookPermissionsByBookAndUser(book, user);
         if (!bookPermission.isEmpty()) return true;
 
-        // 2. Active category permission for any category containing this book
         return !categoryPermissionRepository
                 .findActiveByUserAndBook(userID, bookID, java.time.Instant.now())
                 .isEmpty();

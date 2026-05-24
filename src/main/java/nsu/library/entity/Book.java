@@ -27,6 +27,10 @@ public class Book {
     @Column
     Double rating;
 
+    @Column(name = "publicity")
+    @Enumerated(EnumType.STRING)
+    PublicityType publicity;
+
     @Column(columnDefinition = "TEXT")
     String description;
 
@@ -36,4 +40,9 @@ public class Book {
 
     @Column(nullable = false)
     String linkToBook;
+
+    public enum PublicityType{
+        PUBLIC,
+        PRIVATE,
+    }
 }
