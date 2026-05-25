@@ -8,6 +8,7 @@ import nsu.library.entity.Genre;
 import nsu.library.repository.BookRepository;
 import nsu.library.service.minio.MinioService;
 import nsu.library.service.search.SearchIndexClient;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,30 +37,8 @@ public class BookService {
     @Transactional
     public Book addBookManually(BookDTO bookDTO, MultipartFile file) {
         String bookId = UUID.randomUUID() + "." + file.getOriginalFilename();
-        minioService.loadBookEpub(file, bookId);
 
-        Book book = createBookFromDTO(bookDTO, bookId);
-        Book saved;
-        try {
-            minioService.loadBookEpub(file, bookId);
-
-            byte[] cover = bookImport.getBookPreview(file);
-            if (cover != null) {
-                minioService.loadBookCover(cover, bookId);
-            }
-
-            saved = bookRepository.save(book);
-            searchIndexClient.indexBook(saved);
-        } catch (Exception e) {
-            try {
-                minioService.deleteBook(bookId);
-                minioService.deleteBookCover(bookId);
-            }  catch (Exception cleanupEx) {
-                e.addSuppressed(cleanupEx);
-            }
-            throw e;
-        }
-        return saved;
+        return saveBook(file, bookId, bookDTO);
     }
 
     /**
@@ -80,6 +59,11 @@ public class BookService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return saveBook(file, bookId, book);
+    }
+
+    @NotNull
+    private Book saveBook(MultipartFile file, String bookId, BookDTO book) {
         Book ourBook = createBookFromDTO(book, bookId);
         Book saved;
         try {
@@ -117,6 +101,11 @@ public class BookService {
         book.setAuthor(bookDTO.getAuthor());
         book.setDescription(bookDTO.getDescription());
         book.setPublisher(bookDTO.getPublisher());
+        if (bookDTO.getPublicity() != null) {
+            book.setPublicity(bookDTO.getPublicity());
+        } else {
+            book.setPublicity(Book.PublicityType.PUBLIC);
+        }
         if (bookDTO.getGenre() != null) {
             Genre genre = genreService.GetGenreByName(bookDTO.getGenre());
             if (genre == null) {
@@ -144,6 +133,7 @@ public class BookService {
         bookDTO.setDescription(book.getDescription());
         bookDTO.setPublisher(book.getPublisher());
         bookDTO.setRating(book.getRating());
+        bookDTO.setPublicity(book.getPublicity());
         if (book.getGenre() != null) {
             bookDTO.setGenre(book.getGenre().getGenreName());
         }
@@ -172,6 +162,9 @@ public class BookService {
 
         if (bookDTO.getPublisher() != null) {
             book.setPublisher(bookDTO.getPublisher());
+        }
+        if (bookDTO.getPublicity() != null) {
+            book.setPublicity(bookDTO.getPublicity());
         }
         bookRepository.save(book);
         searchIndexClient.indexBook(book);

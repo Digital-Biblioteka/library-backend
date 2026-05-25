@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import nsu.library.entity.Book;
 
 import java.util.List;
 
@@ -19,5 +20,6 @@ public class BookDTO {
     String genre;
     String publisher;
     Double rating;
+    Book.PublicityType publicity;
     List<String> reviewSnippets;
 }

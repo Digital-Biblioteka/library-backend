@@ -5,6 +5,7 @@ import lombok.*;
 @RequiredArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 public class addBookDTO {
     @NonNull
     ADDMode mode;
