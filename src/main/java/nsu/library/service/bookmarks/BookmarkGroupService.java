@@ -34,10 +34,8 @@ public class BookmarkGroupService {
         bookmarkGroup.setVisibility(visibility);
         bookmarkGroup.setBook(book);
         bookmarkGroup.setName(name);
-        bookmarkGroup.setId(UUID.randomUUID());
         bookmarkGroup.setAccessToken(UUID.randomUUID());
 
-        bookmarkGroupRepository.save(bookmarkGroup);
         return bookmarkGroupRepository.save(bookmarkGroup);
     }
 
@@ -59,6 +57,7 @@ public class BookmarkGroupService {
             throw new EntityNotFoundException("Bookmark group with access token " + accessToken + " not found");
         }
         BookmarkGroupUser bookmarkGroupUser = new BookmarkGroupUser();
+        bookmarkGroupUser.setId(new nsu.library.util.BookmarkGroupUserId(user.getId(), bookmarkGroup.getId()));
         bookmarkGroupUser.setGroup(bookmarkGroup);
         bookmarkGroupUser.setUser(user);
         return bookmarkGroupUserRepository.save(bookmarkGroupUser);

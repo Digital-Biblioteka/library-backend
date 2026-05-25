@@ -25,7 +25,7 @@ public class BookmarkGroup {
     @Column(nullable = false, unique = true)
     UUID accessToken;
 
-    @Column(nullable = true)
+    @Column()
     String name;
 
     @ManyToOne
@@ -33,9 +33,10 @@ public class BookmarkGroup {
     User owner;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     BookmarkVisibility visibility;
 
-    @Column(nullable = true)
+    @Column()
     Instant created_at;
 
     public enum BookmarkVisibility{

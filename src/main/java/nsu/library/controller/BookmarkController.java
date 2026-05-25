@@ -1,84 +1,132 @@
 package nsu.library.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.book.BookmarkDTO;
 import nsu.library.entity.Bookmark;
+import nsu.library.entity.BookmarkGroup;
+import nsu.library.entity.BookmarkGroupUser;
 import nsu.library.security.CustomUserDetails;
+import nsu.library.service.bookmarks.BookmarkGroupService;
 import nsu.library.service.bookmarks.BookmarkService;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/bookmarks")
 @RequiredArgsConstructor
 public class BookmarkController {
     private final BookmarkService bookmarkService;
+    private final BookmarkGroupService bookmarkGroupService;
 
     /**
-     * Create new bookmark. id of book in path, auth получен via spring security.
-     *
-     * @param bookId id of book in path variable
-     * @param auth user
-     * @param dto bookmark dto: spine idx+ paragraph idx+ text
-     * @return created bookmark
+     * Create new bookmark for a book. Optionally attach to a group via dto.groupID.
      */
     @PostMapping("/{bookId}")
-    public Bookmark addBookmark(@PathVariable Long bookId, Authentication auth, @RequestBody BookmarkDTO dto) {
-        if (auth == null) {
-            throw new AccessDeniedException("User not logged in");
-        }
-        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
-        return bookmarkService.addBookmark(dto,bookId, user.getUser().getId());
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Добавить заметку")
+    public Bookmark addBookmark(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long bookId,  @RequestBody BookmarkDTO dto) {
+        return bookmarkService.addBookmark(dto, bookId, user.getUser().getId());
     }
 
     /**
-     * get bookmarks of book by user.
-     *
-     * @param bookId id of book in path variable
-     * @param auth user auth
-     * @return list of bookmarks user created on this book
+     * Get personal bookmarks of the authenticated user for a specific book.
      */
     @GetMapping("/{bookId}")
-    public List<Bookmark> getBookmarksByUser(@PathVariable Long bookId, Authentication auth){
-        if (auth == null) {
-            throw new AccessDeniedException("User not logged in");
-        }
-        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Получить все заметки пользователя в заданной книге")
+    public List<Bookmark> getBookmarksByUser(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long bookId) {
         return bookmarkService.getUserBookmarksByBook(user.getUser().getId(), bookId);
     }
 
     /**
-     * Edit bookmark by its id. text or paragraph placement
-     *
-     * @param id of bookmark
-     * @param auth user auth
-     * @param dto bookmark dto
-     * @return edited bookmark
+     * Edit bookmark text / position.
      */
     @PutMapping("/{id}")
-    public Bookmark editBookmark(@PathVariable Long id, Authentication auth, @RequestBody BookmarkDTO dto) {
-        if (auth == null) {
-            throw new AccessDeniedException("User not logged in");
-        }
-        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Редактировать заметку")
+    public Bookmark editBookmark(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long id, @RequestBody BookmarkDTO dto) {
         return bookmarkService.editBookmark(id, user.getUser().getId(), dto);
     }
 
     /**
-     * delete bookmark by its id.
-     * checks if user owns bookmark
-     *
-     * @param id of bookmark
-     * @param auth user auth
+     * Delete a bookmark (ownership enforced inside service).
      */
     @DeleteMapping("/{id}")
-    public void deleteBookmark(@PathVariable Long id, Authentication auth) {
-        if (auth == null) {
-            throw new AccessDeniedException("User not logged in");
-        }
-        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Удалить заметку")
+    public void deleteBookmark(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long id) {
         bookmarkService.deleteBookmark(id, user.getUser().getId());
+    }
+
+    /**
+     * Move an existing bookmark into a shared group.
+     */
+    @PutMapping("/{id}/group/{groupId}")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Добавить заметку в группу")
+    public Bookmark addBookmarkToGroup(@AuthenticationPrincipal CustomUserDetails user,
+                                       @PathVariable Long id,
+                                       @PathVariable UUID groupId) {
+        return bookmarkService.AddBookmarkToGroup(id, groupId, user.getUser().getId());
+    }
+
+    /**
+     * Get all bookmarks by a shared group.
+     * group belongs only to one book
+     */
+    @GetMapping("/groups/{groupId}")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Получить все заметки заданной группы. Группа жестко привязана к одной книге")
+    public List<Bookmark> getBookmarksByGroup(@PathVariable UUID groupId) {
+        return bookmarkService.getBookmarksByGroup(groupId);
+    }
+
+    /**
+     * Create a new shared bookmark group for a book.
+     * Query params: name, visibility (PRIVATE | BY_LINK)
+     */
+    @PostMapping("/groups/{bookId}")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Создать группу заметок")
+    public BookmarkGroup createBookmarkGroup(@AuthenticationPrincipal CustomUserDetails user,
+                                             @PathVariable Long bookId,
+                                             @RequestParam String name,
+                                             @RequestParam BookmarkGroup.BookmarkVisibility visibility) {
+        return bookmarkGroupService.createBookmarkGroup(bookId, user.getUser(), name, visibility);
+    }
+
+    /**
+     * Delete a bookmark group.
+     */
+    @DeleteMapping("/groups/{groupId}")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Удалить группу заметок")
+    public void deleteBookmarkGroup(@PathVariable UUID groupId) {
+        bookmarkGroupService.deleteBookmarkGroup(groupId);
+    }
+
+    /**
+     * Join a bookmark group using its access token.
+     */
+    @PostMapping("/groups/join/{accessToken}")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Присоединиться к общей группе заметок по ссылке(токену)")
+    public BookmarkGroupUser joinBookmarkGroup(@AuthenticationPrincipal CustomUserDetails user, @PathVariable UUID accessToken) {
+        return bookmarkGroupService.giveAccessToBookmarkGroup(accessToken, user.getUser());
+    }
+
+    /**
+     * List all members of a bookmark group.
+     */
+    @GetMapping("/groups/{groupId}/members")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Получить всех юзеров в общей группе заметок")
+    public List<BookmarkGroupUser> getGroupMembers(@PathVariable UUID groupId) {
+        return bookmarkGroupService.getUsersByBookmarkGroup(groupId);
     }
 }

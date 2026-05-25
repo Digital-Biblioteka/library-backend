@@ -22,17 +22,17 @@ public class BookmarkRealTimeService {
 
     public void handleBookmarkCreated(Bookmark bookmark) {
         BookmarkEvent event = toEvent(bookmark, BookmarkEvent.EventType.CREATED);
-        messagingTemplate.convertAndSend("/topic/bookmarks" + bookmark.getGroup().getId(), event);
+        messagingTemplate.convertAndSend("/topic/bookmarks/" + bookmark.getGroup().getId(), event);
     }
 
     public void handleBookmarkUpdated(Bookmark bookmark) {
         BookmarkEvent event = toEvent(bookmark, BookmarkEvent.EventType.UPDATED);
-        messagingTemplate.convertAndSend("/topic/bookmarks" + bookmark.getGroup().getId(), event);
+        messagingTemplate.convertAndSend("/topic/bookmarks/" + bookmark.getGroup().getId(), event);
     }
 
     public void handleBookmarkDeleted(Bookmark bookmark) {
         BookmarkEvent event = toEvent(bookmark, BookmarkEvent.EventType.DELETED);
-        messagingTemplate.convertAndSend("/topic/bookmarks" + bookmark.getGroup().getId(), event);
+        messagingTemplate.convertAndSend("/topic/bookmarks/" + bookmark.getGroup().getId(), event);
     }
 
     BookmarkEvent toEvent(Bookmark bookmark, BookmarkEvent.EventType type) {
