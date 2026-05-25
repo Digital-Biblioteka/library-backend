@@ -17,5 +17,5 @@ public class BookmarkGroupUserId implements Serializable {
     @Column(name="user_id")
     Long userId;
     @Column(name="group_id")
-    UUID bookmarkGroupId;
+    UUID groupId;
 }
