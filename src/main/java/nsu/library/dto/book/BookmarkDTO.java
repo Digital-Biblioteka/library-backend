@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -12,5 +14,6 @@ import lombok.Setter;
 public class BookmarkDTO {
     int spineRef;
     int paragraphIdx;
+    UUID groupID;
     String text;
 }

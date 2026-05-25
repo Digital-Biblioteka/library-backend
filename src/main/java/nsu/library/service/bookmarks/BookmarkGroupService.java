@@ -41,19 +41,19 @@ public class BookmarkGroupService {
         return bookmarkGroupRepository.save(bookmarkGroup);
     }
 
-    public void DeleteBookmarkGroup(UUID bookmarkGroupID) {
+    public void deleteBookmarkGroup(UUID bookmarkGroupID) {
         bookmarkGroupRepository.deleteById(bookmarkGroupID);
     }
     
     public BookmarkGroup getBookmarkGroupByID(UUID id) {
-        return bookmarkGroupRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(""));
+        return bookmarkGroupRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Bookmark group with ID " + id + " not found"));
     }
 
     public List<BookmarkGroup> getBookmarkGroupsByName(String name) {
         return bookmarkGroupRepository.findBookmarkGroupsByName(name);
     }
 
-    public BookmarkGroupUser GiveAccessToBookmarkGroup(UUID accessToken, User user) {
+    public BookmarkGroupUser giveAccessToBookmarkGroup(UUID accessToken, User user) {
         BookmarkGroup bookmarkGroup = bookmarkGroupRepository.findBookmarkGroupsByAccessToken(accessToken);
         if (bookmarkGroup == null) {
             throw new EntityNotFoundException("Bookmark group with access token " + accessToken + " not found");
@@ -64,5 +64,9 @@ public class BookmarkGroupService {
         return bookmarkGroupUserRepository.save(bookmarkGroupUser);
     }
 
+    public List<BookmarkGroupUser> getUsersByBookmarkGroup(UUID id) {
+        BookmarkGroup group = getBookmarkGroupByID(id);
+        return bookmarkGroupUserRepository.findBookmarkGroupUsersByGroup(group);
+    }
 
 }

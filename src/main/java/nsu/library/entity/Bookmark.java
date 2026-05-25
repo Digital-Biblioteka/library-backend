@@ -16,6 +16,7 @@ public class Bookmark {
     long id;
 
     @JoinColumn(name = "group_id", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     BookmarkGroup group;
 
     @JoinColumn(name = "user_id", nullable = false)
