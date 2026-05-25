@@ -1,4 +1,4 @@
-package nsu.library.service.books;
+package nsu.library.service.bookmarks;
 
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.book.BookmarkDTO;

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import nsu.library.dto.book.BookmarkDTO;
 import nsu.library.entity.Bookmark;
 import nsu.library.security.CustomUserDetails;
-import nsu.library.service.books.BookmarkService;
+import nsu.library.service.bookmarks.BookmarkService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
