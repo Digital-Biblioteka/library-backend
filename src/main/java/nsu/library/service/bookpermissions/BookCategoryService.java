@@ -21,7 +21,6 @@ public class BookCategoryService {
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
 
-    // --- Category CRUD ---
 
     public List<BookCategory> getAllCategories() {
         return bookCategoryRepository.findAll();
