@@ -3,6 +3,8 @@ package nsu.library.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.category.BookCategoryDTO;
+import nsu.library.dto.category.BooksInCategoryDTO;
+import nsu.library.dto.category.CategoriesForBookDTO;
 import nsu.library.dto.category.CategoryAccessRequestDTO;
 import nsu.library.entity.*;
 import nsu.library.security.CustomUserDetails;
@@ -66,15 +68,25 @@ public class CategoryController {
     @Operation(summary = "Книги в категории")
     @GetMapping("/{id}/books")
     @PreAuthorize("isAuthenticated()")
-    public List<BookCategoryAssignment> getBooksInCategory(@PathVariable UUID id) {
-        return bookCategoryService.getBooksInCategory(id);
+    public List<BooksInCategoryDTO> getBooksInCategory(@PathVariable UUID id) {
+        List<BooksInCategoryDTO> books = new ArrayList<>();
+        for (BookCategoryAssignment assignment : bookCategoryService.getBooksInCategory(id)) {
+            BooksInCategoryDTO dto = new BooksInCategoryDTO(assignment.getBook());
+            books.add(dto);
+        }
+        return books;
     }
 
     @Operation(summary = "Категории конкретной книги")
     @GetMapping("/book/{bookId}")
     @PreAuthorize("isAuthenticated()")
-    public List<BookCategoryAssignment> getCategoriesForBook(@PathVariable Long bookId) {
-        return bookCategoryService.getCategoriesForBook(bookId);
+    public List<CategoriesForBookDTO> getCategoriesForBook(@PathVariable Long bookId) {
+        List<CategoriesForBookDTO> categories = new ArrayList<>();
+        for (BookCategoryAssignment assignment : bookCategoryService.getCategoriesForBook(bookId)) {
+            CategoriesForBookDTO dto = new CategoriesForBookDTO(assignment.getCategory());
+            categories.add(dto);
+        }
+        return categories;
     }
 
     @Operation(summary = "Создать категорию")
@@ -99,7 +111,6 @@ public class CategoryController {
         bookCategoryService.deleteCategory(id);
     }
 
-    // ---- Назначение книг (librarian | admin) ----
 
     @Operation(summary = "Добавить книгу в категорию")
     @PostMapping("/{id}/books/{bookId}")
@@ -140,6 +151,6 @@ public class CategoryController {
     }
 
     public BookCategoryDTO convertToDTO(BookCategory category) {
-        return new BookCategoryDTO(category.getName(), category.getDescription());
+        return new BookCategoryDTO(category.getId(), category.getName(), category.getDescription());
     }
 }
