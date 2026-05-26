@@ -21,8 +21,6 @@ public class LimitService {
     private final BookService bookService;
     private final GroupService groupService;
 
-    // --- BookLimit CRUD (existing) ---
-
     public BookLimit AddBookLimit(UUID groupID, Long bookID, Long limit) {
         BookLimit bookLimit = new BookLimit();
         Book book = bookService.getBook(bookID);

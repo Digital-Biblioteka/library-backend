@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "bookmarks")
 @Getter
@@ -12,6 +14,10 @@ public class Bookmark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
+
+    @JoinColumn(name = "group_id", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    BookmarkGroup group;
 
     @JoinColumn(name = "user_id", nullable = false)
     @ManyToOne
@@ -27,5 +33,6 @@ public class Bookmark {
     @Column(nullable = false)
     int paragraph_index;
 
+    @Column(nullable = true)
     String text_bookmark;
 }

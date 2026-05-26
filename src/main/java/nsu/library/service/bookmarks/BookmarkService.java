@@ -1,11 +1,14 @@
-package nsu.library.service.books;
+package nsu.library.service.bookmarks;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.book.BookmarkDTO;
 import nsu.library.entity.Book;
 import nsu.library.entity.Bookmark;
+import nsu.library.entity.BookmarkGroup;
 import nsu.library.entity.User;
 import nsu.library.repository.BookRepository;
+import nsu.library.repository.BookmarkGroupRepository;
 import nsu.library.repository.BookmarkRepository;
 import nsu.library.repository.UserRepository;
 import org.springframework.security.access.AccessDeniedException;
@@ -13,13 +16,16 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
 public class BookmarkService {
+    private final BookmarkRealTimeService bookmarkRealTimeService;
     private final BookmarkRepository bookmarkRepository;
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
+    private final BookmarkGroupRepository bookmarkGroupRepository;
 
     public List<Bookmark> getUserBookmarksByBook(Long userId, Long bookId) {
         return bookmarkRepository.getBookmarksByUser_idAndBook_Id(userId, bookId);
@@ -35,11 +41,32 @@ public class BookmarkService {
         bookmark.setBook(book);
         User user = userRepository.findById(userId).orElseThrow();
         bookmark.setUser(user);
+        // Set data fields first so the WebSocket event carries correct data
         bookmark.setSpine_reference(dto.getSpineRef());
         bookmark.setParagraph_index(dto.getParagraphIdx());
         bookmark.setText_bookmark(dto.getText());
-        bookmarkRepository.save(bookmark);
+        if (dto.getGroupID() != null) {
+            BookmarkGroup group = bookmarkGroupRepository.findById(dto.getGroupID())
+                    .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Bookmark group not found"));
+            bookmark.setGroup(group);
+            bookmarkRepository.save(bookmark);
+            bookmarkRealTimeService.handleBookmarkCreated(bookmark);
+        } else {
+            bookmarkRepository.save(bookmark);
+        }
         return bookmark;
+    }
+
+    public Bookmark AddBookmarkToGroup(Long id, UUID groupID, Long requestingUserId) {
+        Bookmark bookmark = bookmarkRepository.findById(id).orElseThrow();
+        if (!Objects.equals(bookmark.getUser().getId(), requestingUserId)) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "You do not have permission to move this bookmark");
+        }
+        BookmarkGroup group = bookmarkGroupRepository.findById(groupID).orElseThrow();
+        bookmark.setGroup(group);
+        bookmarkRealTimeService.handleBookmarkCreated(bookmark);
+        return bookmarkRepository.save(bookmark);
     }
 
     public Bookmark editBookmark(Long id, Long userId, BookmarkDTO dto) {
@@ -56,8 +83,18 @@ public class BookmarkService {
         if (dto.getSpineRef() != 0) {
             bookmark.setSpine_reference(dto.getSpineRef());
         }
+        if (bookmark.getGroup() != null) {
+            bookmarkRealTimeService.handleBookmarkUpdated(bookmark);
+        }
+
         bookmarkRepository.save(bookmark);
         return bookmark;
+    }
+
+    public List<Bookmark>  getBookmarksByGroup(UUID groupId) {
+        BookmarkGroup group = bookmarkGroupRepository.findById(groupId).orElseThrow(EntityNotFoundException::new);
+
+        return bookmarkRepository.findBookmarksByGroup(group);
     }
 
     public void deleteBookmark(Long id, Long userId) {
@@ -68,6 +105,10 @@ public class BookmarkService {
         if (!Objects.equals(bookmark.getUser().getId(), userId)) {
             throw new AccessDeniedException("You do not have permission to delete this bookmark");
         }
+        if (bookmark.getGroup() != null) {
+            bookmarkRealTimeService.handleBookmarkDeleted(bookmark);
+        }
+
         bookmarkRepository.deleteById(id);
     }
 }
