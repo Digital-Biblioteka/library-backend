@@ -71,6 +71,12 @@ public class LibrarianController {
         return groupService.GetUsersByGroup(id);
     }
 
+    @GetMapping("/groups/{groupID}/books/limits")
+    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
+    public List<BookLimit> GetGroupBookLimits(@PathVariable UUID groupID) {
+        return limitService.GetBookLimitsForGroup(groupID);
+    }
+
     @Operation(summary = "Добавить пользователя в группу")
     @PostMapping("/groups/{groupID}")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")

@@ -35,7 +35,7 @@ public class BookCategoryService {
         if (bookCategoryRepository.existsByName(dto.getName())) {
             throw new IllegalStateException("Category with name '" + dto.getName() + "' already exists");
         }
-        User creator = userRepository.getReferenceById(creatorId);
+        User creator = userRepository.findById(creatorId).orElseThrow(EntityNotFoundException::new);
         BookCategory category = new BookCategory();
         category.setName(dto.getName());
         category.setDescription(dto.getDescription());
@@ -63,8 +63,6 @@ public class BookCategoryService {
         bookCategoryRepository.deleteById(id);
     }
 
-    // --- Book-Category assignments ---
-
     @Transactional
     public BookCategoryAssignment assignBookToCategory(Long bookId, UUID categoryId) {
         if (!bookRepository.existsById(bookId)) {
@@ -76,7 +74,7 @@ public class BookCategoryService {
             throw new IllegalStateException("Book is already in this category");
         }
 
-        Book book = bookRepository.getReferenceById(bookId);
+        Book book = bookRepository.findById(bookId).orElseThrow(EntityNotFoundException::new);
         BookCategoryAssignment assignment = new BookCategoryAssignment();
         assignment.setId(new BookCategoryId(bookId, categoryId));
         assignment.setBook(book);
@@ -101,4 +99,5 @@ public class BookCategoryService {
     public List<BookCategoryAssignment> getCategoriesForBook(Long bookId) {
         return assignmentRepository.findByBook_Id(bookId);
     }
+
 }

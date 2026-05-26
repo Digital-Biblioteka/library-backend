@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,20 +43,24 @@ public class CategoryController {
     private final BookCategoryService bookCategoryService;
     private final CategoryPermissionService categoryPermissionService;
 
-    // ---- Просмотр категорий (все аутентифицированные) ----
-
     @Operation(summary = "Список всех категорий")
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public List<BookCategory> getAllCategories() {
-        return bookCategoryService.getAllCategories();
+    public List<BookCategoryDTO> getAllCategories() {
+        List<BookCategory> categories = bookCategoryService.getAllCategories();
+        List<BookCategoryDTO> categoriesDTO = new ArrayList<>();
+        for (BookCategory category:  categories) {
+            BookCategoryDTO dto = convertToDTO(category);
+            categoriesDTO.add(dto);
+        }
+        return categoriesDTO;
     }
 
     @Operation(summary = "Получить категорию по ID")
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public BookCategory getCategoryById(@PathVariable UUID id) {
-        return bookCategoryService.getCategoryById(id);
+    public BookCategoryDTO getCategoryById(@PathVariable UUID id) {
+        return convertToDTO(bookCategoryService.getCategoryById(id));
     }
 
     @Operation(summary = "Книги в категории")
@@ -71,8 +76,6 @@ public class CategoryController {
     public List<BookCategoryAssignment> getCategoriesForBook(@PathVariable Long bookId) {
         return bookCategoryService.getCategoriesForBook(bookId);
     }
-
-    // ---- CRUD категорий (librarian | admin) ----
 
     @Operation(summary = "Создать категорию")
     @PostMapping
@@ -112,8 +115,6 @@ public class CategoryController {
         bookCategoryService.removeBookFromCategory(bookId, id);
     }
 
-    // ---- Пользователь: запросы доступа к категории ----
-
     @Operation(summary = "Запросить доступ к категории (в рамках группы)")
     @PostMapping("/access")
     @PreAuthorize("isAuthenticated()")
@@ -136,5 +137,9 @@ public class CategoryController {
     @PreAuthorize("isAuthenticated()")
     public List<CategoryPermission> myPermissions(@AuthenticationPrincipal CustomUserDetails user) {
         return categoryPermissionService.getUserPermissions(user.getUser().getId());
+    }
+
+    public BookCategoryDTO convertToDTO(BookCategory category) {
+        return new BookCategoryDTO(category.getName(), category.getDescription());
     }
 }
