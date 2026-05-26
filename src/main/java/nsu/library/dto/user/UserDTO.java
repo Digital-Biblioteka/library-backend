@@ -9,6 +9,7 @@ import nsu.library.entity.User;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDTO {
+    Long id;
     String userName;
     String email;
     User.ROLE role;

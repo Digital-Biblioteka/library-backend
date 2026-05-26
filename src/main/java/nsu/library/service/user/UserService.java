@@ -57,7 +57,7 @@ public class UserService {
     }
 
     public UserDTO convertDTO(User user) {
-        return new UserDTO(user.getUsername(), user.getEmail(), user.getRole());
+        return new UserDTO(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
     }
 
     public void deleteUser(Long id) {
