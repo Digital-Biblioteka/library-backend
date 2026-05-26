@@ -8,6 +8,7 @@ import nsu.library.dto.user.CreateUserDTO;
 import nsu.library.dto.user.UserDTO;
 import nsu.library.security.CustomUserDetails;
 import nsu.library.service.user.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,8 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "Получить список пользователей")
-    @GetMapping("/admin/users")
+    @GetMapping("/users")
+    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN','ROLE_ADMIN')")
     public List<UserDTO> getAllUsers() {
 
         return userService.getUsers().stream()
