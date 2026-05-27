@@ -176,4 +176,8 @@ public class BookService {
     public Book getBook(Long id) {
         return bookRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
+
+    public List<Book> getBooksByPublicityType(Book.PublicityType type) {
+        return bookRepository.findAllByPublicity(type);
+    }
 }

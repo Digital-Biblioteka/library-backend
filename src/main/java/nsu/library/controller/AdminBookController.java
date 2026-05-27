@@ -31,6 +31,12 @@ public class AdminBookController {
         return bookService.getBooks();
     }
 
+
+    @GetMapping("admin/books/private")
+    public List<Book> getBooksAdminPrivate() {
+        return bookService.getBooksByPublicityType(Book.PublicityType.PRIVATE);
+    }
+
     //@GetMapping("admin/search")
     //public List<Book> searchBooks(SearchQuery searchQuery) {
     //    return bookService.searchBooks(searchQuery);
