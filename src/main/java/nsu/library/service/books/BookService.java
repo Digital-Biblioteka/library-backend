@@ -34,7 +34,6 @@ public class BookService {
      * @param file файл самой книжки
      * @return созданный и сохраненный в бд объект книги
      */
-    @Transactional
     public Book addBookManually(BookDTO bookDTO, MultipartFile file) {
         String bookId = UUID.randomUUID() + "." + file.getOriginalFilename();
 
@@ -49,7 +48,6 @@ public class BookService {
      * @param file просто файл книжки
      * @return созданную книжку
      */
-    @Transactional
     public Book addBookAuto(MultipartFile file) {
         String bookId = UUID.randomUUID() + "." + file.getOriginalFilename();
 
