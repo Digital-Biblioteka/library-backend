@@ -74,10 +74,11 @@ public class AdminBookController {
 
         if (dto.getMode() == addBookDTO.ADDMode.auto) {
             System.out.println("adding book auto");
-            return bookService.addBookAuto(file);
+            return bookService.addBookAuto(file, dto.getPublicityType());
         } else {
             System.out.println("adding book manually");
             if (dto.getBookDTO() == null) throw new IllegalArgumentException("bookDTO is required");
+            dto.getBookDTO().setPublicity(dto.getPublicityType());
             return bookService.addBookManually(dto.getBookDTO(), file);
         }
     }

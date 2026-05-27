@@ -10,7 +10,6 @@ import nsu.library.service.minio.MinioService;
 import nsu.library.service.search.SearchIndexClient;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -34,7 +33,7 @@ public class BookService {
      * @param file файл самой книжки
      * @return созданный и сохраненный в бд объект книги
      */
-    public Book addBookManually(BookDTO bookDTO, MultipartFile file) {
+    public Book addBookManually(BookDTO bookDTO,  MultipartFile file) {
         String bookId = UUID.randomUUID() + "." + file.getOriginalFilename();
 
         return saveBook(file, bookId, bookDTO);
@@ -48,7 +47,7 @@ public class BookService {
      * @param file просто файл книжки
      * @return созданную книжку
      */
-    public Book addBookAuto(MultipartFile file) {
+    public Book addBookAuto(MultipartFile file, Book.PublicityType publicityType) {
         String bookId = UUID.randomUUID() + "." + file.getOriginalFilename();
 
         BookDTO book;
@@ -57,6 +56,7 @@ public class BookService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        book.setPublicity(publicityType);
         return saveBook(file, bookId, book);
     }
 
