@@ -33,8 +33,7 @@ public class LibrarianController {
     private final LimitService limitService;
     private final CategoryPermissionService categoryPermissionService;
 
-    // --- Access requests (user → librarian) ---
-
+    // Запросы на доступ юзер - библиотекарь
     @Operation(summary = "Получить список запросов на доступ своей группы")
     @GetMapping("/requests/groups/{groupID}")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
@@ -55,7 +54,7 @@ public class LibrarianController {
         return accessControlService.SaveAccessRequest(request);
     }
 
-    // --- Group management ---
+    // Управление группами библиотекаря
 
     @Operation(summary = "Получить список групп библиотекаря")
     @GetMapping("/groups")
@@ -71,6 +70,7 @@ public class LibrarianController {
         return groupService.GetUsersByGroup(id);
     }
 
+    @Operation(summary = "Получить лимиты выданных книжек группы")
     @GetMapping("/groups/{groupID}/books/limits")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
     public List<BookLimit> GetGroupBookLimits(@PathVariable UUID groupID) {
@@ -90,7 +90,7 @@ public class LibrarianController {
         return groupService.AddUserToGroup(addedUser.getId(), groupID);
     }
 
-
+    // Управление лимитами книжек и запросы на еще книжки
     @Operation(summary = "Создать запрос на увеличение лимита на книгу для своей группы")
     @PostMapping("/limits/requests")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
@@ -116,7 +116,7 @@ public class LibrarianController {
         return limitService.GetLimitRequestsByLibrarian(user.getUser().getId());
     }
 
-    // --- Category access requests (user → librarian) ---
+    // Управление категориями
 
     @Operation(summary = "Запросы пользователей на доступ к категориям группы")
     @GetMapping("/categories/requests/{groupID}")
@@ -148,8 +148,7 @@ public class LibrarianController {
         return categoryPermissionService.rejectAccessRequest(requestID);
     }
 
-    // --- Category limit requests (librarian → admin) ---
-
+    // Лимиты категорий
     @Operation(summary = "Запросить у админа лимиты на категорию для своей группы")
     @PostMapping("/categories/limits/requests")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
@@ -177,8 +176,6 @@ public class LibrarianController {
         RequireLibrarianAccess(group, user);
         return categoryPermissionService.getLimitRequestsByGroup(groupID);
     }
-
-    // --- Internal helper ---
 
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
     void RequireLibrarianAccess(Group group, CustomUserDetails user) {

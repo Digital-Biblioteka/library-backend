@@ -29,7 +29,6 @@ public class GroupController {
     private final LimitService limitService;
     private final CategoryPermissionService categoryPermissionService;
 
-    // --- Groups ---
 
     @Operation(summary = "Получить группы, в которые входит пользователь")
     @GetMapping("/user")
@@ -64,39 +63,42 @@ public class GroupController {
         return groupService.AddUserToGroup(addedUser.getId(), groupID);
     }
 
+    @Operation(summary = "Изменить группу")
     @PutMapping("/{groupID}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Group UpdateGroup(@PathVariable UUID groupID, @RequestBody GroupDTO req, @AuthenticationPrincipal CustomUserDetails user) {
         return groupService.updateGroup(groupID, req);
     }
 
-    // --- Book limits ---
 
+    @Operation(summary = "Дать книжки группе по запросу")
     @PostMapping("{groupID}/books/limits")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public BookLimit GiveGroupBooklimit(@PathVariable UUID groupID, @RequestBody BookLimitDTO req, @AuthenticationPrincipal CustomUserDetails user) {
         return limitService.AddBookLimit(groupID, req.getBookID(), req.getLimit());
     }
 
+    @Operation(summary = "Редактировать лимит книжек группы")
     @PutMapping("/books/limits/{bookLimitID}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public BookLimit EditGroupBooklimit(@PathVariable Long bookLimitID, @RequestBody EditBookLimitDTO req, @AuthenticationPrincipal CustomUserDetails user) {
         return limitService.EditBookLimit(bookLimitID, req.getLimit());
     }
 
+    @Operation(summary = "Посмотреть лимиты книжек группы")
     @GetMapping("{groupID}/books/limits")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<BookLimit> GetGroupBookLimits(@PathVariable UUID groupID) {
         return limitService.GetBookLimitsForGroup(groupID);
     }
 
+    @Operation(summary = "Посмотреть все лимиты книжек всех групп")
     @GetMapping("/books/limits")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<BookLimit> GetBookLimits() {
         return limitService.GetBookLimits();
     }
 
-    // --- Limit requests (librarian → admin) ---
 
     @Operation(summary = "Получить все запросы библиотекарей на увеличение лимитов")
     @GetMapping("/limits/requests")
@@ -118,7 +120,8 @@ public class GroupController {
     public BookLimitRequest RejectLimitRequest(@PathVariable UUID requestID) {
         return limitService.RejectLimitRequest(requestID);
     }
-    // --- Category limit requests: admin ---
+
+    // Категории групп
 
     @io.swagger.v3.oas.annotations.Operation(summary = "Все запросы библиотекарей на лимиты по категориям")
     @GetMapping("/categories/limits/requests")

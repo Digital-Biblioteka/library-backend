@@ -24,7 +24,7 @@ public class BookmarkController {
     private final BookmarkGroupService bookmarkGroupService;
 
     /**
-     * Create new bookmark for a book. Optionally attach to a group via dto.groupID.
+     * Создать букмарку. Опционально сразу задать группу, в которую она входит.
      */
     @PostMapping("/{bookId}")
     @PreAuthorize("isAuthenticated()")
@@ -34,7 +34,7 @@ public class BookmarkController {
     }
 
     /**
-     * Get personal bookmarks of the authenticated user for a specific book.
+     * Получить букмарки юзера в конкретной книге.
      */
     @GetMapping("/{bookId}")
     @PreAuthorize("isAuthenticated()")
@@ -43,9 +43,6 @@ public class BookmarkController {
         return bookmarkService.getUserBookmarksByBook(user.getUser().getId(), bookId);
     }
 
-    /**
-     * Edit bookmark text / position.
-     */
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Редактировать заметку")
@@ -53,9 +50,6 @@ public class BookmarkController {
         return bookmarkService.editBookmark(id, user.getUser().getId(), dto);
     }
 
-    /**
-     * Delete a bookmark (ownership enforced inside service).
-     */
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Удалить заметку")
@@ -64,7 +58,7 @@ public class BookmarkController {
     }
 
     /**
-     * Move an existing bookmark into a shared group.
+     * Добавить существующую букмарку в группу.
      */
     @PutMapping("/{id}/group/{groupId}")
     @PreAuthorize("isAuthenticated()")
@@ -76,8 +70,7 @@ public class BookmarkController {
     }
 
     /**
-     * Get all bookmarks by a shared group.
-     * group belongs only to one book
+     * Получить все букмарки группы по книжке.
      */
     @GetMapping("/groups/{groupId}")
     @PreAuthorize("isAuthenticated()")
@@ -87,7 +80,7 @@ public class BookmarkController {
     }
 
     /**
-     * Create a new shared bookmark group for a book.
+     * Создать группу букмарок для книжки.
      * Query params: name, visibility (PRIVATE | BY_LINK)
      */
     @PostMapping("/groups/{bookId}")
@@ -100,9 +93,6 @@ public class BookmarkController {
         return bookmarkGroupService.createBookmarkGroup(bookId, user.getUser(), name, visibility);
     }
 
-    /**
-     * Delete a bookmark group.
-     */
     @DeleteMapping("/groups/{groupId}")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Удалить группу заметок")
@@ -111,7 +101,7 @@ public class BookmarkController {
     }
 
     /**
-     * Join a bookmark group using its access token.
+     * Присоединиться к группе букмарок по токену доступа
      */
     @PostMapping("/groups/join/{accessToken}")
     @PreAuthorize("isAuthenticated()")
@@ -121,7 +111,7 @@ public class BookmarkController {
     }
 
     /**
-     * List all members of a bookmark group.
+     * Увидеть всех пользователей в группе букмарок
      */
     @GetMapping("/groups/{groupId}/members")
     @PreAuthorize("isAuthenticated()")
