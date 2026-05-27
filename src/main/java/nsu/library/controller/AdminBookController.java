@@ -54,12 +54,16 @@ public class AdminBookController {
         String filename = file.getOriginalFilename();
 
         if (contentType == null || !"application/epub+zip".equals(contentType)) {
+            System.out.println("Недопустимый MIME-тип файла: " + contentType +
+                    ". Разрешены только EPUB-файлы (application/epub+zip).");
             throw new IllegalArgumentException(
                     "Недопустимый MIME-тип файла: " + contentType +
                     ". Разрешены только EPUB-файлы (application/epub+zip)."
             );
         }
         if (filename == null || !filename.toLowerCase().endsWith(".epub")) {
+            System.out.println("Недопустимое расширение файла: " + filename +
+                    ". Разрешены только файлы с расширением .epub.");
             throw new IllegalArgumentException(
                     "Недопустимое расширение файла: " + filename +
                     ". Разрешены только файлы с расширением .epub."
@@ -69,8 +73,10 @@ public class AdminBookController {
         addBookDTO dto = new ObjectMapper().readValue(dtoJson, addBookDTO.class);
 
         if (dto.getMode() == addBookDTO.ADDMode.auto) {
+            System.out.println("adding book auto");
             return bookService.addBookAuto(file);
         } else {
+            System.out.println("adding book manually");
             if (dto.getBookDTO() == null) throw new IllegalArgumentException("bookDTO is required");
             return bookService.addBookManually(dto.getBookDTO(), file);
         }
