@@ -41,6 +41,10 @@ public class Book {
     @Column(nullable = false)
     String linkToBook;
 
+    @Column(name = "indexing_status")
+    @Enumerated(EnumType.STRING)
+    IndexingStatus indexingStatus = IndexingStatus.NOT_INDEXED;
+
     public enum PublicityType{
         PUBLIC,
         PRIVATE,

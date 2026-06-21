@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import nsu.library.dto.book.BookDTO;
 import nsu.library.entity.Book;
 import nsu.library.entity.Genre;
+import nsu.library.entity.IndexingStatus;
 import nsu.library.repository.BookRepository;
 import nsu.library.service.minio.MinioService;
 import nsu.library.service.search.SearchIndexClient;
@@ -25,6 +26,7 @@ public class BookService {
     private final MinioService minioService;
     private final SearchIndexClient searchIndexClient;
     private final GenreService genreService;
+    private final BookIndexer bookIndexer;
 
     /**
      * Ручное добавление книги с заполнением всех полей и ее добавление в минио
@@ -73,7 +75,7 @@ public class BookService {
             }
 
             saved = bookRepository.save(ourBook);
-            searchIndexClient.indexBook(saved);
+            bookIndexer.indexBookAsync(saved);
         } catch (Exception e) {
             try {
                 minioService.deleteBook(bookId);
@@ -132,6 +134,7 @@ public class BookService {
         bookDTO.setPublisher(book.getPublisher());
         bookDTO.setRating(book.getRating());
         bookDTO.setPublicity(book.getPublicity());
+        bookDTO.setIndexingStatus(book.getIndexingStatus());
         if (book.getGenre() != null) {
             bookDTO.setGenre(book.getGenre().getGenreName());
         }
@@ -164,8 +167,8 @@ public class BookService {
         if (bookDTO.getPublicity() != null) {
             book.setPublicity(bookDTO.getPublicity());
         }
-        bookRepository.save(book);
-        searchIndexClient.indexBook(book);
+        book = bookRepository.save(book);
+        bookIndexer.indexBookAsync(book);
         return book;
     }
 
@@ -180,4 +183,27 @@ public class BookService {
     public List<Book> getBooksByPublicityType(Book.PublicityType type) {
         return bookRepository.findAllByPublicity(type);
     }
+
+    public IndexingStatus getIndexingStatus(Long id) {
+        Book book = getBook(id);
+        return book.getIndexingStatus();
+    }
+
+    public void reindexBook(Long id) {
+        Book book = getBook(id);
+        book.setIndexingStatus(IndexingStatus.NOT_INDEXED);
+        bookRepository.save(book);
+        bookIndexer.indexBookAsync(book);
+    }
+
+    public int reindexAllBooks() {
+        List<Book> all = bookRepository.findAll();
+        for (Book book : all) {
+            book.setIndexingStatus(IndexingStatus.NOT_INDEXED);
+            bookRepository.save(book);
+            bookIndexer.indexBookAsync(book);
+        }
+        return all.size();
+    }
+
 }

@@ -25,6 +25,11 @@ public class SearchController {
         return ResponseEntity.ok(searchService.searchBooks(query));
     }
 
+    @PostMapping("/books/semantic")
+    public ResponseEntity<List<BookDTO>> semanticSearch(@RequestBody SearchQuery query) {
+        return ResponseEntity.ok(searchService.semanticSearch(query));
+    }
+
     @PostMapping("/content")
     public ResponseEntity<List<ContentSearchResult>> contentSearch(@RequestBody ContentSearchQuery query) {
         return ResponseEntity.ok(searchService.searchContent(query));

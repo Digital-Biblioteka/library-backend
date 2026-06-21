@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nsu.library.entity.Book;
+import nsu.library.entity.IndexingStatus;
 
 import java.util.List;
 
@@ -21,5 +22,6 @@ public class BookDTO {
     String publisher;
     Double rating;
     Book.PublicityType publicity;
+    IndexingStatus indexingStatus;
     List<String> reviewSnippets;
 }
