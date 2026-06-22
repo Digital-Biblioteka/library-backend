@@ -41,10 +41,14 @@ public class BookmarkService {
         bookmark.setBook(book);
         User user = userRepository.findById(userId).orElseThrow();
         bookmark.setUser(user);
-        // Set data fields first so the WebSocket event carries correct data
+
         bookmark.setSpine_reference(dto.getSpineRef());
         bookmark.setParagraph_index(dto.getParagraphIdx());
         bookmark.setText_bookmark(dto.getText());
+        bookmark.setColor(dto.getColor());
+        bookmark.setSelectedText(dto.getSelectedText());
+        bookmark.setStartOffset(dto.getStartOffset());
+        bookmark.setEndOffset(dto.getEndOffset());
         if (dto.getGroupID() != null) {
             BookmarkGroup group = bookmarkGroupRepository.findById(dto.getGroupID())
                     .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Bookmark group not found"));
@@ -82,6 +86,18 @@ public class BookmarkService {
         }
         if (dto.getSpineRef() != 0) {
             bookmark.setSpine_reference(dto.getSpineRef());
+        }
+        if (dto.getColor() != null) {
+            bookmark.setColor(dto.getColor());
+        }
+        if (dto.getSelectedText() != null) {
+            bookmark.setSelectedText(dto.getSelectedText());
+        }
+        if (dto.getStartOffset() != 0) {
+            bookmark.setStartOffset(dto.getStartOffset());
+        }
+        if (dto.getEndOffset() != 0) {
+            bookmark.setEndOffset(dto.getEndOffset());
         }
         if (bookmark.getGroup() != null) {
             bookmarkRealTimeService.handleBookmarkUpdated(bookmark);

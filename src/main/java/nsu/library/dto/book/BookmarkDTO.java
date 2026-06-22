@@ -11,9 +11,16 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+//добавить поля в дто
+//startOffset, endOffset, selectedText, note, color
 public class BookmarkDTO {
     int spineRef;
     int paragraphIdx;
+    long startOffset;
+    long endOffset;
+
     UUID groupID;
     String text;
+    String selectedText;
+    String color;
 }

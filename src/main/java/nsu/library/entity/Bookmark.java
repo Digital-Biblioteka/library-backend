@@ -10,6 +10,8 @@ import java.util.UUID;
 @Table(name = "bookmarks")
 @Getter
 @Setter
+//добавить поля в дто
+//startOffset, endOffset, selectedText, note, color
 public class Bookmark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,12 +29,24 @@ public class Bookmark {
     @ManyToOne
     private Book book;
 
+    @JoinColumn(name = "start_offset")
+    Long startOffset;
+
+    @JoinColumn(name = "end_offset")
+    Long endOffset;
+
     @Column(nullable = false)
     int spine_reference;
 
     @Column(nullable = false)
     int paragraph_index;
 
-    @Column(nullable = true)
+    @Column()
     String text_bookmark;
+
+    @Column()
+    String selectedText;
+
+    @Column()
+    String color;
 }
