@@ -1,0 +1,1 @@
+UPDATE books SET indexing_status = 'INDEXED' WHERE indexing_status = 'NOT_INDEXED';

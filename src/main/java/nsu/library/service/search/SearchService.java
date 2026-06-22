@@ -61,9 +61,15 @@ public class SearchService {
                             if (bid != null) {
                                 Long bookId = bid instanceof Number n ? n.longValue() : Long.parseLong(bid.toString());
                                 reviewBookIds.add(bookId);
-                                String text = (String) r.getOrDefault("review_text", "");
-                                if (!text.isBlank()) {
-                                    reviewSnippetsMap.computeIfAbsent(bookId, k -> new ArrayList<>()).add(text);
+                                @SuppressWarnings("unchecked")
+                                List<String> reviews = (List<String>) r.get("reviews");
+                                if (reviews != null && !reviews.isEmpty()) {
+                                    reviewSnippetsMap.computeIfAbsent(bookId, k -> new ArrayList<>()).addAll(reviews);
+                                } else {
+                                    String text = (String) r.getOrDefault("review_text", "");
+                                    if (!text.isBlank()) {
+                                        reviewSnippetsMap.computeIfAbsent(bookId, k -> new ArrayList<>()).add(text);
+                                    }
                                 }
                             }
                         }
@@ -179,6 +185,14 @@ public class SearchService {
         return results;
     }
 
+    public List<BookDTO> semanticSearch(SearchQuery q) {
+        String url = props.getSearchSemanticUrl();
+        if (url == null || url.isBlank()) {
+            return List.of();
+        }
+        return searchBooksExternal(url, q);
+    }
+
     private BookDTO toBookDTO(Book book) {
         BookDTO dto = new BookDTO();
         dto.setId(book.getId());
@@ -190,6 +204,7 @@ public class SearchService {
         if (book.getGenre() != null) {
             dto.setGenre(book.getGenre().getGenreName());
         }
+        dto.setIndexingStatus(book.getIndexingStatus());
         return dto;
     }
 
@@ -273,6 +288,12 @@ public class SearchService {
             dto.setDescription((String) m.get("description"));
             dto.setGenre((String) m.get("genres"));
             dto.setPublisher((String) m.get("publisher"));
+            if (dto.getId() != null) {
+                bookRepository.findById(dto.getId()).ifPresent(book -> {
+                    dto.setIndexingStatus(book.getIndexingStatus());
+                    dto.setRating(book.getRating());
+                });
+            }
             out.add(dto);
         }
         return out;
@@ -315,6 +336,11 @@ public class SearchService {
             dto.setDescription((String) src.get("description"));
             dto.setGenre((String) src.get("genres"));
             dto.setPublisher((String) src.get("publisher"));
+            if (dto.getId() != null) {
+                bookRepository.findById(dto.getId()).ifPresent(book ->
+                    dto.setIndexingStatus(book.getIndexingStatus())
+                );
+            }
             out.add(dto);
         }
         return out;

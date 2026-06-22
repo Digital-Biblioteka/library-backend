@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import nsu.library.dto.book.BookDTO;
 import nsu.library.dto.book.addBookDTO;
+import nsu.library.entity.IndexingStatus;
 import nsu.library.service.books.BookService;
 import nsu.library.service.search.SearchIndexClient;
 import org.springframework.http.MediaType;
@@ -107,5 +108,21 @@ public class AdminBookController {
             searchIndexClient.indexBook(book);
         }
         return books;
+    }
+
+    @GetMapping("admin/books/{id}/indexing-status")
+    public IndexingStatus getIndexingStatus(@PathVariable Long id) {
+        return bookService.getIndexingStatus(id);
+    }
+
+    @PostMapping("admin/books/{id}/reindex")
+    public void reindexBook(@PathVariable Long id) {
+        bookService.reindexBook(id);
+    }
+
+    @PostMapping("admin/books/reindex-all")
+    public String reindexAllBooks() {
+        int count = bookService.reindexAllBooks();
+        return "Запущена переиндексация " + count + " книг";
     }
 }
