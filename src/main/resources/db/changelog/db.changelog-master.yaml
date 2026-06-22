@@ -182,3 +182,5 @@ databaseChangeLog:
       file: db/changelog/026-add-bookmark-groups.sql
   - include:
       file: db/changelog/027-add-group-id-bookmarks.sql
+  - include:
+      file: db/changelog/028-add-fields-bookmark.sql
