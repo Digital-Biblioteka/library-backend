@@ -289,9 +289,10 @@ public class SearchService {
             dto.setGenre((String) m.get("genres"));
             dto.setPublisher((String) m.get("publisher"));
             if (dto.getId() != null) {
-                bookRepository.findById(dto.getId()).ifPresent(book ->
-                    dto.setIndexingStatus(book.getIndexingStatus())
-                );
+                bookRepository.findById(dto.getId()).ifPresent(book -> {
+                    dto.setIndexingStatus(book.getIndexingStatus());
+                    dto.setRating(book.getRating());
+                });
             }
             out.add(dto);
         }
