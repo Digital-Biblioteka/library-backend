@@ -1,5 +1,6 @@
 package nsu.library.service.bookpermissions;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import nsu.library.entity.*;
 import nsu.library.repository.*;
@@ -30,6 +31,9 @@ public class PermissionService {
         bookPermission.setTimeExpires(Instant.now().plus(30, ChronoUnit.DAYS));
 
         BookLimit limit = bookLimitsRepository.findByBook_IdAndGroup_Id(bookID, groupID);
+        if (limit == null) {
+            throw new EntityNotFoundException("Book limit not found");
+        }
         boolean ok = limit.decrementLimit();
         if (!ok) {
             throw new IllegalStateException("Book limit reached for book: " + bookPermission.getBook() + " group: " + bookPermission.getGroup());
