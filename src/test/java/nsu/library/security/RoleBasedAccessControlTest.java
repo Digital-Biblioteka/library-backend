@@ -37,15 +37,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Тесты ролевого доступа (RBAC) для трёх ролей системы: ROLE_USER, ROLE_LIBRARIAN, ROLE_ADMIN,
  * а также для неаутентифицированных запросов.
- * <p>
  * Цель — зафиксировать в виде тестов то, что сейчас настроено в
  * {@link SecurityConfig} (защита по пути, например {@code /api/admin/**}) и через
  * {@code @PreAuthorize} в контроллерах, чтобы случайная правка в одном из этих мест
  * не открыла доступ не той роли (или, наоборот, не закрыла доступ той, у которой он должен быть).
- * <p>
  * Поднимается только web-слой ({@code @WebMvcTest}) — без реальной БД, MinIO, Liquibase
- * и т.п. Все сервисы замоканы, нас интересует только то, кого Spring Security пропускает
- * до контроллера и кого режет на 403.
  */
 @WebMvcTest(controllers = {
         AdminBookController.class,
@@ -60,13 +56,11 @@ class RoleBasedAccessControlTest {
     @Autowired
     private MockMvc mockMvc;
 
-    // Зависимости JwtAuthFilter / SecurityConfig
     @MockitoBean
     private JwtService jwtService;
     @MockitoBean
     private CustomUserDetailsService customUserDetailsService;
 
-    // Зависимости контроллеров под тестом
     @MockitoBean
     private BookService bookService;
     @MockitoBean
