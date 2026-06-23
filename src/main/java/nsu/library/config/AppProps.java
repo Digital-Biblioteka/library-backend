@@ -30,4 +30,7 @@ public class AppProps {
 
     @Value("${app.search.semantic-url:http://localhost:8001/search/books/semantic}")
     private String searchSemanticUrl;
+
+    @Value("${app.search.ask-url:http://localhost:8001/ask-book}")
+    private String askUrl;
 }
