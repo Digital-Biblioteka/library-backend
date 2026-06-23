@@ -215,7 +215,11 @@ public class SearchService {
         }
         HttpHeaders h = new HttpHeaders();
         h.setContentType(MediaType.APPLICATION_JSON);
-        ResponseEntity<List> resp = http.postForEntity(url, new HttpEntity<>(q, h), List.class);
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("query", q.query());
+        body.put("book_id", q.bookId());
+        body.put("size", q.size());
+        ResponseEntity<List> resp = http.postForEntity(url, new HttpEntity<>(body, h), List.class);
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> arr = (List<Map<String, Object>>) resp.getBody();
         List<ContentSearchResult> out = new ArrayList<>();
