@@ -12,6 +12,7 @@ import nsu.library.repository.BookmarkGroupUserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +38,15 @@ public class BookmarkGroupService {
         bookmarkGroup.setAccessToken(UUID.randomUUID());
 
         return bookmarkGroupRepository.save(bookmarkGroup);
+    }
+
+    public List<BookmarkGroup> getBookmarkGroupsByBookIDAndUser(Long bookID, User user) {
+        List<BookmarkGroupUser> userGroup = bookmarkGroupUserRepository.findBookmarkGroupUserByUser_IdAndGroup_Book_Id(user.getId(), bookID);
+        List<BookmarkGroup> group = new ArrayList<>();
+        for (BookmarkGroupUser groupUser : userGroup) {
+            group.add(groupUser.getGroup());
+        }
+        return group;
     }
 
     public void deleteBookmarkGroup(UUID bookmarkGroupID) {
