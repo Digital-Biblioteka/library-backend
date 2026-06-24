@@ -63,11 +63,11 @@ public class BookmarkController {
         bookmarkService.deleteBookmark(id, user.getUser().getId());
     }
 
-    @GetMapping("{id}/groups")
+    @GetMapping("{bookId}/groups")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Получить группы заметок, которым принадлежит пользователь по этой книге")
-    public List<BookmarkGroup> getBookmarkGroupsByBookAndUser(Long bookID, User user) {
-        return bookmarkGroupService.getBookmarkGroupsByBookIDAndUser(bookID, user);
+    public List<BookmarkGroup> getBookmarkGroupsByBookAndUser(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long bookId) {
+        return bookmarkGroupService.getBookmarkGroupsByBookIDAndUser(bookId, user.getUser());
     }
 
     /**

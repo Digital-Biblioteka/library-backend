@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface BookmarkGroupUserRepository  extends JpaRepository<BookmarkGroupUser, BookmarkGroupUserId> {
     List<BookmarkGroupUser> findBookmarkGroupUsersByGroup(BookmarkGroup bookmarkGroup);
-    List<BookmarkGroupUser> findBookmarkGroupUserByUser_IdAndGroup_Book_Id(Long userId, Long bookID);
+    List<BookmarkGroupUser> findBookmarkGroupUserByUser_IdAndGroup_Book_Id(Long userId, Long bookID);;
 }

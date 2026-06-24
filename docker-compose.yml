@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres
+    image: postgres:17
     container_name: db
     environment:
       - POSTGRES_DB=${DB_URL}
@@ -42,6 +42,27 @@ services:
       interval: 30s
       timeout: 5s
       retries: 5
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin}
+      - RAW_BUCKET=${RAW_BUCKET:-raw}
+      - COVER_BUCKET=${COVER_BUCKET:-cover}
+      - PARSED_BUCKET=${PARSED_BUCKET:-parsed}
+      - INDEX_BUCKET=${INDEX_BUCKET:-index}
+      - ES_SNAPSHOTS_BUCKET=${ES_SNAPSHOTS_BUCKET:-es-snapshots}
+    entrypoint: [ "/bin/sh", "-c" ]
+    command: >
+      "mc alias set local http://minio:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD &&
+       mc mb -p local/$$RAW_BUCKET || true &&
+       mc mb -p local/$$COVER_BUCKET || true &&
+       mc mb -p local/$$PARSED_BUCKET || true &&
+       mc mb -p local/$$INDEX_BUCKET || true &&
+       mc mb -p local/$$ES_SNAPSHOTS_BUCKET || true"
 volumes:
   minio-data:
   postgres_data:

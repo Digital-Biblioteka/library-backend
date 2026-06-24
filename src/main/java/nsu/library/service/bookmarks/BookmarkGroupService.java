@@ -46,6 +46,8 @@ public class BookmarkGroupService {
         for (BookmarkGroupUser groupUser : userGroup) {
             group.add(groupUser.getGroup());
         }
+        List<BookmarkGroup> ownedGroups = bookmarkGroupRepository.findBookmarkGroupsByBook_IdAndOwner_Id(bookID, user.getId());
+        group.addAll(ownedGroups);
         return group;
     }
 
