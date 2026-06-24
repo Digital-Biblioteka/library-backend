@@ -183,4 +183,8 @@ databaseChangeLog:
   - include:
       file: db/changelog/027-add-group-id-bookmarks.sql
   - include:
-      file: db/changelog/028-add-fields-bookmark.sql
+      file: db/changelog/028-add-indexing-status.sql
+  - include:
+      file: db/changelog/029-migrate-existing-books-indexed.sql
+  - include:
+      file: db/changelog/030-add-fields-bookmark.sql

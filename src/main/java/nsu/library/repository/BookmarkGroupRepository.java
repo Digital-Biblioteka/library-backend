@@ -1,6 +1,7 @@
 package nsu.library.repository;
 
 import nsu.library.entity.BookmarkGroup;
+import nsu.library.entity.BookmarkGroupUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +12,5 @@ import java.util.UUID;
 public interface BookmarkGroupRepository extends JpaRepository<BookmarkGroup, UUID> {
     List<BookmarkGroup> findBookmarkGroupsByName(String name);
     BookmarkGroup findBookmarkGroupsByAccessToken(UUID accessToken);
+    List<BookmarkGroup> findBookmarkGroupsByBook_IdAndOwner_Id(Long bookId, Long userId);
 }

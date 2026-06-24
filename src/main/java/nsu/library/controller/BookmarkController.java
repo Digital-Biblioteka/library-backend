@@ -6,6 +6,7 @@ import nsu.library.dto.book.BookmarkDTO;
 import nsu.library.entity.Bookmark;
 import nsu.library.entity.BookmarkGroup;
 import nsu.library.entity.BookmarkGroupUser;
+import nsu.library.entity.User;
 import nsu.library.security.CustomUserDetails;
 import nsu.library.service.bookmarks.BookmarkGroupService;
 import nsu.library.service.bookmarks.BookmarkService;
@@ -43,6 +44,11 @@ public class BookmarkController {
         return bookmarkService.getUserBookmarksByBook(user.getUser().getId(), bookId);
     }
 
+//    @GetMapping("/{bookId}/groups/{groupID}")
+//    public List<Bookmark> getBookmarksByUserAndGroup(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long bookId, @PathVariable UUID groupId) {
+//        return bookmarkService.getBookmarksByGroup()
+//    }
+
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Редактировать заметку")
@@ -55,6 +61,13 @@ public class BookmarkController {
     @Operation(summary = "Удалить заметку")
     public void deleteBookmark(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long id) {
         bookmarkService.deleteBookmark(id, user.getUser().getId());
+    }
+
+    @GetMapping("{bookId}/groups")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Получить группы заметок, которым принадлежит пользователь по этой книге")
+    public List<BookmarkGroup> getBookmarkGroupsByBookAndUser(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long bookId) {
+        return bookmarkGroupService.getBookmarkGroupsByBookIDAndUser(bookId, user.getUser());
     }
 
     /**
