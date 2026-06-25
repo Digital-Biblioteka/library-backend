@@ -1,6 +1,8 @@
 package nsu.library.controller;
 
 import nsu.library.dto.book.BookDTO;
+import nsu.library.dto.search.AskBookRequest;
+import nsu.library.dto.search.AskBookResponse;
 import nsu.library.dto.search.ContentSearchQuery;
 import nsu.library.dto.search.ContentSearchResult;
 import nsu.library.dto.search.SearchQuery;
@@ -33,6 +35,11 @@ public class SearchController {
     @PostMapping("/content")
     public ResponseEntity<List<ContentSearchResult>> contentSearch(@RequestBody ContentSearchQuery query) {
         return ResponseEntity.ok(searchService.searchContent(query));
+    }
+
+    @PostMapping("/ask")
+    public ResponseEntity<AskBookResponse> askBook(@RequestBody AskBookRequest req) {
+        return ResponseEntity.ok(searchService.askBook(req));
     }
 
     @GetMapping("/suggest")

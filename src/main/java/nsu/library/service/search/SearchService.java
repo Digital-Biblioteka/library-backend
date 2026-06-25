@@ -1,6 +1,8 @@
 package nsu.library.service.search;
 
 import nsu.library.config.AppProps;
+import nsu.library.dto.search.AskBookRequest;
+import nsu.library.dto.search.AskBookResponse;
 import nsu.library.dto.search.ContentSearchQuery;
 import nsu.library.dto.search.ContentSearchResult;
 import nsu.library.dto.search.SearchQuery;
@@ -238,6 +240,17 @@ public class SearchService {
             out.add(r);
         }
         return out;
+    }
+
+    public AskBookResponse askBook(AskBookRequest req) {
+        String url = props.getAskUrl();
+        if (url == null || url.isBlank()) {
+            return new AskBookResponse("Ask service not configured", List.of());
+        }
+        HttpHeaders h = new HttpHeaders();
+        h.setContentType(MediaType.APPLICATION_JSON);
+        ResponseEntity<AskBookResponse> resp = http.postForEntity(url, new HttpEntity<>(req, h), AskBookResponse.class);
+        return resp.getBody();
     }
 
     public List<Map<String, Object>> suggest(String prefix, int size) {
